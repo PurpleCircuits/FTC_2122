@@ -1,14 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
@@ -27,6 +30,9 @@ public class SensorsTest extends LinearOpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
     BNO055IMU imu;
+    private DistanceSensor sensorRange = null;
+    private Rev2mDistanceSensor sensorTimeOfFlight = null;
+
 
     // Used for determining how long something has ran
     private ElapsedTime runtime = new ElapsedTime();
@@ -44,8 +50,20 @@ public class SensorsTest extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        if (opModeIsActive()){
+            driveFor(3.75, true);
+        }
+        telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
+        telemetry.update();
+        if (10 > sensorRange.getDistance(DistanceUnit.CM)){
+            turnLeft(90, 5);
+        } else {
+            turnRight(270, 5);
+        } //TODO Get the second distance sensor working
+        //TODO Get encoderDrive working
+        
         // Go forward away from wall for 36 inches
-        if (opModeIsActive()) {
+       /* if (opModeIsActive()) {
             driveFor(1, true);
         }
         if (opModeIsActive()) {
@@ -57,19 +75,11 @@ public class SensorsTest extends LinearOpMode {
         if (opModeIsActive()) {
             turnRight(180, 5);
         }
-        /*
-        // Turn right 90 degrees
-        if (opModeIsActive()) {
-            turnFor(.50, true);
-        }
-        if (opModeIsActive())  {
-            turnFor(.5, false);
-        }
-         */
         // Go forward 2 feet (24 inches)
         if (opModeIsActive()) {
             driveFor(1, false);
-        }
+        }*/
+       sleep(5000);
     }
 
     /**
@@ -89,7 +99,10 @@ public class SensorsTest extends LinearOpMode {
         }
         // Reset the timeout time and start motion
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < time));
+        while (opModeIsActive() && (runtime.seconds() < time)) {
+            telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
+            telemetry.update();
+        }
         // Stop all motion
         leftDrive.setPower(0);
         rightDrive.setPower(0);
@@ -208,11 +221,29 @@ public class SensorsTest extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
+        sensorRange = hardwareMap.get(DistanceSensor.class, "distance");
+        // you can also cast this to a Rev2mDistanceSensor if you want to use added
+        // methods associated with the Rev2mDistanceSensor class.
+        sensorTimeOfFlight = (Rev2mDistanceSensor)sensorRange;
+
         // Log that init hardware is finished
         telemetry.log().clear();
         telemetry.log().add("Init. hardware finished.");
         telemetry.clear();
         telemetry.update();
     }
+    private void distanceAction(){
+        // generic DistanceSensor methods.
+        telemetry.addData("deviceName",sensorRange.getDeviceName() );
+        telemetry.addData("range", String.format("%.01f mm", sensorRange.getDistance(DistanceUnit.MM)));
+        telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
+        telemetry.addData("range", String.format("%.01f m", sensorRange.getDistance(DistanceUnit.METER)));
+        telemetry.addData("range", String.format("%.01f in", sensorRange.getDistance(DistanceUnit.INCH)));
 
+        // Rev2mDistanceSensor specific methods.
+        telemetry.addData("ID", String.format("%x", sensorTimeOfFlight.getModelID()));
+        telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
+
+        telemetry.update();
+    }
 }
