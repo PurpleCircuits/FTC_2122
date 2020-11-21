@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -36,6 +38,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -56,6 +60,7 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
     private DcMotor intake = null;
     private DistanceSensor sensorRange = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
+    NormalizedColorSensor colorSensor = null;
 
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
@@ -81,6 +86,8 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
         // you can also cast this to a Rev2mDistanceSensor if you want to use added
         // methods associated with the Rev2mDistanceSensor class.
         sensorTimeOfFlight = (Rev2mDistanceSensor)sensorRange;
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
+        colorSensor.setGain(2);
 
         // These are the encoder positions for the motor to go to in the array
         /*pose[0]=0;
@@ -108,7 +115,11 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
             clawAction();
             driveAction();
             //intakeAction();
-            distanceAction();
+            //Below is used for outputting and testing distance sensor
+            //distanceAction();
+            //The following tests color sensor output
+            colorSensorTest();
+            //TODO options below
             //Conveyer right stick #2
             //Launch#2 Y (add servo gate + conveyerAction)
             //Open Claw#2 B
@@ -277,5 +288,29 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
         telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
 
         telemetry.update();
+    }
+    private void colorSensorTest() {
+
+        final float[] hsvValues = new float[3];
+        // Get the normalized colors from the sensor
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+
+        /* Use telemetry to display feedback on the driver station. We show the red, green, and blue
+         * normalized values from the sensor (in the range of 0 to 1), as well as the equivalent
+         * HSV (hue, saturation and value) values. See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
+         * for an explanation of HSV color. */
+
+        // Update the hsvValues array by passing it to Color.colorToHSV()
+        Color.colorToHSV(colors.toColor(), hsvValues);
+
+        telemetry.addLine()
+                .addData("Red", "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue", "%.3f", colors.blue);
+        telemetry.addLine()
+                .addData("Hue", "%.3f", hsvValues[0])
+                .addData("Saturation", "%.3f", hsvValues[1])
+                .addData("Value", "%.3f", hsvValues[2]);
+        telemetry.addData("Alpha", "%.3f", colors.alpha);
     }
 }

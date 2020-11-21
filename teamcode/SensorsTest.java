@@ -51,7 +51,7 @@ public class SensorsTest extends LinearOpMode {
         runtime.reset();
 
         if (opModeIsActive()){
-            driveFor(3.75, true);
+            driveFor(3.8, true);
         }
         telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
         telemetry.update();
@@ -61,7 +61,7 @@ public class SensorsTest extends LinearOpMode {
             turnRight(270, 5);
         } //TODO Get the second distance sensor working
         //TODO Get encoderDrive working
-        
+
         // Go forward away from wall for 36 inches
        /* if (opModeIsActive()) {
             driveFor(1, true);
