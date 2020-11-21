@@ -7,6 +7,7 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
@@ -84,10 +85,9 @@ public class PurpleTeleOP extends LinearOpMode {
         if (gamepad2.a) {
             isIntakeOn = !isIntakeOn;
         }
-        if (isIntakeOn){
+        if (isIntakeOn) {
             intake.setPower(1);
-        }
-        else {
+        } else {
             intake.setPower(0);
         }
     }
@@ -107,6 +107,7 @@ public class PurpleTeleOP extends LinearOpMode {
          leftDrive.setDirection(DcMotor.Direction.FORWARD);
          rightDrive.setDirection(DcMotor.Direction.REVERSE);
          theClawMotor.setDirection(DcMotor.Direction.FORWARD);
+         intake.setDirection(DcMotor.Direction.REVERSE);
      }
 
     /**
