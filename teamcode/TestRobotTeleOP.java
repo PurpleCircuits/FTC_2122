@@ -32,11 +32,9 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Color;
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -58,9 +56,10 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private DcMotor intake = null;
-    private DistanceSensor sensorRange = null;
+    private DistanceSensor bottomDistanceSensor = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
     NormalizedColorSensor colorSensor = null;
+    private DistanceSensor topDistanceSensor = null;
 
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
@@ -82,21 +81,15 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
         //intake = hardwareMap.get(DcMotor.class, "toggle_intake");
-        sensorRange = hardwareMap.get(DistanceSensor.class, "distance");
+        bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottomdistance");
+        topDistanceSensor = hardwareMap.get(DistanceSensor.class, "topdistance");
         // you can also cast this to a Rev2mDistanceSensor if you want to use added
         // methods associated with the Rev2mDistanceSensor class.
-        sensorTimeOfFlight = (Rev2mDistanceSensor)sensorRange;
+        sensorTimeOfFlight = (Rev2mDistanceSensor) bottomDistanceSensor;
+
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
         colorSensor.setGain(2);
 
-        // These are the encoder positions for the motor to go to in the array
-        /*pose[0]=0;
-        pose[1]=383;
-        pose[2]=553;
-        pose[3]=538;
-        pose[4]=724;
-        pose[5]=916;
-        */
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -116,7 +109,7 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
             driveAction();
             //intakeAction();
             //Below is used for outputting and testing distance sensor
-            //distanceAction();
+            distanceAction();
             //The following tests color sensor output
             colorSensorTest();
             //TODO options below
@@ -201,50 +194,6 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
         //sleep so bot does not over correct and to make sure one button press is one increment in 'a' value
         sleep(100);
 
-/*
-       if (gamepad2.right_bumper){
-           a= ++a;
-       }
-        if (a==1){
-            theClawMotor.setTargetPosition(0);
-            theClawMotor.setPower(1);
-            theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        if  (a==2){
-            theClawMotor.setTargetPosition(383);
-            theClawMotor.setPower(1);
-            theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        if  (a==3){
-            theClawMotor.setTargetPosition(682);
-            theClawMotor.setPower(1);
-            theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        if (a==4){
-            theClawMotor.setTargetPosition(706);
-            theClawMotor.setPower(1);
-            theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        if (a==5){
-            theClawMotor.setTargetPosition(753);
-            theClawMotor.setPower(1);
-            theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        if (a==6){
-            theClawMotor.setTargetPosition(762);
-            theClawMotor.setPower(1);
-            theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        if (a==7){
-            theClawMotor.setTargetPosition(0);
-            theClawMotor.setPower(1);
-            theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            a=a-6;
-        }
-
- */
-
-
     }
 
     private void driveAction() {
@@ -277,17 +226,11 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
     }
     private void distanceAction(){
         // generic DistanceSensor methods.
-        telemetry.addData("deviceName",sensorRange.getDeviceName() );
-        telemetry.addData("range", String.format("%.01f mm", sensorRange.getDistance(DistanceUnit.MM)));
-        telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
-        telemetry.addData("range", String.format("%.01f m", sensorRange.getDistance(DistanceUnit.METER)));
-        telemetry.addData("range", String.format("%.01f in", sensorRange.getDistance(DistanceUnit.INCH)));
+        telemetry.addData("deviceName", bottomDistanceSensor.getDeviceName() );
+        telemetry.addData("range", String.format("%.01f cm", bottomDistanceSensor.getDistance(DistanceUnit.CM)));
+        telemetry.addData("deviceName", topDistanceSensor.getDeviceName() );
+        telemetry.addData("range", String.format("%.01f cm", topDistanceSensor.getDistance(DistanceUnit.CM)));
 
-        // Rev2mDistanceSensor specific methods.
-        telemetry.addData("ID", String.format("%x", sensorTimeOfFlight.getModelID()));
-        telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
-
-        telemetry.update();
     }
     private void colorSensorTest() {
 
