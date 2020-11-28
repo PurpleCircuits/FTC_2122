@@ -81,8 +81,8 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
         //intake = hardwareMap.get(DcMotor.class, "toggle_intake");
-        bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottomdistance");
-        topDistanceSensor = hardwareMap.get(DistanceSensor.class, "topdistance");
+        bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottom_distance");
+        topDistanceSensor = hardwareMap.get(DistanceSensor.class, "top_distance");
         // you can also cast this to a Rev2mDistanceSensor if you want to use added
         // methods associated with the Rev2mDistanceSensor class.
         sensorTimeOfFlight = (Rev2mDistanceSensor) bottomDistanceSensor;

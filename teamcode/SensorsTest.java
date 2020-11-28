@@ -22,7 +22,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 @Autonomous(name = "SensorsTest", group = "Linear Opmode")
 public class SensorsTest extends LinearOpMode {
-
+    static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // eg: TETRIX Motor Encoder
+    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
+    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415);
     // The speed for the drive motors to operate at during autonomous
     private static final double SPEED = 0.3;
 
@@ -30,9 +34,9 @@ public class SensorsTest extends LinearOpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
     BNO055IMU imu;
-    private DistanceSensor sensorRange = null;
+    private DistanceSensor topDistanceSensor = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
-
+    private DistanceSensor bottomDistanceSensor = null;
 
     // Used for determining how long something has ran
     private ElapsedTime runtime = new ElapsedTime();
@@ -51,15 +55,22 @@ public class SensorsTest extends LinearOpMode {
         runtime.reset();
 
         if (opModeIsActive()){
-            driveFor(3.8, true);
+            //driveFor(3.8, true);
+            encoderDrive(.3, 12,12, 10);
         }
-        telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
+
+        sleep(1000);
+        /*
+        distanceAction();
         telemetry.update();
-        if (10 > sensorRange.getDistance(DistanceUnit.CM)){
+
+        if (10 > topDistanceSensor.getDistance(DistanceUnit.CM)){
             turnLeft(90, 5);
         } else {
             turnRight(270, 5);
-        } //TODO Get the second distance sensor working
+        }
+*/
+        //TODO Get the second distance sensor working
         //TODO Get encoderDrive working
 
         // Go forward away from wall for 36 inches
@@ -79,7 +90,7 @@ public class SensorsTest extends LinearOpMode {
         if (opModeIsActive()) {
             driveFor(1, false);
         }*/
-       sleep(5000);
+       sleep(10000);
     }
 
     /**
@@ -100,7 +111,7 @@ public class SensorsTest extends LinearOpMode {
         // Reset the timeout time and start motion
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < time)) {
-            telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
+            distanceAction();
             telemetry.update();
         }
         // Stop all motion
@@ -209,9 +220,9 @@ public class SensorsTest extends LinearOpMode {
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        // Ensure to not run with encoder
-        leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // Ensure to not run with encoder //TODO add back in after done with encoders (if not using)
+        //leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         // We are expecting the IMU to be attached to an I2C port on a Core Device Interface Module and named "imu".
@@ -221,10 +232,8 @@ public class SensorsTest extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        sensorRange = hardwareMap.get(DistanceSensor.class, "distance");
-        // you can also cast this to a Rev2mDistanceSensor if you want to use added
-        // methods associated with the Rev2mDistanceSensor class.
-        sensorTimeOfFlight = (Rev2mDistanceSensor)sensorRange;
+        bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottom_distance");
+        topDistanceSensor = hardwareMap.get(DistanceSensor.class, "top_distance");
 
         // Log that init hardware is finished
         telemetry.log().clear();
@@ -234,16 +243,71 @@ public class SensorsTest extends LinearOpMode {
     }
     private void distanceAction(){
         // generic DistanceSensor methods.
-        telemetry.addData("deviceName",sensorRange.getDeviceName() );
-        telemetry.addData("range", String.format("%.01f mm", sensorRange.getDistance(DistanceUnit.MM)));
-        telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
-        telemetry.addData("range", String.format("%.01f m", sensorRange.getDistance(DistanceUnit.METER)));
-        telemetry.addData("range", String.format("%.01f in", sensorRange.getDistance(DistanceUnit.INCH)));
+        telemetry.addData("Bottom deviceName", bottomDistanceSensor.getDeviceName() );
+        telemetry.addData("range", String.format("%.01f cm", bottomDistanceSensor.getDistance(DistanceUnit.CM)));
+        telemetry.addData("Top deviceName", topDistanceSensor.getDeviceName() );
+        telemetry.addData("range", String.format("%.01f cm", topDistanceSensor.getDistance(DistanceUnit.CM)));
 
-        // Rev2mDistanceSensor specific methods.
-        telemetry.addData("ID", String.format("%x", sensorTimeOfFlight.getModelID()));
-        telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
+    }
+    /*
+     *  Method to perform a relative move, based on encoder counts.
+     *  Encoders are not reset as the move is based on the current position.
+     *  Move will stop if any of three conditions occur:
+     *  1) Move gets to the desired position
+     *  2) Move runs out of time
+     *  3) Driver stops the opmode running.
+     */
+    public void encoderDrive(double speed,
+                             double leftInches, double rightInches,
+                             double timeoutS) {
+        int newLeftTarget;
+        int newRightTarget;
 
-        telemetry.update();
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = leftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newRightTarget = rightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            leftDrive.setTargetPosition(newLeftTarget);
+            rightDrive.setTargetPosition(newRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            leftDrive.setPower(Math.abs(speed));
+            rightDrive.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (leftDrive.isBusy() && rightDrive.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
+                        leftDrive.getCurrentPosition(),
+                        rightDrive.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            leftDrive.setPower(0);
+            rightDrive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            //  sleep(250);   // optional pause after each move
+        }
     }
 }
