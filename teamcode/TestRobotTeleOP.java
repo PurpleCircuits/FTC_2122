@@ -92,8 +92,8 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);
         theClawMotor.setDirection(DcMotor.Direction.FORWARD);
 
 
@@ -223,6 +223,9 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
         rightDrive.setPower(rightPower);
         // Telemetry wont be updated until update is called
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+        telemetry.addData("Path2",  "Running at %7d :%7d",
+                leftDrive.getCurrentPosition(),
+                rightDrive.getCurrentPosition());
     }
     private void distanceAction(){
         // generic DistanceSensor methods.

@@ -5,6 +5,7 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -22,9 +23,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 @Autonomous(name = "SensorsTest", group = "Linear Opmode")
 public class SensorsTest extends LinearOpMode {
-    static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // eg: TETRIX Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 450 ;    // (20 GEARBOX) eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    static final double     WHEEL_DIAMETER_INCHES   = 3.75 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
     // The speed for the drive motors to operate at during autonomous
@@ -56,14 +57,14 @@ public class SensorsTest extends LinearOpMode {
 
         if (opModeIsActive()){
             //driveFor(3.8, true);
-            encoderDrive(.3, 12,12, 10);
+            encoderDrive(.3, 36,36, 20);
         }
-
-        sleep(1000);
-        /*
+        sleep (500);
         distanceAction();
         telemetry.update();
-
+        //Store variables for which square to go in
+        //Storing variables could also be useful for later in the season if we want to throw rings
+        /*
         if (10 > topDistanceSensor.getDistance(DistanceUnit.CM)){
             turnLeft(90, 5);
         } else {
@@ -217,8 +218,8 @@ public class SensorsTest extends LinearOpMode {
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
 
         // Our robot needs the motor on one side to be reversed to drive forward
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         // Ensure to not run with encoder //TODO add back in after done with encoders (if not using)
         //leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
