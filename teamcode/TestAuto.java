@@ -59,9 +59,11 @@ public class TestAuto extends LinearOpMode {
             //driveFor(3.8, true);
             encoderDrive(.3, 36,36, 10);
         }
+        sleep (250);
         String action = determineAction();
         telemetry.addData("Action", action);
-        sleep (500);
+        telemetry.update();
+        sleep (2000);
         if (opModeIsActive()){
             encoderDrive(.3, -12, -12, 10);
         }
@@ -77,9 +79,17 @@ public class TestAuto extends LinearOpMode {
         if (opModeIsActive()){
             turnLeft(90, 10);
         }
+        if ("a".equalsIgnoreCase(action)){
+            processA();
+        } else if ("b".equalsIgnoreCase(action)){
+            processB();
+        } else {
+            processC();
+        }
         //Fetch how many rings were there and do one of three operations
-        //Process A go forward 36 inches
-        //Process B
+        //if A execute processA
+        //else if execute processB
+        //else execute processC
         distanceAction();
         telemetry.update();
         sleep(10000);
@@ -124,13 +134,13 @@ public class TestAuto extends LinearOpMode {
         double degreesLeft = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while(opModeIsActive()
-                && runtime.seconds() < timeoutS
-                && degreesLeft>10
+        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1
             // && oldDegreesLeft-degreesLeft>=0 //TODO possibly used as a 'stall' state - stuck up against something and stop turning
         )
         { //check to see if we overshot target
-            scaledSpeed=degreesLeft/(10+degreesLeft)*speed;
+            //we changed the current 100 from our 10 because this will slow the robot down more
+            //we think that this will fix the left turn, we changed it to 10 earlier
+            scaledSpeed=degreesLeft/(100+degreesLeft)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}
 
             leftDrive.setPower(-1*scaledSpeed); //extra power to back wheels
@@ -146,6 +156,8 @@ public class TestAuto extends LinearOpMode {
             //oldAngle=angles.firstAngle;
         }
         //sleep(250); //small pause at end of turn TODO Why?
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
     }
 
     //TODO see comments in turnLeft
@@ -159,12 +171,9 @@ public class TestAuto extends LinearOpMode {
         double degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while(opModeIsActive() &&
-                runtime.seconds() < timeoutS &&
-                degreesLeft>10
-        )
+        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
         { //check to see if we overshot target
-            scaledSpeed=degreesLeft/(10+degreesLeft)*speed;
+            scaledSpeed=degreesLeft/(100+degreesLeft)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}
 
             leftDrive.setPower(scaledSpeed);
@@ -173,6 +182,8 @@ public class TestAuto extends LinearOpMode {
             degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         }
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
     }
 
     /**
@@ -309,6 +320,26 @@ public class TestAuto extends LinearOpMode {
             return "b";
         } else {
             return "a";
+        }
+    }
+    private void processA() {
+        if (opModeIsActive())
+            encoderDrive(.5,48,48,20);
+    }
+    private void processB(){
+        if (opModeIsActive()) {
+            encoderDrive(.5, 72, 72, 20);
+        }
+        if (opModeIsActive()){
+            turnLeft(90, 10);
+        }
+        if (opModeIsActive()) {
+            encoderDrive(.5,24,24,10);
+        }
+    }
+    private void processC() {
+        if (opModeIsActive()) {
+            encoderDrive(.5, 96, 96, 20);
         }
     }
 }
