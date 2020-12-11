@@ -5,7 +5,6 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,9 +22,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 @Autonomous(name = "SensorsTest", group = "Linear Opmode")
 public class SensorsTest extends LinearOpMode {
-    static final double     COUNTS_PER_MOTOR_REV    = 450 ;    // (20 GEARBOX) eg: TETRIX Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // (40 GEARBOX) eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES   = 3.75 ;     // For figuring circumference
+    static final double     WHEEL_DIAMETER_INCHES   = 4 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
     // The speed for the drive motors to operate at during autonomous
@@ -35,9 +34,9 @@ public class SensorsTest extends LinearOpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
     BNO055IMU imu;
-    private DistanceSensor topDistanceSensor = null;
-    private Rev2mDistanceSensor sensorTimeOfFlight = null;
-    private DistanceSensor bottomDistanceSensor = null;
+    //private DistanceSensor topDistanceSensor = null;
+    //private Rev2mDistanceSensor sensorTimeOfFlight = null;
+    //private DistanceSensor bottomDistanceSensor = null;
 
     // Used for determining how long something has ran
     private ElapsedTime runtime = new ElapsedTime();
@@ -57,40 +56,11 @@ public class SensorsTest extends LinearOpMode {
 
         if (opModeIsActive()){
             //driveFor(3.8, true);
-            encoderDrive(.3, 36,36, 20);
+            encoderDrive(.3, 12,12, 20);
         }
         sleep (500);
-        distanceAction();
+        //distanceAction();
         telemetry.update();
-        //Store variables for which square to go in
-        //Storing variables could also be useful for later in the season if we want to throw rings
-        /*
-        if (10 > topDistanceSensor.getDistance(DistanceUnit.CM)){
-            turnLeft(90, 5);
-        } else {
-            turnRight(270, 5);
-        }
-*/
-        //TODO Get the second distance sensor working
-        //TODO Get encoderDrive working
-
-        // Go forward away from wall for 36 inches
-       /* if (opModeIsActive()) {
-            driveFor(1, true);
-        }
-        if (opModeIsActive()) {
-            turnLeft(90, 5);
-        }
-        if (opModeIsActive()) {
-            driveFor(1, true);
-        }
-        if (opModeIsActive()) {
-            turnRight(180, 5);
-        }
-        // Go forward 2 feet (24 inches)
-        if (opModeIsActive()) {
-            driveFor(1, false);
-        }*/
        sleep(10000);
     }
 
@@ -112,7 +82,7 @@ public class SensorsTest extends LinearOpMode {
         // Reset the timeout time and start motion
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < time)) {
-            distanceAction();
+            //distanceAction();
             telemetry.update();
         }
         // Stop all motion
@@ -233,8 +203,8 @@ public class SensorsTest extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottom_distance");
-        topDistanceSensor = hardwareMap.get(DistanceSensor.class, "top_distance");
+        //bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottom_distance");
+        //topDistanceSensor = hardwareMap.get(DistanceSensor.class, "top_distance");
 
         // Log that init hardware is finished
         telemetry.log().clear();
@@ -242,6 +212,7 @@ public class SensorsTest extends LinearOpMode {
         telemetry.clear();
         telemetry.update();
     }
+    /*
     private void distanceAction(){
         // generic DistanceSensor methods.
         telemetry.addData("Bottom deviceName", bottomDistanceSensor.getDeviceName() );
@@ -250,6 +221,7 @@ public class SensorsTest extends LinearOpMode {
         telemetry.addData("range", String.format("%.01f cm", topDistanceSensor.getDistance(DistanceUnit.CM)));
 
     }
+     */
     /*
      *  Method to perform a relative move, based on encoder counts.
      *  Encoders are not reset as the move is based on the current position.
