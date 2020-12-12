@@ -139,7 +139,9 @@ public class TestSensorsTest extends LinearOpMode {
             // && oldDegreesLeft-degreesLeft>=0 //TODO possibly used as a 'stall' state - stuck up against something and stop turning
         )
         { //check to see if we overshot target
-            scaledSpeed=degreesLeft/(10+degreesLeft)*speed;
+            //we changed the current 100 from our 10 because this will slow the robot down more
+            //we think that this will fix the left turn, we changed it to 10 earlier
+            scaledSpeed=degreesLeft/(100+degreesLeft)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}
 
             leftDrive.setPower(-1*scaledSpeed); //extra power to back wheels
@@ -155,6 +157,8 @@ public class TestSensorsTest extends LinearOpMode {
             //oldAngle=angles.firstAngle;
         }
         //sleep(250); //small pause at end of turn TODO Why?
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
     }
 
     //TODO see comments in turnLeft
@@ -173,7 +177,7 @@ public class TestSensorsTest extends LinearOpMode {
                 degreesLeft>1
                 )
         { //check to see if we overshot target
-            scaledSpeed=degreesLeft/(10+degreesLeft)*speed;
+            scaledSpeed=degreesLeft/(100+degreesLeft)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}
 
             leftDrive.setPower(scaledSpeed);
@@ -182,6 +186,8 @@ public class TestSensorsTest extends LinearOpMode {
             degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         }
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
     }
 
     /**

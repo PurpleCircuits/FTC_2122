@@ -34,6 +34,7 @@ public class TestAuto extends LinearOpMode {
     // Declare hardware
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
+    private DcMotor theClawMotor = null;
     BNO055IMU imu;
     private DistanceSensor topDistanceSensor = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
@@ -55,30 +56,22 @@ public class TestAuto extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        if (opModeIsActive()){
-            //driveFor(3.8, true);
-            encoderDrive(.3, 36,36, 10);
-        }
+        encoderDrive(.3, 36,36, 10);
+
         sleep (250);
         String action = determineAction();
         telemetry.addData("Action", action);
         telemetry.update();
-        sleep (2000);
-        if (opModeIsActive()){
-            encoderDrive(.3, -12, -12, 10);
-        }
+        sleep (500);
+
+        encoderDrive(.3, -12, -12, 10);
         // reverse robot 12 inches and turn right 270
-        if (opModeIsActive()){
-            turnRight(270, 5);
-        }
+        turnRight(270, 5);
         //Forward 24 inches
-        if (opModeIsActive()){
-            encoderDrive(.3, 24, 24, 10);
-        }
+        encoderDrive(.3, 18, 18, 10);
+
         //turn left 90
-        if (opModeIsActive()){
-            turnLeft(90, 10);
-        }
+        turnLeft(90, 10);
         if ("a".equalsIgnoreCase(action)){
             processA();
         } else if ("b".equalsIgnoreCase(action)){
@@ -86,82 +79,66 @@ public class TestAuto extends LinearOpMode {
         } else {
             processC();
         }
-        //Fetch how many rings were there and do one of three operations
-        //if A execute processA
-        //else if execute processB
-        //else execute processC
         distanceAction();
         telemetry.update();
         sleep(10000);
     }
 
-    /**
-     * A simple method used to make our robot reverse or go forward.
-     *
-     * @param time The amount of time in seconds to drive for
-     * @param forward True to go forward, false to go background
-     */
-    private void driveFor(double time, boolean forward) {
-        // Determine the direction and power to set
-        if (forward) {
-            leftDrive.setPower(SPEED);
-            rightDrive.setPower(SPEED);
-        } else {
-            leftDrive.setPower(-SPEED);
-            rightDrive.setPower(-SPEED);
-        }
-        // Reset the timeout time and start motion
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < time)) {
-            distanceAction();
-            telemetry.update();
-        }
-        // Stop all motion
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
+    private void processA() {
+        encoderDrive(.3,48,48,20);
+        dropGoal();
+        encoderDrive(.3,-12,-12,5);
+        turnLeft(45,5);
+        encoderDrive(.3,36,36,10);
     }
-    //TODO the below method is almost exact duplicate of the turnRight, minus the degrees left and setPower calls. can this be broken up differently?
+    private void processB(){
+        encoderDrive(.3, 84, 84, 20);
+        turnLeft(90, 10);
+        encoderDrive(.3,18,18,10);
+        dropGoal();
+        turnRight(270,5);
+        encoderDrive(.3,-18,-18,10);
+    }
+    private void processC() {
+        encoderDrive(.3,96, 96, 20);
+        dropGoal();
+        encoderDrive(.3,-30,-30,10);
+    }
+
     public void turnLeft(double turnAngle, double timeoutS) {
-        //sleep(500);//TODO why?
+        if (!opModeIsActive()){
+            return;
+        }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double speed=.5;
-        //double oldDegreesLeft=turnAngle;
         double scaledSpeed=speed;
         double targetHeading=angles.firstAngle+turnAngle;
-        //double oldAngle=angles.firstAngle;
         if(targetHeading<-180) {targetHeading+=360;}
         if(targetHeading>180){targetHeading-=360;}
         double degreesLeft = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1
-            // && oldDegreesLeft-degreesLeft>=0 //TODO possibly used as a 'stall' state - stuck up against something and stop turning
-        )
-        { //check to see if we overshot target
-            //we changed the current 100 from our 10 because this will slow the robot down more
-            //we think that this will fix the left turn, we changed it to 10 earlier
-            scaledSpeed=degreesLeft/(100+degreesLeft)*speed;
-            if(scaledSpeed>1){scaledSpeed=.1;}
+        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
+        {
+            //TODO maybe change the 100 to 75 to make the turn slightly faster.
+            //TODO change this is TestSensorsTest also
+            scaledSpeed=degreesLeft/(75+degreesLeft)*speed;
+            if(scaledSpeed>1){scaledSpeed=.1;}//TODO should we have a minimum scaled speed also? 0.1?
 
-            leftDrive.setPower(-1*scaledSpeed); //extra power to back wheels
-            rightDrive.setPower(scaledSpeed); //due to extra weight
-            //robot.leftFront.setPower(scaledSpeed);
-            //robot.rightFront.setPower(-1*scaledSpeed);
+            leftDrive.setPower(-1*scaledSpeed);
+            rightDrive.setPower(scaledSpeed);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            //oldDegreesLeft=degreesLeft;
             degreesLeft = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
-            //TODO below is questionable code based on the speed of CPU on the robot controller
-            //if(Math.abs(angles.firstAngle-oldAngle)<1){speed*=1.1;} //bump up speed to wheels in case robot stalls before reaching target
-            //oldAngle=angles.firstAngle;
         }
-        //sleep(250); //small pause at end of turn TODO Why?
         leftDrive.setPower(0);
         rightDrive.setPower(0);
     }
 
-    //TODO see comments in turnLeft
     public void turnRight(double turnAngle, double timeoutS) {
+        if (!opModeIsActive()){
+            return;
+        }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double speed=.5;
         double scaledSpeed=speed;
@@ -172,8 +149,8 @@ public class TestAuto extends LinearOpMode {
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
-        { //check to see if we overshot target
-            scaledSpeed=degreesLeft/(100+degreesLeft)*speed;
+        {
+            scaledSpeed=degreesLeft/(75+degreesLeft)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}
 
             leftDrive.setPower(scaledSpeed);
@@ -185,50 +162,23 @@ public class TestAuto extends LinearOpMode {
         leftDrive.setPower(0);
         rightDrive.setPower(0);
     }
-
-    /**
-     * A simple method used to turn our robot.
-     *
-     * @param time The amount of time in seconds to execute a turn for
-     * @param right True to turn right, false to turn left
-     */
-    private void turnFor(double time, boolean right) {
-        // Determine the direction and power to set
-        if (right) {
-            leftDrive.setPower(SPEED);
-            rightDrive.setPower(-SPEED);
-        } else {
-            leftDrive.setPower(-SPEED);
-            rightDrive.setPower(SPEED);
-        }
-        // Reset the timeout time and start motion
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < time));
-        // Stop all motion
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
-    }
-
     /**
      * Simply initializes our hardware from the FTC config into variables.
      */
     private void initHardware() {
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
         leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
 
         // Our robot needs the motor on one side to be reversed to drive forward
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        // Ensure to not run with encoder //TODO add back in after done with encoders (if not using)
-        //leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-        // We are expecting the IMU to be attached to an I2C port on a Core Device Interface Module and named "imu".
+        // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
         parameters.loggingTag     = "IMU";
@@ -263,6 +213,9 @@ public class TestAuto extends LinearOpMode {
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
+        if (!opModeIsActive()){
+            return;
+        }
         int newLeftTarget;
         int newRightTarget;
 
@@ -322,24 +275,23 @@ public class TestAuto extends LinearOpMode {
             return "a";
         }
     }
-    private void processA() {
-        if (opModeIsActive())
-            encoderDrive(.5,48,48,20);
-    }
-    private void processB(){
-        if (opModeIsActive()) {
-            encoderDrive(.5, 72, 72, 20);
+    private void dropGoal(){
+        if (!opModeIsActive()){
+            return;
         }
-        if (opModeIsActive()){
-            turnLeft(90, 10);
-        }
-        if (opModeIsActive()) {
-            encoderDrive(.5,24,24,10);
-        }
-    }
-    private void processC() {
-        if (opModeIsActive()) {
-            encoderDrive(.5, 96, 96, 20);
-        }
+        //set the power to the motor to .5
+        theClawMotor.setPower(.5);
+        //let run for one second
+        sleep(1000);
+        //set power to 0
+        theClawMotor.setPower(0);
+        //TODO write the code for a servo
+        //maybe put a sleep in here to stop arm from jolting
+        //open servo up
+        theClawMotor.setPower(-.5);
+        //let run for one second
+        sleep(1000);
+        //set power to 0
+        theClawMotor.setPower(0);
     }
 }
