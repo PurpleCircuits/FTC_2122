@@ -5,6 +5,7 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -57,6 +58,7 @@ public class SensorsTest extends LinearOpMode {
 
             encoderDrive(.3, 12,12, 10);
             turnLeft(90, 5);
+            sleep(500);
             turnRight(270,5);
             encoderDrive(.3,-12,-12,10);
 
@@ -185,8 +187,8 @@ public class SensorsTest extends LinearOpMode {
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
 
         // Our robot needs the motor on one side to be reversed to drive forward
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Ensure to not run with encoder //TODO add back in after done with encoders (if not using)
         //leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
