@@ -53,23 +53,25 @@ public class SensorsTest extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
+        //driveFor(3.8, true);
 
-        if (opModeIsActive()){
-            //driveFor(3.8, true);
-            encoderDrive(.3, 12,12, 20);
-        }
+            encoderDrive(.3, 12,12, 10);
+            turnLeft(90, 5);
+            turnRight(270,5);
+            encoderDrive(.3,-12,-12,10);
+
         sleep (500);
         //distanceAction();
         telemetry.update();
        sleep(10000);
     }
 
-    /**
+    /*
      * A simple method used to make our robot reverse or go forward.
      *
      * @param time The amount of time in seconds to drive for
      * @param forward True to go forward, false to go background
-     */
+
     private void driveFor(double time, boolean forward) {
         // Determine the direction and power to set
         if (forward) {
@@ -89,46 +91,42 @@ public class SensorsTest extends LinearOpMode {
         leftDrive.setPower(0);
         rightDrive.setPower(0);
     }
+    */
     //TODO the below method is almost exact duplicate of the turnRight, minus the degrees left and setPower calls. can this be broken up differently?
     public void turnLeft(double turnAngle, double timeoutS) {
-        //sleep(500);//TODO why?
+        if (!opModeIsActive()){
+            return;
+        }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double speed=.5;
-        //double oldDegreesLeft=turnAngle;
         double scaledSpeed=speed;
         double targetHeading=angles.firstAngle+turnAngle;
-        //double oldAngle=angles.firstAngle;
         if(targetHeading<-180) {targetHeading+=360;}
         if(targetHeading>180){targetHeading-=360;}
         double degreesLeft = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
-                        + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
+                + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while(opModeIsActive()
-                && runtime.seconds() < timeoutS
-                && degreesLeft>1
-            // && oldDegreesLeft-degreesLeft>=0 //TODO possibly used as a 'stall' state - stuck up against something and stop turning
-        )
-        { //check to see if we overshot target
-            scaledSpeed=degreesLeft/(10+degreesLeft)*speed;
-            if(scaledSpeed>1){scaledSpeed=.1;}
+        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
+        {
+            //TODO maybe change the 100 to 75 to make the turn slightly faster.
+            //TODO change this is TestSensorsTest also
+            scaledSpeed=degreesLeft/(75+degreesLeft)*speed;
+            if(scaledSpeed>1){scaledSpeed=.1;}//TODO should we have a minimum scaled speed also? 0.1?
 
-            leftDrive.setPower(-1*scaledSpeed); //extra power to back wheels
-            rightDrive.setPower(scaledSpeed); //due to extra weight
-            //robot.leftFront.setPower(scaledSpeed);
-            //robot.rightFront.setPower(-1*scaledSpeed);
+            leftDrive.setPower(-1*scaledSpeed);
+            rightDrive.setPower(scaledSpeed);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            //oldDegreesLeft=degreesLeft;
             degreesLeft = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
-            //TODO below is questionable code based on the speed of CPU on the robot controller
-            //if(Math.abs(angles.firstAngle-oldAngle)<1){speed*=1.1;} //bump up speed to wheels in case robot stalls before reaching target
-            //oldAngle=angles.firstAngle;
         }
-        //sleep(250); //small pause at end of turn TODO Why?
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
     }
-
     //TODO see comments in turnLeft
     public void turnRight(double turnAngle, double timeoutS) {
+        if (!opModeIsActive()){
+            return;
+        }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double speed=.5;
         double scaledSpeed=speed;
@@ -136,14 +134,11 @@ public class SensorsTest extends LinearOpMode {
         if(targetHeading<-180) {targetHeading+=360;}
         if(targetHeading>180){targetHeading-=360;}
         double degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
-                        + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
+                + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while(opModeIsActive() &&
-                runtime.seconds() < timeoutS &&
-                degreesLeft>1
-                )
-        { //check to see if we overshot target
-            scaledSpeed=degreesLeft/(10+degreesLeft)*speed;
+        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
+        {
+            scaledSpeed=degreesLeft/(75+degreesLeft)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}
 
             leftDrive.setPower(scaledSpeed);
@@ -152,14 +147,16 @@ public class SensorsTest extends LinearOpMode {
             degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         }
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
     }
 
-    /**
+    /*
      * A simple method used to turn our robot.
      *
      * @param time The amount of time in seconds to execute a turn for
      * @param right True to turn right, false to turn left
-     */
+
     private void turnFor(double time, boolean right) {
         // Determine the direction and power to set
         if (right) {
@@ -176,7 +173,7 @@ public class SensorsTest extends LinearOpMode {
         leftDrive.setPower(0);
         rightDrive.setPower(0);
     }
-
+    */
     /**
      * Simply initializes our hardware from the FTC config into variables.
      */
@@ -233,6 +230,9 @@ public class SensorsTest extends LinearOpMode {
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
+        if (!opModeIsActive()){
+            return;
+        }
         int newLeftTarget;
         int newRightTarget;
 
