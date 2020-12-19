@@ -35,6 +35,7 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -60,6 +61,7 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
     NormalizedColorSensor colorSensor = null;
     private DistanceSensor topDistanceSensor = null;
+    DigitalChannel digitalTouch = null;
 
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
@@ -86,6 +88,8 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
         // you can also cast this to a Rev2mDistanceSensor if you want to use added
         // methods associated with the Rev2mDistanceSensor class.
         sensorTimeOfFlight = (Rev2mDistanceSensor) bottomDistanceSensor;
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "limit_sensor");
+        digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
         colorSensor.setGain(2);
@@ -107,9 +111,10 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
 
             clawAction();
             driveAction();
+            limitAction();
             //intakeAction();
             //Below is used for outputting and testing distance sensor
-            distanceAction();
+            //distanceAction();
             //The following tests color sensor output
             colorSensorTest();
             //TODO options below
@@ -258,5 +263,14 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
                 .addData("Saturation", "%.3f", hsvValues[1])
                 .addData("Value", "%.3f", hsvValues[2]);
         telemetry.addData("Alpha", "%.3f", colors.alpha);
+    }
+    private void limitAction(){
+        // send the info back to driver station using telemetry function.
+        // if the digital channel returns true it's HIGH and the button is unpressed.
+        if (digitalTouch.getState() == true) {
+            telemetry.addData("Digital Touch", "True");
+        } else {
+            telemetry.addData("Digital Touch", "False");
+        }
     }
 }

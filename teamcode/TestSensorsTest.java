@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -39,6 +40,7 @@ public class TestSensorsTest extends LinearOpMode {
     private DistanceSensor topDistanceSensor = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
     private DistanceSensor bottomDistanceSensor = null;
+    DigitalChannel digitalTouch = null;
 
     // Used for determining how long something has ran
     private ElapsedTime runtime = new ElapsedTime();
@@ -62,7 +64,7 @@ public class TestSensorsTest extends LinearOpMode {
             turnRight(270, 3);
             dropGoal();
             encoderDrive(.3,-12,-12,10);
-
+            limitAction();
 
         sleep (500);
         distanceAction();
@@ -218,6 +220,8 @@ public class TestSensorsTest extends LinearOpMode {
         leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "limit_sensor");
+        digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
         // Our robot needs the motor on one side to be reversed to drive forward
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -320,6 +324,17 @@ public class TestSensorsTest extends LinearOpMode {
         if (!opModeIsActive()){
             return;
         }
+        //if touch sensor = false
+        if (digitalTouch.getState() == true) {
+            theClawMotor.setPower(-.5);
+            while (digitalTouch.getState() == true){
+                //do nothing
+            }
+            theClawMotor.setPower(0);
+        }
+        /*
+        //return to stowed position
+        //else continue
         //set the power to the motor to .5
         theClawMotor.setPower(.5);
         //let run for one second
@@ -334,5 +349,16 @@ public class TestSensorsTest extends LinearOpMode {
         sleep(1000);
         //set power to 0
         theClawMotor.setPower(0);
+
+         */
+    }
+    private void limitAction(){
+        // send the info back to driver station using telemetry function.
+        // if the digital channel returns true it's HIGH and the button is unpressed.
+        if (digitalTouch.getState() == true) {
+            telemetry.addData("Digital Touch", "True");
+        } else {
+            telemetry.addData("Digital Touch", "False");
+        }
     }
 }
