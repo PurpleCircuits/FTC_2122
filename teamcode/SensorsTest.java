@@ -56,11 +56,12 @@ public class SensorsTest extends LinearOpMode {
         runtime.reset();
         //driveFor(3.8, true);
 
-            encoderDrive(.3, 12,12, 10);
-            turnLeft(90, 5);
-            sleep(500);
-            turnRight(270,5);
-            encoderDrive(.3,-12,-12,10);
+            turnLeft(90,10);
+            //encoderDrive(.3, 12,12, 10);
+            //turnLeft(90, 5);
+            //sleep(500);
+            //turnRight(270,5);
+            //encoderDrive(.3,-12,-12,10);
 
         sleep (500);
         //distanceAction();
@@ -100,7 +101,7 @@ public class SensorsTest extends LinearOpMode {
             return;
         }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double speed=.5;
+        double speed=1;
         double scaledSpeed=speed;
         double targetHeading=angles.firstAngle+turnAngle;
         if(targetHeading<-180) {targetHeading+=360;}
@@ -112,7 +113,7 @@ public class SensorsTest extends LinearOpMode {
         {
             //TODO maybe change the 100 to 75 to make the turn slightly faster.
             //TODO change this is TestSensorsTest also
-            scaledSpeed=degreesLeft/(75+degreesLeft)*speed;
+            scaledSpeed=degreesLeft/(50+degreesLeft)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}//TODO should we have a minimum scaled speed also? 0.1?
 
             leftDrive.setPower(-1*scaledSpeed);
@@ -130,7 +131,7 @@ public class SensorsTest extends LinearOpMode {
             return;
         }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double speed=.5;
+        double speed=1;
         double scaledSpeed=speed;
         double targetHeading=angles.firstAngle+turnAngle;
         if(targetHeading<-180) {targetHeading+=360;}
