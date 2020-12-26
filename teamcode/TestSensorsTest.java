@@ -169,18 +169,18 @@ public class TestSensorsTest extends LinearOpMode {
         double targetHeading=angles.firstAngle+turnAngle;
         if(targetHeading<-180) {targetHeading+=360;}
         if(targetHeading>180){targetHeading-=360;}
-        double degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
+        double degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
+        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>1)
         {
-            scaledSpeed=degreesLeft/(75+degreesLeft)*speed;
+            scaledSpeed=degreesRemaining/(75+degreesRemaining)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}
 
             leftDrive.setPower(scaledSpeed);
             rightDrive.setPower(-1*scaledSpeed);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
+            degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         }
         leftDrive.setPower(0);
