@@ -141,7 +141,7 @@ public class SensorsTest extends LinearOpMode {
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
         {
-            scaledSpeed=degreesLeft/(75+degreesLeft)*speed;
+            scaledSpeed=degreesLeft/(50+degreesLeft)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}
 
             leftDrive.setPower(scaledSpeed);
