@@ -74,6 +74,7 @@ public class PurpleTeleOP extends LinearOpMode {
             driveAction();
             knockAction();
             intakeAction();
+            launchAction();
             //TODO options below
             //Conveyer right stick #2
             //Launch#2 Y (add servo gate + conveyerAction)
@@ -123,11 +124,19 @@ public class PurpleTeleOP extends LinearOpMode {
              theLaunchServo.setPosition(0.38);
              sleep(1000);
              theLaunchServo.setPosition(Servo.MIN_POSITION);
-
-
-
          }
      }
+
+    private void launchAction() {
+        if (gamepad2.a) {
+            isIntakeOn = !isIntakeOn;
+        }
+        if (isIntakeOn) {
+            intake.setPower(-.6);
+        } else {
+            intake.setPower(0);
+        }
+    }
 
     /**
      * Sets servo position depending on button input, A = Middle B = Grab X = Open
