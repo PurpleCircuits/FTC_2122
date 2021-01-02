@@ -38,6 +38,7 @@ public class PurpleTeleOP extends LinearOpMode {
     private DcMotor rightDrive = null;
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
+    private Servo theLaunchServo = null;
     private DcMotor intake = null;
     private DistanceSensor sensorRange = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
@@ -71,6 +72,7 @@ public class PurpleTeleOP extends LinearOpMode {
 
             clawAction();
             driveAction();
+            knockAction();
             intakeAction();
             //TODO options below
             //Conveyer right stick #2
@@ -86,11 +88,14 @@ public class PurpleTeleOP extends LinearOpMode {
             isIntakeOn = !isIntakeOn;
         }
         if (isIntakeOn) {
-            intake.setPower(-1);
+            intake.setPower(-.6);
         } else {
             intake.setPower(0);
         }
     }
+
+
+
 
      private void initHardware(){
          // Initialize the hardware variables. Note that the strings used here as parameters
@@ -100,6 +105,7 @@ public class PurpleTeleOP extends LinearOpMode {
          rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
          theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
          theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
+         theLaunchServo =hardwareMap.get(Servo.class, "the_launch_servo");
          intake = hardwareMap.get(DcMotor.class, "intake");
 
          // Most robots need the motor on one side to be reversed to drive forward
@@ -108,6 +114,19 @@ public class PurpleTeleOP extends LinearOpMode {
          rightDrive.setDirection(DcMotor.Direction.REVERSE);
          theClawMotor.setDirection(DcMotor.Direction.FORWARD);
          intake.setDirection(DcMotor.Direction.REVERSE);
+     }
+
+
+     private void knockAction() {
+        // hits ring into launcher then returns to original position
+         if (gamepad1.a) {
+             theLaunchServo.setPosition(0.38);
+             sleep(1000);
+             theLaunchServo.setPosition(Servo.MIN_POSITION);
+
+
+
+         }
      }
 
     /**
