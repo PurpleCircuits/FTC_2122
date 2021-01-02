@@ -39,6 +39,7 @@ public class PurpleTeleOP extends LinearOpMode {
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private Servo theLaunchServo = null;
+    private DcMotor theLaunchMotor = null;
     private DcMotor intake = null;
     private DistanceSensor sensorRange = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
@@ -47,6 +48,7 @@ public class PurpleTeleOP extends LinearOpMode {
     private boolean lastResetState = false;
     private boolean curResetState  = false;
     private boolean isIntakeOn = true;
+    private boolean isLaunchOn = false;
 
     // A timer helps provide feedback while calibration is taking place
     private ElapsedTime timer = new ElapsedTime();
@@ -84,16 +86,6 @@ public class PurpleTeleOP extends LinearOpMode {
         }
     }
 
-    private void intakeAction() {
-        if (gamepad2.a) {
-            isIntakeOn = !isIntakeOn;
-        }
-        if (isIntakeOn) {
-            intake.setPower(-.6);
-        } else {
-            intake.setPower(0);
-        }
-    }
 
 
 
@@ -106,7 +98,8 @@ public class PurpleTeleOP extends LinearOpMode {
          rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
          theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
          theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
-         theLaunchServo =hardwareMap.get(Servo.class, "the_launch_servo");
+         theLaunchServo = hardwareMap.get(Servo.class, "the_launch_servo");
+         theLaunchMotor = hardwareMap.get(DcMotor.class, "the_launch_motor");
          intake = hardwareMap.get(DcMotor.class, "intake");
 
          // Most robots need the motor on one side to be reversed to drive forward
@@ -128,7 +121,18 @@ public class PurpleTeleOP extends LinearOpMode {
      }
 
     private void launchAction() {
-        if (gamepad2.a) {
+        if (gamepad1.b) {
+            isLaunchOn = !isLaunchOn;
+        }
+        if (isLaunchOn) {
+            theLaunchMotor.setPower(-.6);
+        } else {
+            theLaunchMotor.setPower(0);
+        }
+    }
+
+    private void intakeAction() {
+        if (gamepad2.x) {
             isIntakeOn = !isIntakeOn;
         }
         if (isIntakeOn) {
