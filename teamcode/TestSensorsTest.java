@@ -145,7 +145,7 @@ public class TestSensorsTest extends LinearOpMode {
         {
             //TODO maybe change the 100 to 75 to make the turn slightly faster.
             //TODO change this is TestSensorsTest also
-            scaledSpeed=degreesLeft/(75+degreesLeft)*speed;
+            scaledSpeed=degreesLeft/(50+degreesLeft)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}//TODO should we have a minimum scaled speed also? 0.1?
 
             leftDrive.setPower(-1*scaledSpeed);
@@ -169,18 +169,18 @@ public class TestSensorsTest extends LinearOpMode {
         double targetHeading=angles.firstAngle+turnAngle;
         if(targetHeading<-180) {targetHeading+=360;}
         if(targetHeading>180){targetHeading-=360;}
-        double degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
+        double degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
+        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>1)
         {
-            scaledSpeed=degreesLeft/(75+degreesLeft)*speed;
+            scaledSpeed=degreesRemaining/(50+degreesRemaining)*speed;
             if(scaledSpeed>1){scaledSpeed=.1;}
 
             leftDrive.setPower(scaledSpeed);
             rightDrive.setPower(-1*scaledSpeed);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
+            degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         }
         leftDrive.setPower(0);
