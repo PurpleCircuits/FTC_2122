@@ -101,7 +101,7 @@ public class SensorsTest extends LinearOpMode {
             return;
         }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double speed=1;
+        double speed=.5;
         double scaledSpeed=speed;
         double targetHeading=angles.firstAngle+turnAngle;
         if(targetHeading<-180) {targetHeading+=360;}
