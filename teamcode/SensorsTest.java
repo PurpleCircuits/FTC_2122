@@ -29,7 +29,7 @@ public class SensorsTest extends LinearOpMode {
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
     // The speed for the drive motors to operate at during autonomous
-    private static final double SPEED = 0.3;
+    private static final double SPEED = 0.1;
 
     // Declare hardware
     private DcMotor leftDrive = null;
@@ -56,7 +56,8 @@ public class SensorsTest extends LinearOpMode {
         runtime.reset();
         //driveFor(3.8, true);
 
-            turnLeft(90,10);
+            turnFor(5, false);
+            //turnLeft(90,10);
             //encoderDrive(.3, 12,12, 10);
             //turnLeft(90, 5);
             //sleep(500);
@@ -159,7 +160,7 @@ public class SensorsTest extends LinearOpMode {
      *
      * @param time The amount of time in seconds to execute a turn for
      * @param right True to turn right, false to turn left
-
+*/
     private void turnFor(double time, boolean right) {
         // Determine the direction and power to set
         if (right) {
@@ -176,7 +177,7 @@ public class SensorsTest extends LinearOpMode {
         leftDrive.setPower(0);
         rightDrive.setPower(0);
     }
-    */
+
     /**
      * Simply initializes our hardware from the FTC config into variables.
      */
