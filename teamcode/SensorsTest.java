@@ -56,8 +56,8 @@ public class SensorsTest extends LinearOpMode {
         runtime.reset();
         //driveFor(3.8, true);
 
-            turnFor(5, false);
-            //turnLeft(90,10);
+
+            turnLeft(90,10);
             //encoderDrive(.3, 12,12, 10);
             //turnLeft(90, 5);
             //sleep(500);
@@ -115,7 +115,7 @@ public class SensorsTest extends LinearOpMode {
             //TODO maybe change the 100 to 75 to make the turn slightly faster.
             //TODO change this is TestSensorsTest also
             scaledSpeed=degreesRemaining/(50+degreesRemaining)*speed;
-            if(scaledSpeed>1 || scaledSpeed<.05){scaledSpeed=.05;}//We have a minimum and maximum scaled speed
+            if(scaledSpeed>1 || scaledSpeed<.25){scaledSpeed=.25;}//We have a minimum and maximum scaled speed
 
             leftDrive.setPower(-1*scaledSpeed);
             rightDrive.setPower(scaledSpeed);
@@ -143,7 +143,7 @@ public class SensorsTest extends LinearOpMode {
         while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
         {
             scaledSpeed=degreesLeft/(50+degreesLeft)*speed;
-            if(scaledSpeed>1 || scaledSpeed<.05){scaledSpeed=.05;}
+            if(scaledSpeed>1 || scaledSpeed<.25){scaledSpeed=.25;}
 
             leftDrive.setPower(scaledSpeed);
             rightDrive.setPower(-1*scaledSpeed);
@@ -160,7 +160,7 @@ public class SensorsTest extends LinearOpMode {
      *
      * @param time The amount of time in seconds to execute a turn for
      * @param right True to turn right, false to turn left
-*/
+
     private void turnFor(double time, boolean right) {
         // Determine the direction and power to set
         if (right) {
@@ -177,7 +177,7 @@ public class SensorsTest extends LinearOpMode {
         leftDrive.setPower(0);
         rightDrive.setPower(0);
     }
-
+*/
     /**
      * Simply initializes our hardware from the FTC config into variables.
      */
