@@ -114,7 +114,7 @@ public class SensorsTest extends LinearOpMode {
             //TODO maybe change the 100 to 75 to make the turn slightly faster.
             //TODO change this is TestSensorsTest also
             scaledSpeed=degreesRemaining/(50+degreesRemaining)*speed;
-            if(scaledSpeed>1 || scaledSpeed<.1){scaledSpeed=.1;}//We have a minimum and maximum scaled speed
+            if(scaledSpeed>1 || scaledSpeed<.05){scaledSpeed=.05;}//We have a minimum and maximum scaled speed
 
             leftDrive.setPower(-1*scaledSpeed);
             rightDrive.setPower(scaledSpeed);
@@ -142,7 +142,7 @@ public class SensorsTest extends LinearOpMode {
         while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
         {
             scaledSpeed=degreesLeft/(50+degreesLeft)*speed;
-            if(scaledSpeed>1 || scaledSpeed<.1){scaledSpeed=.1;}
+            if(scaledSpeed>1 || scaledSpeed<.05){scaledSpeed=.05;}
 
             leftDrive.setPower(scaledSpeed);
             rightDrive.setPower(-1*scaledSpeed);
