@@ -121,11 +121,12 @@ public class PurpleTeleOP extends LinearOpMode {
      }
 
     private void launchAction() {
-        if (gamepad1.b) {
+        if (gamepad1.x) {
             isLaunchOn = !isLaunchOn;
         }
         if (isLaunchOn) {
-            theLaunchMotor.setPower(-.6);
+            theLaunchMotor.setPower(
+                    .6);
         } else {
             theLaunchMotor.setPower(0);
         }
@@ -147,12 +148,12 @@ public class PurpleTeleOP extends LinearOpMode {
      */
     private void clawAction() {
         // close the claw
-        if (gamepad2.a) {
+        if (gamepad2.b) {
             theClawServo.setPosition(SERVO_MIN_POS);
         }
 
         // open the claw
-        if (gamepad2.b) {
+        if (gamepad2.y) {
             theClawServo.setPosition(SERVO_MAX_POS);
         }
 
