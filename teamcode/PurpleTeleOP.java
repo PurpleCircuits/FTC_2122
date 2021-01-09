@@ -137,7 +137,7 @@ public class PurpleTeleOP extends LinearOpMode {
             isIntakeOn = !isIntakeOn;
         }
         if (isIntakeOn) {
-            intake.setPower(-.6);
+            intake.setPower(-.5);
         } else {
             intake.setPower(0);
         }
