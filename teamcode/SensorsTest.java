@@ -56,8 +56,9 @@ public class SensorsTest extends LinearOpMode {
         runtime.reset();
         //driveFor(3.8, true);
 
-
+            encoderDrive(.3,24,24, 5);
             turnLeft(90,10);
+            turnRight(270,10);
             //encoderDrive(.3, 12,12, 10);
             //turnLeft(90, 5);
             //sleep(500);

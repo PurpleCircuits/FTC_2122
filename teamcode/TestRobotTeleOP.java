@@ -263,6 +263,9 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
                 .addData("Saturation", "%.3f", hsvValues[1])
                 .addData("Value", "%.3f", hsvValues[2]);
         telemetry.addData("Alpha", "%.3f", colors.alpha);
+        if (colorSensor instanceof DistanceSensor) {
+            telemetry.addData("Distance (cm)", "%.3f", ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM));
+        }
     }
     private void limitAction(){
         // send the info back to driver station using telemetry function.
