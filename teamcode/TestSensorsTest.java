@@ -40,7 +40,7 @@ public class TestSensorsTest extends LinearOpMode {
     private DistanceSensor topDistanceSensor = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
     private DistanceSensor bottomDistanceSensor = null;
-    DigitalChannel digitalTouch = null;
+    private DigitalChannel digitalTouch = null;
 
     // Used for determining how long something has ran
     private ElapsedTime runtime = new ElapsedTime();

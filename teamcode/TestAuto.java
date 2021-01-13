@@ -35,7 +35,7 @@ public class TestAuto extends LinearOpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
     private DcMotor theClawMotor = null;
-    BNO055IMU imu;
+    private BNO055IMU imu = null;
     private DistanceSensor topDistanceSensor = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
     private DistanceSensor bottomDistanceSensor = null;
