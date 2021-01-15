@@ -47,10 +47,11 @@ public class PurpleTeleOP extends LinearOpMode {
 
     private boolean lastResetState = false;
     private boolean curResetState  = false;
-    private boolean isIntakeOn = true;
+    private boolean isIntakeOn = false;
     private boolean isLaunchOn = false;
 
     // A timer helps provide feedback while calibration is taking place
+
     private ElapsedTime timer = new ElapsedTime();
 
     // Settings for our servo
