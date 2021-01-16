@@ -139,6 +139,7 @@ public class PurpleTeleOP extends LinearOpMode {
         } else {
             theLaunchMotor.setPower(0);
         }
+        sleep(100);
     }
 
     private void intakeAction() {
