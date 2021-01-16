@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
@@ -44,6 +45,9 @@ public class PurpleTeleOP extends LinearOpMode {
     private DistanceSensor sensorRange = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
     NormalizedColorSensor colorSensor = null;
+    private DistanceSensor topDistanceSensor = null;
+    private DistanceSensor bottomDistanceSensor = null;
+
 
     private boolean lastResetState = false;
     private boolean curResetState  = false;
@@ -51,7 +55,6 @@ public class PurpleTeleOP extends LinearOpMode {
     private boolean isLaunchOn = false;
 
     // A timer helps provide feedback while calibration is taking place
-
     private ElapsedTime timer = new ElapsedTime();
 
     // Settings for our servo
@@ -78,6 +81,7 @@ public class PurpleTeleOP extends LinearOpMode {
             knockAction();
             intakeAction();
             launchAction();
+            distanceAction();
             //TODO options below
             //Conveyer right stick #2
             //Launch#2 Y (add servo gate + conveyerAction)
@@ -109,6 +113,10 @@ public class PurpleTeleOP extends LinearOpMode {
          rightDrive.setDirection(DcMotor.Direction.REVERSE);
          theClawMotor.setDirection(DcMotor.Direction.FORWARD);
          intake.setDirection(DcMotor.Direction.REVERSE);
+
+         bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottom_distance");
+         topDistanceSensor = hardwareMap.get(DistanceSensor.class, "top_distance");
+
      }
 
 
@@ -216,5 +224,13 @@ public class PurpleTeleOP extends LinearOpMode {
         rightDrive.setPower(rightPower);
         // Telemetry wont be updated until update is called
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+    }
+    private void distanceAction(){
+        // generic DistanceSensor methods.
+        telemetry.addData("deviceName", bottomDistanceSensor.getDeviceName() );
+        telemetry.addData("range", String.format("%.01f cm", bottomDistanceSensor.getDistance(DistanceUnit.CM)));
+        telemetry.addData("deviceName", topDistanceSensor.getDeviceName() );
+        telemetry.addData("range", String.format("%.01f cm", topDistanceSensor.getDistance(DistanceUnit.CM)));
+
     }
 }

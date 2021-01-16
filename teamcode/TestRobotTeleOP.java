@@ -57,11 +57,11 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private DcMotor intake = null;
+    private DistanceSensor topDistanceSensor = null;
     private DistanceSensor bottomDistanceSensor = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
-    NormalizedColorSensor colorSensor = null;
-    private DistanceSensor topDistanceSensor = null;
-    DigitalChannel digitalTouch = null;
+    private NormalizedColorSensor colorSensor = null;
+    //TODO private DigitalChannel digitalTouch = null;
 
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
@@ -267,6 +267,7 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
             telemetry.addData("Distance (cm)", "%.3f", ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM));
         }
     }
+
     private void limitAction(){
         // send the info back to driver station using telemetry function.
         // if the digital channel returns true it's HIGH and the button is unpressed.
