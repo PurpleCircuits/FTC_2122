@@ -61,7 +61,7 @@ public class TestRobotTeleOP<pose> extends LinearOpMode {
     private DistanceSensor bottomDistanceSensor = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
     private NormalizedColorSensor colorSensor = null;
-    //TODO private DigitalChannel digitalTouch = null;
+    private DigitalChannel digitalTouch = null;
 
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
