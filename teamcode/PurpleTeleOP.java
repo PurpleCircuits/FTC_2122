@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
@@ -47,7 +48,7 @@ public class PurpleTeleOP extends LinearOpMode {
     private DcMotor intake = null;
     private DistanceSensor sensorRange = null;
     private Rev2mDistanceSensor sensorTimeOfFlight = null;
-    NormalizedColorSensor colorSensor = null;
+    private NormalizedColorSensor colorSensor = null;
     private DistanceSensor topDistanceSensor = null;
     private DistanceSensor bottomDistanceSensor = null;
 
@@ -84,6 +85,7 @@ public class PurpleTeleOP extends LinearOpMode {
             knockAction();
             intakeAction();
             launchAction();
+            //TODO launchAction();
             distanceAction();
             //TODO options below
             //Conveyer right stick #2
@@ -122,15 +124,31 @@ public class PurpleTeleOP extends LinearOpMode {
 
      }
 
+    //private int timesExecuted = 0;
 
     private void knockAction() {
+
         // hits ring into launcher then returns to original position
+        if (gamepad1.a) {
+
+            //timesExecuted++;
+            theLaunchServo.setPosition(0.68);
+            sleep(1000);
+            theLaunchServo.setPosition(Servo.MIN_POSITION);
+
+        }
+        //telemetry.addData("knockAction", "knock action executed: %d", timesExecuted);
+
+        // hits ring into launcher then returns to original position
+        /*
         long elapsedTime = System.currentTimeMillis() - timeSinceKnockActionWasPressed;
         if (gamepad1.a && (elapsedTime > 1000)) {
             theLaunchServo.setPosition(0.38);
             theLaunchServo.setPosition(Servo.MIN_POSITION);
             timeSinceKnockActionWasPressed = System.currentTimeMillis();
         }
+         */
+
     }
 
     private void launchAction() {
@@ -239,6 +257,5 @@ public class PurpleTeleOP extends LinearOpMode {
         telemetry.addData("range", String.format("%.01f cm", bottomDistanceSensor.getDistance(DistanceUnit.CM)));
         telemetry.addData("deviceName", topDistanceSensor.getDeviceName() );
         telemetry.addData("range", String.format("%.01f cm", topDistanceSensor.getDistance(DistanceUnit.CM)));
-
     }
 }
