@@ -33,6 +33,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class PurpleTeleOP extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
+    private long timeSinceLaunchActionWasPressed = System.currentTimeMillis();
+    private long timeSinceIntakeActionWasPressed = System.currentTimeMillis();
+    private long timeSinceKnockActionWasPressed = System.currentTimeMillis();
 
     // Declare our hardware
     private DcMotor leftDrive = null;
@@ -120,22 +123,24 @@ public class PurpleTeleOP extends LinearOpMode {
      }
 
 
-     private void knockAction() {
+    private void knockAction() {
         // hits ring into launcher then returns to original position
-         if (gamepad1.a) {
-             theLaunchServo.setPosition(0.38);
-             sleep(1000);
-             theLaunchServo.setPosition(Servo.MIN_POSITION);
-         }
-     }
+        long elapsedTime = System.currentTimeMillis() - timeSinceKnockActionWasPressed;
+        if (gamepad1.a && (elapsedTime > 1000)) {
+            theLaunchServo.setPosition(0.38);
+            theLaunchServo.setPosition(Servo.MIN_POSITION);
+            timeSinceKnockActionWasPressed = System.currentTimeMillis();
+        }
+    }
 
     private void launchAction() {
-        if (gamepad1.x) {
+        long elapsedTime = System.currentTimeMillis() - timeSinceLaunchActionWasPressed;
+        if (gamepad1.x && (elapsedTime > 1000)) {
             isLaunchOn = !isLaunchOn;
+            timeSinceLaunchActionWasPressed = System.currentTimeMillis();
         }
         if (isLaunchOn) {
-            theLaunchMotor.setPower(
-                    .6);
+            theLaunchMotor.setPower(.6);
         } else {
             theLaunchMotor.setPower(0);
         }
@@ -143,8 +148,10 @@ public class PurpleTeleOP extends LinearOpMode {
     }
 
     private void intakeAction() {
-        if (gamepad2.x) {
+        long elapsedTime = System.currentTimeMillis() - timeSinceIntakeActionWasPressed;
+        if (gamepad2.x && (elapsedTime > 1000)) {
             isIntakeOn = !isIntakeOn;
+            timeSinceIntakeActionWasPressed = System.currentTimeMillis();
         }
         if (isIntakeOn) {
             intake.setPower(-.5);
