@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -34,13 +35,16 @@ public class SensorsTest extends LinearOpMode {
     // Declare hardware
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
-    BNO055IMU imu;
+    private DcMotor theClawMotor = null;
+    private BNO055IMU imu = null;
+    private ElapsedTime runtime = new ElapsedTime();
+    private DigitalChannel digitalTouch = null;
+
     //private DistanceSensor topDistanceSensor = null;
     //private Rev2mDistanceSensor sensorTimeOfFlight = null;
     //private DistanceSensor bottomDistanceSensor = null;
 
     // Used for determining how long something has ran
-    private ElapsedTime runtime = new ElapsedTime();
 
     /**
      * This is the entry of our Op Mode.
@@ -56,19 +60,18 @@ public class SensorsTest extends LinearOpMode {
         runtime.reset();
         //driveFor(3.8, true);
 
-            encoderDrive(.3,24,24, 5);
-            turnLeft(90,10);
-            turnRight(270,10);
+            //encoderDrive(.3,24,24, 5);
+            //turnLeft(90,10);
+            //turnRight(270,10);
             //encoderDrive(.3, 12,12, 10);
             //turnLeft(90, 5);
             //sleep(500);
             //turnRight(270,5);
             //encoderDrive(.3,-12,-12,10);
+            dropGoal();
 
-        sleep (500);
         //distanceAction();
         telemetry.update();
-       sleep(10000);
     }
 
     /*
@@ -188,6 +191,9 @@ public class SensorsTest extends LinearOpMode {
         // step (using the FTC Robot Controller app on the phone).
         leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "limit_sensor");
+        digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
         // Our robot needs the motor on one side to be reversed to drive forward
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -287,5 +293,37 @@ public class SensorsTest extends LinearOpMode {
 
             //  sleep(250);   // optional pause after each move
         }
+    }
+
+    private void dropGoal() {
+        if (!opModeIsActive()) {
+            return;
+        }
+        if(isAtLimit()) {
+            telemetry.addData("dropGoal", "Not at Limit:" + isAtLimit());
+            telemetry.update();
+            //Arm down until sensor
+            theClawMotor.setPower(-.3);
+            while(isAtLimit()){
+                telemetry.addData("In Loop", "value: " + isAtLimit());
+                telemetry.update();
+            }
+            theClawMotor.setPower(0);
+        }
+
+        telemetry.addData("Out of Loop", "value: " + isAtLimit());
+        telemetry.update();
+        //open servo
+        /*openClaw();
+        //Arm Up until sensor
+        theClawMotor.setPower(.5);
+        while(!isAtLimit()){}
+        theClawMotor.setPower(0);
+         */
+    }
+    private boolean isAtLimit(){
+        // send the info back to driver station using telemetry function.
+        // if the digital channel returns true it's HIGH and the button is unpressed.
+        return digitalTouch.getState();
     }
 }

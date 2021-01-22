@@ -245,15 +245,16 @@ public class PurpleAuto extends LinearOpMode {
             return;
         }
         //Arm down until sensor
-        theClawMotor.setPower(.5);
-        while(!isAtLimit()){}
+        theClawMotor.setPower(-.5);
+        while(isAtLimit()){}
         theClawMotor.setPower(0);
         //open servo
-        openClaw();
+        /*openClaw();
         //Arm Up until sensor
         theClawMotor.setPower(.5);
         while(!isAtLimit()){}
         theClawMotor.setPower(0);
+         */
     }
     private boolean isAtLimit(){
         // send the info back to driver station using telemetry function.
