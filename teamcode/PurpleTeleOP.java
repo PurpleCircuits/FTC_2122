@@ -85,7 +85,7 @@ public class PurpleTeleOP extends LinearOpMode {
             knockAction();
             intakeAction();
             launchAction();
-            //TODO launchAction();
+            launchAction();
             distanceAction();
             //TODO options below
             //Conveyer right stick #2
@@ -114,8 +114,8 @@ public class PurpleTeleOP extends LinearOpMode {
 
          // Most robots need the motor on one side to be reversed to drive forward
          // Reverse the motor that runs backwards when connected directly to the battery
-         leftDrive.setDirection(DcMotor.Direction.FORWARD);
-         rightDrive.setDirection(DcMotor.Direction.REVERSE);
+         leftDrive.setDirection(DcMotor.Direction.REVERSE);
+         rightDrive.setDirection(DcMotor.Direction.FORWARD);
          theClawMotor.setDirection(DcMotor.Direction.FORWARD);
          intake.setDirection(DcMotor.Direction.REVERSE);
 
@@ -129,7 +129,7 @@ public class PurpleTeleOP extends LinearOpMode {
     private void knockAction() {
 
         // hits ring into launcher then returns to original position
-        if (gamepad1.a) {
+        if (gamepad2.y) {
 
             //timesExecuted++;
             theLaunchServo.setPosition(0.68);
@@ -153,12 +153,12 @@ public class PurpleTeleOP extends LinearOpMode {
 
     private void launchAction() {
         long elapsedTime = System.currentTimeMillis() - timeSinceLaunchActionWasPressed;
-        if (gamepad1.x && (elapsedTime > 1000)) {
+        if (gamepad2.x && (elapsedTime > 1000)) {
             isLaunchOn = !isLaunchOn;
             timeSinceLaunchActionWasPressed = System.currentTimeMillis();
         }
         if (isLaunchOn) {
-            theLaunchMotor.setPower(.6);
+            theLaunchMotor.setPower(.56);
         } else {
             theLaunchMotor.setPower(0);
         }
@@ -167,12 +167,12 @@ public class PurpleTeleOP extends LinearOpMode {
 
     private void intakeAction() {
         long elapsedTime = System.currentTimeMillis() - timeSinceIntakeActionWasPressed;
-        if (gamepad2.x && (elapsedTime > 1000)) {
+        if (gamepad2.left_bumper && (elapsedTime > 1000)) {
             isIntakeOn = !isIntakeOn;
             timeSinceIntakeActionWasPressed = System.currentTimeMillis();
         }
         if (isIntakeOn) {
-            intake.setPower(-.5);
+            intake.setPower(-.75);
         } else {
             intake.setPower(0);
         }
@@ -188,7 +188,7 @@ public class PurpleTeleOP extends LinearOpMode {
         }
 
         // open the claw
-        if (gamepad2.y) {
+        if (gamepad2.a) {
             theClawServo.setPosition(SERVO_MAX_POS);
         }
 
@@ -235,15 +235,15 @@ public class PurpleTeleOP extends LinearOpMode {
         } else {
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = -gamepad1.left_stick_y;
-            double turn = gamepad1.right_stick_x;
+            double drive = gamepad1.left_stick_y;
+            double turn = -gamepad1.right_stick_x;
             leftPower = Range.clip(drive + turn, -1.0, 1.0);
             rightPower = Range.clip(drive - turn, -1.0, 1.0);
         }
         // Slow down the robot by factor 5
         if (!gamepad1.right_bumper) {
-            leftPower = leftPower / 3;
-            rightPower = rightPower / 3;
+            leftPower = leftPower / 2;
+            rightPower = rightPower / 2;
         }
         // Send calculated power to wheels
         leftDrive.setPower(leftPower);

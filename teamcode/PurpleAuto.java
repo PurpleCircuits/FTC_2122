@@ -244,25 +244,22 @@ public class PurpleAuto extends LinearOpMode {
         if (!opModeIsActive()) {
             return;
         }
-        //Arm down until sensor
-        theClawMotor.setPower(-.5);
-        while(isAtLimit()){}
-        theClawMotor.setPower(0);
-        //open servo
-        /*openClaw();
+        if(isAtLimit()) {
+            //Arm down until sensor
+            theClawMotor.setPower(-.3);
+            while(isAtLimit()){
+            }
+            theClawMotor.setPower(0);
+        }
+        theClawServo.setPosition(SERVO_MAX_POS);
         //Arm Up until sensor
         theClawMotor.setPower(.5);
-        while(!isAtLimit()){}
+        sleep(500);
         theClawMotor.setPower(0);
-         */
     }
     private boolean isAtLimit(){
         // send the info back to driver station using telemetry function.
         // if the digital channel returns true it's HIGH and the button is unpressed.
         return digitalTouch.getState();
-    }
-    private void openClaw() {
-        //open the claw
-        theClawServo.setPosition(SERVO_MAX_POS);
     }
 }

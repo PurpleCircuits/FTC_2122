@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -27,8 +28,10 @@ public class SensorsTest extends LinearOpMode {
     static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // (40 GEARBOX) eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4 ;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+    private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
+    private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
+
     // The speed for the drive motors to operate at during autonomous
     private static final double SPEED = 0.1;
 
@@ -36,6 +39,7 @@ public class SensorsTest extends LinearOpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
     private DcMotor theClawMotor = null;
+    private Servo theClawServo = null;
     private BNO055IMU imu = null;
     private ElapsedTime runtime = new ElapsedTime();
     private DigitalChannel digitalTouch = null;
@@ -58,19 +62,12 @@ public class SensorsTest extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-        //driveFor(3.8, true);
 
-            //encoderDrive(.3,24,24, 5);
-            //turnLeft(90,10);
-            //turnRight(270,10);
-            //encoderDrive(.3, 12,12, 10);
-            //turnLeft(90, 5);
-            //sleep(500);
-            //turnRight(270,5);
-            //encoderDrive(.3,-12,-12,10);
+            encoderDrive(.3,24,24, 5);
+            turnLeft(90,10);
+            turnRight(270,10);
             dropGoal();
-
-        //distanceAction();
+            encoderDrive(.3,-24,-24,5);
         telemetry.update();
     }
 
@@ -192,6 +189,8 @@ public class SensorsTest extends LinearOpMode {
         leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
+        theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
+
         digitalTouch = hardwareMap.get(DigitalChannel.class, "limit_sensor");
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
@@ -300,26 +299,17 @@ public class SensorsTest extends LinearOpMode {
             return;
         }
         if(isAtLimit()) {
-            telemetry.addData("dropGoal", "Not at Limit:" + isAtLimit());
-            telemetry.update();
             //Arm down until sensor
             theClawMotor.setPower(-.3);
             while(isAtLimit()){
-                telemetry.addData("In Loop", "value: " + isAtLimit());
-                telemetry.update();
             }
             theClawMotor.setPower(0);
         }
-
-        telemetry.addData("Out of Loop", "value: " + isAtLimit());
-        telemetry.update();
-        //open servo
-        /*openClaw();
+        theClawServo.setPosition(SERVO_MAX_POS);
         //Arm Up until sensor
         theClawMotor.setPower(.5);
-        while(!isAtLimit()){}
+        sleep(500);
         theClawMotor.setPower(0);
-         */
     }
     private boolean isAtLimit(){
         // send the info back to driver station using telemetry function.
