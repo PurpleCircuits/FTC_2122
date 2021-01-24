@@ -21,10 +21,10 @@ public class PurpleAuto extends LinearOpMode {
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
     // The speed for the drive motors to operate at during autonomous
-    private static final double SPEED = 0.3;
+    private static final double SPEED = 0.5;
     private static final double COUNTS_PER_MOTOR_REV = 1120 ;    // (40 GEARBOX) eg: TETRIX Motor Encoder
     private static final double DRIVE_GEAR_REDUCTION = 1.0 ;     // This is < 1.0 if geared UP
-    private static final double WHEEL_DIAMETER_INCHES = 3.75 ;     // For figuring circumference
+    private static final double WHEEL_DIAMETER_INCHES = 4 ;     // For figuring circumference
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
 
     private DcMotor leftDrive = null;
@@ -43,20 +43,21 @@ public class PurpleAuto extends LinearOpMode {
     public void runOpMode() {
         //initalize hardware
         initHardware();
+        waitForStart();
         //drive 36 inches forward
-        encoderDrive(SPEED,36,36,10);
+        encoderDrive(SPEED,28,28,10);
         //pause for distance sensor
         sleep (250);
         //sense rings and save rings
         String action = determineAction();
         //reverse 12 inches
-        encoderDrive(SPEED,-12,-12,5);
+        encoderDrive(SPEED,-4,-4,5);
         //turn right heading 270
-        turnRight(270,5);
-        //forward 18 inches
-        encoderDrive(SPEED,18,18,5);
-        //turn left heading 90
         turnLeft(90,5);
+        //forward 18 inches
+        encoderDrive(SPEED,30,30,5);
+        //turn left heading 90
+        turnRight(270,5);
         //Execute option A B, or C
         if ("a".equalsIgnoreCase(action)){
             processA();
@@ -176,15 +177,15 @@ public class PurpleAuto extends LinearOpMode {
         double degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>1)
+        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
         {
             //TODO maybe change the 100 to 75 to make the turn slightly faster.
             //TODO change this is TestSensorsTest also
             scaledSpeed=degreesRemaining/(50+degreesRemaining)*speed;
             if(scaledSpeed>1 || scaledSpeed<.3){scaledSpeed=.3;}//We have a minimum and maximum scaled speed
 
-            leftDrive.setPower(-1*scaledSpeed);
-            rightDrive.setPower(scaledSpeed);
+            leftDrive.setPower(scaledSpeed);
+            rightDrive.setPower(-1*scaledSpeed);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
@@ -206,13 +207,13 @@ public class PurpleAuto extends LinearOpMode {
         double degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>1)
+        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>2)
         {
             scaledSpeed=degreesLeft/(50+degreesLeft)*speed;
             if(scaledSpeed>1 || scaledSpeed<.3){scaledSpeed=.3;}
 
-            leftDrive.setPower(scaledSpeed);
-            rightDrive.setPower(-1*scaledSpeed);
+            leftDrive.setPower(-1*scaledSpeed);
+            rightDrive.setPower(scaledSpeed);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
@@ -221,24 +222,27 @@ public class PurpleAuto extends LinearOpMode {
         rightDrive.setPower(0);
     }
     private void processA() {
-        encoderDrive(.3,48,48,20);
+        encoderDrive(SPEED,36,36,20);
+        turnLeft(45, 5);
         dropGoal();
-        encoderDrive(.3,-12,-12,5);
-        turnLeft(45,5);
-        encoderDrive(.3,36,36,10);
+        encoderDrive(SPEED,-12,-12,5);
+        turnRight(315,5);
+        encoderDrive(SPEED,24,24,10);
     }
     private void processB(){
-        encoderDrive(.3, 84, 84, 20);
-        turnLeft(90, 10);
-        encoderDrive(.3,18,18,10);
+        encoderDrive(SPEED, 84, 84, 20);
+        turnRight(270, 10);
+        //encoderDrive(SPEED,18,18,10);
         dropGoal();
-        turnRight(270,5);
-        encoderDrive(.3,-18,-18,10);
+        turnLeft(90,5);
+        encoderDrive(SPEED,-24,-24,10);
     }
     private void processC() {
-        encoderDrive(.3,96, 96, 20);
+        encoderDrive(SPEED,84, 84, 20);
+        turnLeft(45,5);
         dropGoal();
-        encoderDrive(.3,-30,-30,10);
+        turnRight(315,5);
+        encoderDrive(SPEED,-30,-30,10);
     }
     private void dropGoal() {
         if (!opModeIsActive()) {

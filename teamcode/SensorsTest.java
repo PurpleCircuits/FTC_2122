@@ -67,7 +67,6 @@ public class SensorsTest extends LinearOpMode {
             turnLeft(90,10);
             turnRight(270,10);
             dropGoal();
-            encoderDrive(.3,-24,-24,5);
         telemetry.update();
     }
 
@@ -118,8 +117,8 @@ public class SensorsTest extends LinearOpMode {
             scaledSpeed=degreesRemaining/(50+degreesRemaining)*speed;
             if(scaledSpeed>1 || scaledSpeed<.3){scaledSpeed=.3;}//We have a minimum and maximum scaled speed
 
-            leftDrive.setPower(-1*scaledSpeed);
-            rightDrive.setPower(scaledSpeed);
+            leftDrive.setPower(scaledSpeed);
+            rightDrive.setPower(-1*scaledSpeed);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
@@ -146,8 +145,8 @@ public class SensorsTest extends LinearOpMode {
             scaledSpeed=degreesLeft/(50+degreesLeft)*speed;
             if(scaledSpeed>1 || scaledSpeed<.3){scaledSpeed=.3;}
 
-            leftDrive.setPower(scaledSpeed);
-            rightDrive.setPower(-1*scaledSpeed);
+            leftDrive.setPower(-1*scaledSpeed);
+            rightDrive.setPower(scaledSpeed);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
@@ -195,8 +194,8 @@ public class SensorsTest extends LinearOpMode {
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
         // Our robot needs the motor on one side to be reversed to drive forward
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         // Ensure to not run with encoder //TODO add back in after done with encoders (if not using)
         //leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
