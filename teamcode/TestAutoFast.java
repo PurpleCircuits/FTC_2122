@@ -5,7 +5,6 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -21,8 +20,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * This makes the robot drive forward and turn left and go forward, parking under the bridge during
  * autonomous gaining us 5 points.
  */
-@Autonomous(name = "TestAuto", group = "Linear Opmode")
-public class TestAuto extends LinearOpMode {
+@Autonomous(name = "TestAutoFast", group = "Linear Opmode")
+public class TestAutoFast extends LinearOpMode {
     static final double     COUNTS_PER_MOTOR_REV    = 450 ;    // (20 GEARBOX) eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 3.75 ;     // For figuring circumference
@@ -48,7 +47,7 @@ public class TestAuto extends LinearOpMode {
      */
     @Override
     public void runOpMode() {
-        telemetry.addData("Status", "SensorsTest");
+        telemetry.addData("Status", "TestAutoFast");
         telemetry.update();
         initHardware();
 
@@ -56,7 +55,7 @@ public class TestAuto extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        encoderDrive(.3, 36,36, 10);
+        encoderDrive(SPEED, 36,36, 10);
 
         sleep (250);
         String action = determineAction();
@@ -64,15 +63,20 @@ public class TestAuto extends LinearOpMode {
         telemetry.update();
         sleep (500);
 
-        encoderDrive(.3, -12, -12, 10);
-        // reverse robot 12 inches and turn right 270
-        turnLeft(90, 10);
-        //Forward 24 inches
-        encoderDrive(.3, 18, 18, 10);
+        encoderDrive(SPEED, -6, -6, 10);
 
-        //turn left 90
+        turnRight(315, 10);
 
-        turnRight(270, 5);
+        encoderDrive(SPEED, 18, 18, 10);
+
+        turnLeft(45, 5);
+
+        encoderDrive(SPEED, 44, 44, 10);
+
+        // Shoot rings
+        // sleep(9000);
+
+        /*
         if ("a".equalsIgnoreCase(action)){
             processA();
         } else if ("b".equalsIgnoreCase(action)){
@@ -80,30 +84,33 @@ public class TestAuto extends LinearOpMode {
         } else {
             processC();
         }
+        */
+
+        processC();
         distanceAction();
+
         telemetry.update();
         sleep(10000);
     }
 
     private void processA() {
-        encoderDrive(.3,48,48,20);
-        dropGoal();
-        encoderDrive(.3,-12,-12,5);
-        turnRight(315,5);
-        encoderDrive(.3,36,36,10);
-    }
-    private void processB(){
-        encoderDrive(.3, 84, 84, 20);
         turnLeft(90, 10);
-        encoderDrive(.3,18,18,10);
+        encoderDrive(SPEED,30,30,20);
         dropGoal();
-        turnRight(270,5);
-        encoderDrive(.3,-18,-18,10);
     }
-    private void processC() {
-        encoderDrive(.3,96, 96, 20);
+
+    private void processB(){
+        turnLeft(45, 10);
+        encoderDrive(SPEED,12,12,20);
         dropGoal();
-        encoderDrive(.3,-30,-30,10);
+        encoderDrive(SPEED, -12, -12, 20);
+    }
+
+    private void processC() {
+        turnLeft(45, 10);
+        encoderDrive(SPEED,48,48,20);
+        dropGoal();
+        encoderDrive(SPEED, -48, -48, 20);
     }
 
     public void turnLeft(double turnAngle, double timeoutS) {

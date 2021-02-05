@@ -172,7 +172,7 @@ public class PurpleTeleOP extends LinearOpMode {
             timeSinceIntakeActionWasPressed = System.currentTimeMillis();
         }
         if (isIntakeOn) {
-            intake.setPower(-.75);
+            intake.setPower(-.51);
         } else {
             intake.setPower(0);
         }
@@ -210,7 +210,7 @@ public class PurpleTeleOP extends LinearOpMode {
          */
 
         // Linear speed
-        double power = gamepad2.left_stick_y;
+        double power = -gamepad2.left_stick_y;
         // Slow down the robot by factor 5 or 2 when right bumper pressed
         if (!gamepad2.right_bumper) {
             power = power / 5;
@@ -235,7 +235,7 @@ public class PurpleTeleOP extends LinearOpMode {
         } else {
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = gamepad1.left_stick_y;
+            double drive = -gamepad1.left_stick_y;
             double turn = -gamepad1.right_stick_x;
             leftPower = Range.clip(drive + turn, -1.0, 1.0);
             rightPower = Range.clip(drive - turn, -1.0, 1.0);

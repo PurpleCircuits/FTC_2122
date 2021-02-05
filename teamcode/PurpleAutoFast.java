@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name = "PurpleAuto", group = "Linear Opmode")
-public class PurpleAuto extends LinearOpMode {
+@Autonomous(name = "PurpleAutoFast", group = "Linear Opmode")
+public class PurpleAutoFast extends LinearOpMode {
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
     // The speed for the drive motors to operate at during autonomous
@@ -41,24 +40,35 @@ public class PurpleAuto extends LinearOpMode {
      */
     @Override
     public void runOpMode() {
-        //initalize hardware
+        telemetry.addData("Status", "PurpleAutoFast");
+        telemetry.update();
         initHardware();
+
+        // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        //drive 36 inches forward
-        encoderDrive(SPEED,28,28,10);
-        //pause for distance sensor
+        runtime.reset();
+
+        encoderDrive(SPEED, 28,28, 10);
+
         sleep (250);
-        //sense rings and save rings
         String action = determineAction();
-        //reverse 12 inches
-        encoderDrive(SPEED,-4,-4,5);
-        //turn right heading 270
-        turnLeft(90,5);
-        //forward 18 inches
-        encoderDrive(SPEED,30,30,5);
-        //turn left heading 90
-        turnRight(270,5);
-        //Execute option A B, or C
+        telemetry.addData("Action", action);
+        telemetry.update();
+        sleep (500);
+
+        encoderDrive(SPEED, -6, -6, 10);
+
+        turnRight(315, 10);
+
+        encoderDrive(SPEED, 18, 18, 10);
+
+        turnLeft(45, 5);
+
+        encoderDrive(SPEED, 36, 36, 10);
+
+        // Shoot rings
+        // sleep(9000);
+
         if ("a".equalsIgnoreCase(action)){
             processA();
         } else if ("b".equalsIgnoreCase(action)){
@@ -66,7 +76,31 @@ public class PurpleAuto extends LinearOpMode {
         } else {
             processC();
         }
+
+        telemetry.update();
+        sleep(10000);
     }
+
+    private void processA() {
+        turnLeft(90, 10);
+        encoderDrive(SPEED,30,30,20);
+        dropGoal();
+    }
+
+    private void processB(){
+        turnLeft(45, 10);
+        encoderDrive(SPEED,12,12,20);
+        dropGoal();
+        encoderDrive(SPEED, -12, -12, 20);
+    }
+
+    private void processC() {
+        turnLeft(45, 10);
+        encoderDrive(SPEED,48,48,20);
+        dropGoal();
+        encoderDrive(SPEED, -48, -48, 20);
+    }
+
     private void initHardware() {
         leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
@@ -221,29 +255,7 @@ public class PurpleAuto extends LinearOpMode {
         leftDrive.setPower(0);
         rightDrive.setPower(0);
     }
-    private void processA() {
-        encoderDrive(SPEED,36,36,20);
-        turnLeft(45, 5);
-        dropGoal();
-        encoderDrive(SPEED,-12,-12,5);
-        turnRight(315,5);
-        encoderDrive(SPEED,24,24,10);
-    }
-    private void processB(){
-        encoderDrive(SPEED, 84, 84, 20);
-        turnRight(270, 10);
-        //encoderDrive(SPEED,18,18,10);
-        dropGoal();
-        turnLeft(90,5);
-        encoderDrive(SPEED,-24,-24,10);
-    }
-    private void processC() {
-        encoderDrive(SPEED,84, 84, 20);
-        turnLeft(50,5);
-        dropGoal();
-        turnRight(310,5);
-        encoderDrive(SPEED,-30,-30,10);
-    }
+
     private void dropGoal() {
         if (!opModeIsActive()) {
             return;
