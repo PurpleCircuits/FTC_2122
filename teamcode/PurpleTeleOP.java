@@ -44,6 +44,7 @@ public class PurpleTeleOP extends LinearOpMode {
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private Servo theLaunchServo = null;
+    private Servo theIntakeServo = null;
     private DcMotor theLaunchMotor = null;
     private DcMotor intake = null;
     private DistanceSensor sensorRange = null;
@@ -109,7 +110,9 @@ public class PurpleTeleOP extends LinearOpMode {
          theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
          theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
          theLaunchServo = hardwareMap.get(Servo.class, "the_launch_servo");
+         theIntakeServo = hardwareMap.get(Servo.class, "the_intake_servo");
          theLaunchMotor = hardwareMap.get(DcMotor.class, "the_launch_motor");
+
          intake = hardwareMap.get(DcMotor.class, "intake");
 
          // Most robots need the motor on one side to be reversed to drive forward
@@ -176,6 +179,14 @@ public class PurpleTeleOP extends LinearOpMode {
         } else {
             intake.setPower(0);
         }
+        //TODO remove the following code and make this part of the 'intakeOn' processing
+        if (gamepad1.a) {
+            theIntakeServo.setPosition(0.91);
+        }
+        if (gamepad1.b){
+            theIntakeServo.setPosition(Servo.MAX_POSITION);
+        }
+
     }
 
     /**

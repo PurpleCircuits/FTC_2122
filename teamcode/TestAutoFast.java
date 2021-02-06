@@ -14,6 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+import java.util.SortedMap;
+
 /**
  * Most of this code was copied from the FTC examples, but we tweaked it for our purposes.
  *
@@ -67,14 +69,18 @@ public class TestAutoFast extends LinearOpMode {
 
         turnRight(315, 10);
 
-        encoderDrive(SPEED, 18, 18, 10);
+        encoderDrive(SPEED, 24, 18, 10);
 
         turnLeft(45, 5);
 
-        encoderDrive(SPEED, 44, 44, 10);
+        //TODO start the launch motor
 
-        // Shoot rings
-        // sleep(9000);
+        encoderDrive(SPEED, 36, 36,10);
+
+        launchAction();
+
+        encoderDrive(SPEED,8 , 8, 10);
+
 
         /*
         if ("a".equalsIgnoreCase(action)){
@@ -86,8 +92,8 @@ public class TestAutoFast extends LinearOpMode {
         }
         */
 
-        processC();
-        distanceAction();
+       // processC();
+        //distanceAction();
 
         telemetry.update();
         sleep(10000);
@@ -209,6 +215,17 @@ public class TestAutoFast extends LinearOpMode {
         telemetry.addData("range", String.format("%.01f cm", bottomDistanceSensor.getDistance(DistanceUnit.CM)));
         telemetry.addData("Top deviceName", topDistanceSensor.getDeviceName() );
         telemetry.addData("range", String.format("%.01f cm", topDistanceSensor.getDistance(DistanceUnit.CM)));
+
+    }
+
+    private void launchAction(){
+        for (int i=0; i<3; i++) {
+            // push knocker
+            // reset knocker
+            // sleep 1 second
+        }
+
+
 
     }
     /*

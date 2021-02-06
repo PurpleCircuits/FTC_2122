@@ -35,6 +35,8 @@ public class PurpleAutoFast extends LinearOpMode {
     private DistanceSensor bottomDistanceSensor = null;
     private ElapsedTime runtime = new ElapsedTime();
     private DigitalChannel digitalTouch = null;
+    private Servo theLaunchServo = null;
+    private DcMotor theLaunchMotor = null;
     /**
      * This is the entry of our Op Mode.
      */
@@ -60,14 +62,19 @@ public class PurpleAutoFast extends LinearOpMode {
 
         turnRight(315, 10);
 
-        encoderDrive(SPEED, 18, 18, 10);
+        encoderDrive(SPEED, 24, 18, 10);
 
         turnLeft(45, 5);
 
-        encoderDrive(SPEED, 36, 36, 10);
+        theLaunchMotor.setPower(.40);
 
-        // Shoot rings
-        // sleep(9000);
+        encoderDrive(SPEED, 30, 30, 10);
+
+        launchAction();
+
+        encoderDrive(SPEED,6, 6, 10);
+
+         sleep(500);
 
         if ("a".equalsIgnoreCase(action)){
             processA();
@@ -79,6 +86,8 @@ public class PurpleAutoFast extends LinearOpMode {
 
         telemetry.update();
         sleep(10000);
+
+
     }
 
     private void processA() {
@@ -100,13 +109,25 @@ public class PurpleAutoFast extends LinearOpMode {
         dropGoal();
         encoderDrive(SPEED, -48, -48, 20);
     }
+    private void launchAction() {
+        for (int i = 0; i<3; i++){
+            // push knocker
+            knockAction();
+            // sleep 1 second
+            sleep(1000);
+        }
+        theLaunchMotor.setPower(0);
+    }
 
-    private void initHardware() {
+
+        private void initHardware() {
         leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
         digitalTouch = hardwareMap.get(DigitalChannel.class, "limit_sensor");
+        theLaunchServo = hardwareMap.get(Servo.class, "the_launch_servo");
+        theLaunchMotor = hardwareMap.get(DcMotor.class, "the_launch_motor");
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);
 
         // Our robot needs the motor on one side to be reversed to drive forward
@@ -278,4 +299,14 @@ public class PurpleAutoFast extends LinearOpMode {
         // if the digital channel returns true it's HIGH and the button is unpressed.
         return digitalTouch.getState();
     }
+
+    private void knockAction() {
+
+        // hits ring into launcher then returns to original position
+            theLaunchServo.setPosition(0.68);
+            sleep(1000);
+            theLaunchServo.setPosition(Servo.MIN_POSITION);
+
+        }
+
 }
