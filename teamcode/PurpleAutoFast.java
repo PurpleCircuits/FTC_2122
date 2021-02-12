@@ -66,7 +66,7 @@ public class PurpleAutoFast extends LinearOpMode {
 
         turnLeft(45, 5);
 
-        theLaunchMotor.setPower(.40);
+        theLaunchMotor.setPower(.50);
 
         encoderDrive(SPEED, 30, 30, 10);
 

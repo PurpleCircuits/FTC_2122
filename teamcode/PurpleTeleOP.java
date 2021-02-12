@@ -89,18 +89,11 @@ public class PurpleTeleOP extends LinearOpMode {
             launchAction();
             distanceAction();
             //TODO options below
-            //Conveyer right stick #2
-            //Launch#2 Y (add servo gate + conveyerAction)
             //Open Claw#2 B
 
             telemetry.update();
         }
     }
-
-
-
-
-
      private void initHardware(){
          // Initialize the hardware variables. Note that the strings used here as parameters
          // to 'get' must correspond to the names assigned during the robot configuration
@@ -135,28 +128,15 @@ public class PurpleTeleOP extends LinearOpMode {
         if (gamepad2.y) {
 
             //timesExecuted++;
-            theLaunchServo.setPosition(0.68);
+            theLaunchServo.setPosition(0.70);
             sleep(1000);
             theLaunchServo.setPosition(Servo.MIN_POSITION);
-
         }
-        //telemetry.addData("knockAction", "knock action executed: %d", timesExecuted);
-
-        // hits ring into launcher then returns to original position
-        /*
-        long elapsedTime = System.currentTimeMillis() - timeSinceKnockActionWasPressed;
-        if (gamepad1.a && (elapsedTime > 1000)) {
-            theLaunchServo.setPosition(0.38);
-            theLaunchServo.setPosition(Servo.MIN_POSITION);
-            timeSinceKnockActionWasPressed = System.currentTimeMillis();
-        }
-         */
-
     }
 
     private void launchAction() {
         long elapsedTime = System.currentTimeMillis() - timeSinceLaunchActionWasPressed;
-        if (gamepad2.x && (elapsedTime > 1000)) {
+        if (gamepad2.x && (elapsedTime > 250)) {
             isLaunchOn = !isLaunchOn;
             timeSinceLaunchActionWasPressed = System.currentTimeMillis();
         }
@@ -170,56 +150,38 @@ public class PurpleTeleOP extends LinearOpMode {
 
     private void intakeAction() {
         long elapsedTime = System.currentTimeMillis() - timeSinceIntakeActionWasPressed;
-        if (gamepad2.left_bumper && (elapsedTime > 1000)) {
+        if (gamepad2.left_bumper && (elapsedTime > 250)) {
             isIntakeOn = !isIntakeOn;
             timeSinceIntakeActionWasPressed = System.currentTimeMillis();
         }
         if (isIntakeOn) {
             intake.setPower(-.51);
+            theIntakeServo.setPosition(Servo.MAX_POSITION);
         } else {
             intake.setPower(0);
+            theIntakeServo.setPosition(0.88);
         }
-        //TODO remove the following code and make this part of the 'intakeOn' processing
+        //This is the driver override
         if (gamepad1.a) {
-            theIntakeServo.setPosition(0.91);
+            theIntakeServo.setPosition(0.88);
         }
-        if (gamepad1.b){
-            theIntakeServo.setPosition(Servo.MAX_POSITION);
-        }
-
     }
-
     /**
      * Sets servo position depending on button input, A = Middle B = Grab X = Open
      */
     private void clawAction() {
         // close the claw
-        if (gamepad2.b) {
-            theClawServo.setPosition(SERVO_MIN_POS);
-        }
+        //if (gamepad2.b) {
+        //    theClawServo.setPosition(SERVO_MIN_POS);
+        //}
 
         // open the claw
         if (gamepad2.a) {
             theClawServo.setPosition(SERVO_MAX_POS);
         }
-
-
-        // This is a recreation of an exponential graph we decided to create
-        // y = ax^2 with x being the joystick input and y being the motor power
-        /*
-        float x = gamepad2.left_stick_y;
-        telemetry.addData("Claw Joystick: ", "%.2f", x);
-        if ( x > 0) {
-            double power = 0.90 * x * x;
-            telemetry.addData("Claw Power (Positive): ", "%.2f", power);
-            theClawMotor.setPower(power);
-        } else {
-            double power = -0.90 * x * x;
-            telemetry.addData("Claw Power (Negative): ", "%.2f", power);
-            theClawMotor.setPower(power);
+        else {
+            theClawServo.setPosition(SERVO_MIN_POS);
         }
-         */
-
         // Linear speed
         double power = -gamepad2.left_stick_y;
         // Slow down the robot by factor 5 or 2 when right bumper pressed
@@ -230,7 +192,6 @@ public class PurpleTeleOP extends LinearOpMode {
         }
         theClawMotor.setPower(power);
     }
-
     /**
      * Calculates drive power for POV and outputs power to telemetry
      */
