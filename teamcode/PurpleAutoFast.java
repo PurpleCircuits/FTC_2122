@@ -50,7 +50,7 @@ public class PurpleAutoFast extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        encoderDrive(SPEED, 28,28, 10);
+        encoderDrive(0.5, 26,26, 10);
 
         sleep (250);
         String action = determineAction();
@@ -58,21 +58,23 @@ public class PurpleAutoFast extends LinearOpMode {
         telemetry.update();
         sleep (500);
 
-        encoderDrive(SPEED, -6, -6, 10);
+        encoderDrive(SPEED, -10, -10, 10);
 
         turnRight(315, 10);
 
-        encoderDrive(SPEED, 24, 18, 10);
+        encoderDrive(SPEED, 18, 18, 10);
 
         turnLeft(45, 5);
 
-        theLaunchMotor.setPower(.50);
+        theLaunchMotor.setPower(.5);
 
-        encoderDrive(SPEED, 30, 30, 10);
+        encoderDrive(SPEED, 36, 36, 10);
+
+        turnLeft(5,5);
 
         launchAction();
 
-        encoderDrive(SPEED,6, 6, 10);
+        encoderDrive(SPEED,4, 4, 10);
 
          sleep(500);
 
@@ -91,30 +93,32 @@ public class PurpleAutoFast extends LinearOpMode {
     }
 
     private void processA() {
-        turnLeft(90, 10);
-        encoderDrive(SPEED,30,30,20);
+        turnLeft(85, 10);
+        encoderDrive(SPEED,34,34,20);
         dropGoal();
+        //turnLeft(87,5);
+        //encoderDrive(SPEED,35,35,20);
     }
 
     private void processB(){
-        turnLeft(45, 10);
-        encoderDrive(SPEED,12,12,20);
+        turnLeft(40, 10);
+        encoderDrive(SPEED,15,15,20);
         dropGoal();
-        encoderDrive(SPEED, -12, -12, 20);
+        encoderDrive(SPEED, -15, -15, 20);
     }
 
     private void processC() {
-        turnLeft(45, 10);
-        encoderDrive(SPEED,48,48,20);
+        turnLeft(40, 10);
+        encoderDrive(SPEED,51,51,20);
         dropGoal();
-        encoderDrive(SPEED, -48, -48, 20);
+        encoderDrive(SPEED, -51, -51, 20);
     }
     private void launchAction() {
         for (int i = 0; i<3; i++){
             // push knocker
             knockAction();
             // sleep 1 second
-            sleep(1000);
+            sleep(500);
         }
         theLaunchMotor.setPower(0);
     }
@@ -303,7 +307,7 @@ public class PurpleAutoFast extends LinearOpMode {
     private void knockAction() {
 
         // hits ring into launcher then returns to original position
-            theLaunchServo.setPosition(0.68);
+            theLaunchServo.setPosition(0.3);
             sleep(1000);
             theLaunchServo.setPosition(Servo.MIN_POSITION);
 

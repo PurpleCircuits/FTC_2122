@@ -128,7 +128,7 @@ public class PurpleTeleOP extends LinearOpMode {
         if (gamepad2.y) {
 
             //timesExecuted++;
-            theLaunchServo.setPosition(0.70);
+            theLaunchServo.setPosition(0.3);
             sleep(1000);
             theLaunchServo.setPosition(Servo.MIN_POSITION);
         }
@@ -141,7 +141,7 @@ public class PurpleTeleOP extends LinearOpMode {
             timeSinceLaunchActionWasPressed = System.currentTimeMillis();
         }
         if (isLaunchOn) {
-            theLaunchMotor.setPower(.56);
+            theLaunchMotor.setPower(.5);
         } else {
             theLaunchMotor.setPower(0);
         }
