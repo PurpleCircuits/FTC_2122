@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name = "FastAutoINDEV", group = "Linear Opmode")
-public class FastAutoINDEV extends LinearOpMode {
+public class PurpleFastAutoINDEV extends LinearOpMode {
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
     // The speed for the drive motors to operate at during autonomous
