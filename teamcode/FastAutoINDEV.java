@@ -15,12 +15,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name = "PurpleAutoFast", group = "Linear Opmode")
-public class PurpleAutoFast extends LinearOpMode {
+@Autonomous(name = "FastAutoINDEV", group = "Linear Opmode")
+public class FastAutoINDEV extends LinearOpMode {
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
     // The speed for the drive motors to operate at during autonomous
-    private static final double SPEED = 0.5;
+    private static final double SPEED = 1;
     private static final double COUNTS_PER_MOTOR_REV = 1120 ;    // (40 GEARBOX) eg: TETRIX Motor Encoder
     private static final double DRIVE_GEAR_REDUCTION = 1.0 ;     // This is < 1.0 if geared UP
     private static final double WHEEL_DIAMETER_INCHES = 4 ;     // For figuring circumference
@@ -42,7 +42,7 @@ public class PurpleAutoFast extends LinearOpMode {
      */
     @Override
     public void runOpMode() {
-        telemetry.addData("Status", "PurpleAutoFast");
+        telemetry.addData("Status", "FastAutoINDEV");
         telemetry.update();
         initHardware();
 
@@ -50,7 +50,8 @@ public class PurpleAutoFast extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        encoderDrive(SPEED, 26,26, 10);
+        encoderDrive(SPEED, 18,18, 10);
+        encoderDrive(0.5,9,9,5);
 
         sleep (250);
         String action = determineAction();
@@ -58,23 +59,27 @@ public class PurpleAutoFast extends LinearOpMode {
         telemetry.update();
         sleep (500);
 
-        encoderDrive(SPEED, -10, -10, 10);
+        encoderDrive(SPEED, -8, -8, 10);
+        encoderDrive(0.5,-3,-3,5);
 
         turnRight(315, 10);
 
-        encoderDrive(SPEED, 13, 13, 10);
+        encoderDrive(SPEED, 10, 10, 10);
+        encoderDrive(0.5,3,3,5);
 
         turnLeft(43, 5);
 
         theLaunchMotor.setPower(.46);
 
-        encoderDrive(SPEED, 36, 36, 10);
+        encoderDrive(SPEED, 30, 30, 10);
+        encoderDrive(0.7, 5,5,5);
+        encoderDrive(0.5, 5,5,5);
 
         launchAction();
 
         encoderDrive(SPEED,4, 4, 10);
 
-         sleep(500);
+        sleep(500);
 
         if ("a".equalsIgnoreCase(action)){
             processA();
@@ -107,9 +112,24 @@ public class PurpleAutoFast extends LinearOpMode {
 
     private void processC() {
         turnLeft(37, 10);
-        encoderDrive(SPEED,51,51,20);
+        encoderDrive(SPEED,41,41,20);
+        encoderDrive(0.7,5,5,5);
+        encoderDrive(0.5,5,5,5);
+
         dropGoal();
-        encoderDrive(SPEED, -40, -40, 20);
+
+        turnLeft(105,10);
+
+        encoderDrive(0.6,5,5,5);
+
+        turnLeft(10,5);
+
+        encoderDrive(SPEED,62,62,5);
+        encoderDrive(0.7,5,5,5);
+        encoderDrive(0.5,5,5,5);
+
+
+
     }
     private void launchAction() {
         for (int i = 0; i<3; i++){
@@ -122,7 +142,7 @@ public class PurpleAutoFast extends LinearOpMode {
     }
 
 
-        private void initHardware() {
+    private void initHardware() {
         leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
@@ -305,10 +325,10 @@ public class PurpleAutoFast extends LinearOpMode {
     private void knockAction() {
 
         // hits ring into launcher then returns to original position
-            theLaunchServo.setPosition(0.3);
-            sleep(1000);
-            theLaunchServo.setPosition(Servo.MIN_POSITION);
+        theLaunchServo.setPosition(0.3);
+        sleep(1000);
+        theLaunchServo.setPosition(Servo.MIN_POSITION);
 
-        }
+    }
 
 }

@@ -141,7 +141,7 @@ public class PurpleTeleOP extends LinearOpMode {
             timeSinceLaunchActionWasPressed = System.currentTimeMillis();
         }
         if (isLaunchOn) {
-            theLaunchMotor.setPower(.5);
+            theLaunchMotor.setPower(.47);
         } else {
             theLaunchMotor.setPower(0);
         }
@@ -155,7 +155,7 @@ public class PurpleTeleOP extends LinearOpMode {
             timeSinceIntakeActionWasPressed = System.currentTimeMillis();
         }
         if (isIntakeOn) {
-            intake.setPower(-.51);
+            intake.setPower(-.50);
             theIntakeServo.setPosition(Servo.MAX_POSITION);
         } else {
             intake.setPower(0);
