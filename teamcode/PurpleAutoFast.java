@@ -49,33 +49,33 @@ public class PurpleAutoFast extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-
+        //forward 26 inches
         encoderDrive(SPEED, 26,26, 10);
-
+        //determine how many rings
         sleep (250);
         String action = determineAction();
         telemetry.addData("Action", action);
         telemetry.update();
         sleep (500);
-
+        //reverse 10 inches
         encoderDrive(SPEED, -10, -10, 10);
-
+        //turn right 45 degrees
         turnRight(315, 10);
-
+        //forward 13 inches
         encoderDrive(SPEED, 13, 13, 10);
-
+        // turn left 43 degrees
         turnLeft(43, 5);
-
+        //begin spooling up the launch motor
         theLaunchMotor.setPower(.46);
-
+        //drive forward 36 inches to launch line
         encoderDrive(SPEED, 36, 36, 10);
-
+        //launch three rings
         launchAction();
-
+        //drive forward 4 inches
         encoderDrive(SPEED,4, 4, 10);
-
+        //stop to regain bearings
          sleep(500);
-
+        //execute one of three pre-planned routes
         if ("a".equalsIgnoreCase(action)){
             processA();
         } else if ("b".equalsIgnoreCase(action)){
@@ -83,19 +83,14 @@ public class PurpleAutoFast extends LinearOpMode {
         } else {
             processC();
         }
-
         telemetry.update();
         sleep(10000);
-
-
     }
 
     private void processA() {
         turnLeft(81, 10);
         encoderDrive(SPEED,24,24,20);
         dropGoal();
-        //turnLeft(87,5);
-        //encoderDrive(SPEED,35,35,20);
     }
 
     private void processB(){
@@ -301,14 +296,10 @@ public class PurpleAutoFast extends LinearOpMode {
         // if the digital channel returns true it's HIGH and the button is unpressed.
         return digitalTouch.getState();
     }
-
     private void knockAction() {
-
         // hits ring into launcher then returns to original position
             theLaunchServo.setPosition(0.3);
             sleep(1000);
             theLaunchServo.setPosition(Servo.MIN_POSITION);
-
         }
-
 }
