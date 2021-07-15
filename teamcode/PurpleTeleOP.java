@@ -141,7 +141,7 @@ public class PurpleTeleOP extends LinearOpMode {
             timeSinceLaunchActionWasPressed = System.currentTimeMillis();
         }
         if (isLaunchOn) {
-            theLaunchMotor.setPower(.47);
+            theLaunchMotor.setPower(1);
         } else {
             theLaunchMotor.setPower(0);
         }

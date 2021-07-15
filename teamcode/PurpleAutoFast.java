@@ -63,11 +63,19 @@ public class PurpleAutoFast extends LinearOpMode {
         turnRight(315, 10);
         //forward 13 inches
         encoderDrive(SPEED, 13, 13, 10);
+<<<<<<< Updated upstream
         // turn left 43 degrees
         turnLeft(43, 5);
         //begin spooling up the launch motor
         theLaunchMotor.setPower(.46);
         //drive forward 36 inches to launch line
+=======
+
+        turnLeft(44, 5);
+
+        theLaunchMotor.setPower(.51);
+
+>>>>>>> Stashed changes
         encoderDrive(SPEED, 36, 36, 10);
         //launch three rings
         launchAction();
@@ -97,7 +105,7 @@ public class PurpleAutoFast extends LinearOpMode {
         turnLeft(40, 10);
         encoderDrive(SPEED,15,15,20);
         dropGoal();
-        encoderDrive(SPEED, -15, -15, 20);
+        encoderDrive(SPEED, -6, -6, 20);
     }
 
     private void processC() {
