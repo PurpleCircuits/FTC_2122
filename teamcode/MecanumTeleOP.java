@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="MecanumTeleOP", group="Linear Opmode")
-public abstract class MecanumTeleOP extends OpMode {
+public class MecanumTeleOP extends LinearOpMode {
     private final Object runningNotifier = new Object();
     private volatile boolean isStarted = false;
     private volatile boolean stopRequested = false;
@@ -20,7 +20,7 @@ public abstract class MecanumTeleOP extends OpMode {
     private DcMotor motorFrontRight = null;
     private DcMotor motorBackRight = null;
 
-    //@Override
+    @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -41,6 +41,11 @@ public abstract class MecanumTeleOP extends OpMode {
             double y = -gamepad1.left_stick_y; // Remember, this is reversed!
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
+
+            telemetry.addData("x", x);
+            telemetry.addData("y", y);
+            telemetry.addData("rx", rx);
+            telemetry.update();
 
             double frontLeftPower = y + x + rx;
             double backLeftPower = y - x + rx;
@@ -70,42 +75,5 @@ public abstract class MecanumTeleOP extends OpMode {
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
         }
-    }
-
-    public void waitForStart() {
-        while (!this.isStarted()) {
-            synchronized (this.runningNotifier) {
-                try {
-                    this.runningNotifier.wait();
-                } catch (InterruptedException var4) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
-            }
-        }
-
-    }
-
-    public final boolean isstopRequested() {
-        return this.stopRequested || Thread.currentThread().isInterrupted();
-    }
-
-    public final boolean isStarted() {
-        if (this.isStarted) {
-            this.userMonitoredForStart = true;
-        }
-
-        return this.isStarted || Thread.currentThread().isInterrupted();
-    }
-
-    public final boolean opModeIsActive() {
-        boolean isActive = !this.isstopRequested() && this.isStarted();
-        if (isActive) {
-            this.idle();
-        }
-        return isActive;
-    }
-    public final void idle() {
-        Thread.yield();
     }
 }
