@@ -86,7 +86,7 @@ public class Trigmecanum {
         double motor3Raw = -Stick1Y + Stick1X - (Stick2X / 2);
 
         //Find max motor raw values //TODO fix in future
-        double rawMax = 0;//Math.max(Math.abs(motor0Raw) ,Math.max(Math.abs(motor1Raw) ,Math.max(Math.abs(motor2Raw) ,Math.max(Math.abs(motor3Raw)))));
+        double rawMax = Math.max(Math.abs(motor0Raw) ,Math.max(Math.abs(motor1Raw) ,Math.max(Math.abs(motor2Raw) ,Math.max(Math.abs(motor3Raw)))));
 
         //If any motor power value is outside -1 to 1, scale all values
         if (rawMax > 1) {
@@ -100,6 +100,81 @@ public class Trigmecanum {
             motor2Scaled = motor0Raw;
             motor3Scaled = motor0Raw;
         }
-            //TODO 3:28 in video
+        if(A) {
+            slowdown = 0.5;
+        }else if (Y) {
+            slowdown = 1.0;
+        }
+        motorFrontLeft.setPower(motor0Scaled * slowdown);
+        motorFrontRight.setPower(motor1Scaled * slowdown);
+        motorBackLeft.setPower(motor2Scaled * slowdown);
+        motorBackRight.setPower(motor3Scaled * slowdown);
+        double mticks = motorFrontLeft.getCurrentPosition();
+    }
+    public void fieldOrientedDrive(double Stick1Y, double Stick1X, double Stick2X, boolean A, boolean Y, double imuHeading) {
+
+        double headingRadians = 0;
+        double headingPower = 0;
+        //Changes Degrees to Radians
+        imuHeading = imuHeading * (Math.PI / 180);
+
+        motorFrontLeft.setmode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontRight.setmode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackLeft.setmode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackRight.setmode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //Convert joystick directions to radians and power
+        if (Stick1X == 0 && Stick1Y == 0) {
+            headingRadians = 0;
+            headingPower = 0;
+        } else {
+            headingRadians = Math.atan2(Stick1X, Stick1Y);
+            headingPower = Math.min(Math.sqrt((Stick1X * Stick1X) + (Stick1Y * Stick1Y)), 1);
+        }
+
+        //calculate individual motor power
+        double motor0Raw = headingPower * -Math.sin(headingRadians + imuHeading + (Math.PI / 4)) - Stick2X * 0.5;
+        double motor1Raw = headingPower * -Math.sin(headingRadians + imuHeading + (Math.PI / 4)) - Stick2X * 0.5;
+        double motor2Raw = headingPower * -Math.sin(headingRadians + imuHeading + (Math.PI / 4)) - Stick2X * 0.5;
+        double motor3Raw = headingPower * -Math.sin(headingRadians + imuHeading + (Math.PI / 4)) - Stick2X * 0.5;
+
+        double rawMax = Math.max(Math.abs(motor0Raw), Math.max(Math.abs(motor1Raw), Math.max(Math.abs(motor2Raw), Math.max(Math.abs(motor3Raw)))));
+
+        //If any motor power value is outside -1 to 1, scale all values
+        if (rawMax > 1) {
+            motor0Scaled = motor0Raw / rawMax;
+            motor1Scaled = motor0Raw / rawMax;
+            motor2Scaled = motor0Raw / rawMax;
+            motor3Scaled = motor0Raw / rawMax;
+        } else {
+            motor0Scaled = motor0Raw;
+            motor1Scaled = motor0Raw;
+            motor2Scaled = motor0Raw;
+            motor3Scaled = motor0Raw;
+        }
+
+        //If A pressed slow robot
+        if (A) {
+            slowdown = 0.5;
+        } else if (Y) {
+            slowdown = 1.0;
+        }
+        if (rightDpad) {
+            lrOfset = 0.25;
+        }
+        else {
+            lrOfset = 0;
+        }
+        if (upDpad) {
+            fbOfset = 0.25;
+        }
+        else if (downDpad) {
+            fbOfset = -0.25;
+        }
+        else {
+            fbOfset = 0;
+        }
+
+        motorFrontLeft.setpower(motor0Scaled)
     }
 }
