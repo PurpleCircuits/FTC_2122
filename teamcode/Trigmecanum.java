@@ -111,7 +111,7 @@ public class Trigmecanum {
         motorBackRight.setPower(motor3Scaled * slowdown);
         double mticks = motorFrontLeft.getCurrentPosition();
     }
-    public void fieldOrientedDrive(double Stick1Y, double Stick1X, double Stick2X, boolean A, boolean Y, double imuHeading) {
+    public void fieldOrientedDrive(double Stick1Y, double Stick1X, double Stick2X, boolean A, boolean Y, double imuHeading, boolean rightDpad, boolean upDpad, boolean downDpad) {
 
         double headingRadians = 0;
         double headingPower = 0;
@@ -175,6 +175,9 @@ public class Trigmecanum {
             fbOfset = 0;
         }
 
-        motorFrontLeft.setpower(motor0Scaled)
+        motorFrontLeft.setPower(motor0Scaled * slowdown - lrOfset - fbOfset);
+        motorFrontRight.setPower(motor1Scaled * slowdown - lrOfset + fbOfset);
+        motorBackRight.setPower(motor2Scaled * slowdown + lrOfset + fbOfset);
+        motorBackLeft.setPower(motor2Scaled * slowdown + lrOfset - fbOfset);
     }
 }
