@@ -33,7 +33,7 @@ public class Trigmecanum {
     //how many shaft rotations to wheel rotations
     //TODO what is the shaft to wheel ratio? ticks for wheel (383.6 for 40 motor)
     double shaftToWheelRatio = 1;
-    double ticksPerShaftRotation =
+    double ticksPerShaftRotation = 0;
     double ticksPerWheelRotation = shaftToWheelRatio * ticksPerShaftRotation;
     double lrOfset;
     double fbOfset;
@@ -86,7 +86,7 @@ public class Trigmecanum {
         double motor3Raw = -Stick1Y + Stick1X - (Stick2X / 2);
 
         //Find max motor raw values //TODO fix in future
-        double rawMax = Math.max(Math.abs(motor0Raw) ,Math.max(Math.abs(motor1Raw) ,Math.max(Math.abs(motor2Raw) ,Math.max(Math.abs(motor3Raw)))));
+        double rawMax = Math.max(Math.abs(motor0Raw), Math.max(Math.abs(motor1Raw), Math.max(Math.abs(motor2Raw), Math.abs(motor3Raw))));
 
         //If any motor power value is outside -1 to 1, scale all values
         if (rawMax > 1) {
@@ -118,10 +118,10 @@ public class Trigmecanum {
         //Changes Degrees to Radians
         imuHeading = imuHeading * (Math.PI / 180);
 
-        motorFrontLeft.setmode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorFrontRight.setmode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorBackLeft.setmode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorBackRight.setmode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //Convert joystick directions to radians and power
         if (Stick1X == 0 && Stick1Y == 0) {
@@ -138,7 +138,7 @@ public class Trigmecanum {
         double motor2Raw = headingPower * -Math.sin(headingRadians + imuHeading + (Math.PI / 4)) - Stick2X * 0.5;
         double motor3Raw = headingPower * -Math.sin(headingRadians + imuHeading + (Math.PI / 4)) - Stick2X * 0.5;
 
-        double rawMax = Math.max(Math.abs(motor0Raw), Math.max(Math.abs(motor1Raw), Math.max(Math.abs(motor2Raw), Math.max(Math.abs(motor3Raw)))));
+        double rawMax = Math.max(Math.abs(motor0Raw), Math.max(Math.abs(motor1Raw), Math.max(Math.abs(motor2Raw), Math.abs(motor3Raw))));
 
         //If any motor power value is outside -1 to 1, scale all values
         if (rawMax > 1) {

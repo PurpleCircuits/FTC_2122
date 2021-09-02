@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="TrigMecanumTeleOP", group="Linear Opmode")
 public class TrigMecanumTeleOP extends LinearOpMode {
-    private final Trigmecanum trigmecanum = null;
+    private Trigmecanum trigmecanum = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -18,7 +18,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            trigmecanum.mecanumDrive(-gamepad1.left_sticck_y, gamepad1.left_stick_x,gamepad1.right_stick_x, gamepad1,a, gamepad1.y);
+            trigmecanum.mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x,gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
         }
     }
 }
