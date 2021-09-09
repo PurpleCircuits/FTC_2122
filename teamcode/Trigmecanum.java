@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -50,12 +51,12 @@ public class Trigmecanum {
         motorFrontRight = hwMap.get(DcMotor.class, "motorFrontRight");
         motorBackRight = hwMap.get(DcMotor.class, "motorBackRight");
         motorBackLeft = hwMap.get(DcMotor.class, "motorBackLeft");
-        //TODO these might be forward, for their robot it was all reverse should be the same for all
+        //TODO send in motor direction
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
-        motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
-        //TODO wtf is happening here
+        motorBackLeft.setDirection(DcMotor.Direction.FORWARD);
+        motorBackRight.setDirection(DcMotor.Direction.FORWARD);
+
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -79,31 +80,30 @@ public class Trigmecanum {
         motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //TODO Stick1X + - values
+        double motor0Raw = Stick1Y + Stick1X - (Stick2X / 2);//-Stick1Y - Stick1X - (Stick2X / 2);
+        double motor1Raw = -Stick1Y + Stick1X - (Stick2X / 2);//Stick1Y - Stick1X - (Stick2X / 2);
+        double motor2Raw = Stick1Y - Stick1X - (Stick2X / 2);//Stick1Y + Stick1X - (Stick2X / 2);
+        double motor3Raw = -Stick1Y - Stick1X - (Stick2X / 2);//-Stick1Y + Stick1X - (Stick2X / 2);
 
-        double motor0Raw = -Stick1Y - Stick1X - (Stick2X / 2);
-        double motor1Raw = Stick1Y - Stick1X - (Stick2X / 2);
-        double motor2Raw = Stick1Y + Stick1X - (Stick2X / 2);
-        double motor3Raw = -Stick1Y + Stick1X - (Stick2X / 2);
-
-        //Find max motor raw values //TODO fix in future
+        //Find max motor raw values
         double rawMax = Math.max(Math.abs(motor0Raw), Math.max(Math.abs(motor1Raw), Math.max(Math.abs(motor2Raw), Math.abs(motor3Raw))));
-
         //If any motor power value is outside -1 to 1, scale all values
         if (rawMax > 1) {
             motor0Scaled = motor0Raw / rawMax;
-            motor1Scaled = motor0Raw / rawMax;
-            motor2Scaled = motor0Raw / rawMax;
-            motor3Scaled = motor0Raw / rawMax;
+            motor1Scaled = motor1Raw / rawMax;
+            motor2Scaled = motor2Raw / rawMax;
+            motor3Scaled = motor3Raw / rawMax;
         } else {
             motor0Scaled = motor0Raw;
-            motor1Scaled = motor0Raw;
-            motor2Scaled = motor0Raw;
-            motor3Scaled = motor0Raw;
+            motor1Scaled = motor1Raw;
+            motor2Scaled = motor2Raw;
+            motor3Scaled = motor3Raw;
         }
         if(A) {
-            slowdown = 0.5;
+            slowdown = 0.2;
         }else if (Y) {
-            slowdown = 1.0;
+            slowdown = 0.5;
         }
         motorFrontLeft.setPower(motor0Scaled * slowdown);
         motorFrontRight.setPower(motor1Scaled * slowdown);
@@ -176,8 +176,8 @@ public class Trigmecanum {
         }
 
         motorFrontLeft.setPower(motor0Scaled * slowdown - lrOfset - fbOfset);
-        motorFrontRight.setPower(motor1Scaled * slowdown - lrOfset + fbOfset);
-        motorBackRight.setPower(motor2Scaled * slowdown + lrOfset + fbOfset);
-        motorBackLeft.setPower(motor2Scaled * slowdown + lrOfset - fbOfset);
+        //motorFrontRight.setPower(motor1Scaled * slowdown - lrOfset + fbOfset);
+        //motorBackRight.setPower(motor2Scaled * slowdown + lrOfset + fbOfset);
+        //motorBackLeft.setPower(motor2Scaled * slowdown + lrOfset - fbOfset);
     }
 }
