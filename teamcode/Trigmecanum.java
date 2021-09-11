@@ -52,8 +52,8 @@ public class Trigmecanum {
         motorBackRight = hwMap.get(DcMotor.class, "motorBackRight");
         motorBackLeft = hwMap.get(DcMotor.class, "motorBackLeft");
         //TODO send in motor direction
-        motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontLeft.setDirection(DcMotor.Direction.FORWARD);
+        motorFrontRight.setDirection(DcMotor.Direction.FORWARD);
         motorBackLeft.setDirection(DcMotor.Direction.FORWARD);
         motorBackRight.setDirection(DcMotor.Direction.FORWARD);
 
