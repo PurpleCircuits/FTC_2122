@@ -14,7 +14,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         trigmecanum = new Trigmecanum();
-        trigmecanum.init(hardwareMap);
+        trigmecanum.init(hardwareMap, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD);
 
         waitForStart();
         while (opModeIsActive()) {

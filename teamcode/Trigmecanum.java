@@ -20,7 +20,7 @@ public class Trigmecanum {
     public double motor1Scaled;
     public double motor2Scaled;
     public double motor3Scaled;
-    public double slowdown = 1.0;
+    public double slowdown = 0.5;
 
     private ElapsedTime runtime = new ElapsedTime() ;
 
@@ -32,19 +32,19 @@ public class Trigmecanum {
     Acceleration gravity;
 
     //how many shaft rotations to wheel rotations
-    //TODO what is the shaft to wheel ratio? ticks for wheel (383.6 for 40 motor)
+    //TODO what is the shaft to wheel ratio? ticks for wheel (383.6 for 40 motor) not needed for what we have?
     double shaftToWheelRatio = 1;
     double ticksPerShaftRotation = 0;
     double ticksPerWheelRotation = shaftToWheelRatio * ticksPerShaftRotation;
     double lrOfset;
     double fbOfset;
-    //TODO measure robot
+    //TODO measure robot again not needed for what we have?
     //robot dimensions
-    double robotDiameter = 25.46; //TODO this is if the robot is exactly 18*18 may need to change
+    double robotDiameter = 25.46; //TODO this is if the robot is exactly 18*18 may need to change AGAIN NOT NEEDE FOR WHAT WE HAVE?
     double wheelDiameter = 3.75; //both in inches
     double wheelCircumference = 3.14 * wheelDiameter;
 
-    public void init(HardwareMap ahwMap)  {
+    public void init(HardwareMap ahwMap, DcMotorSimple.Direction frontLeftDirection, DcMotorSimple.Direction frontRightDirection, DcMotorSimple.Direction backLeftDirection, DcMotorSimple.Direction backRightDirection)  {
         hwMap = ahwMap;
 
         motorFrontLeft = hwMap.get(DcMotor.class, "motorFrontLeft");
@@ -52,10 +52,10 @@ public class Trigmecanum {
         motorBackRight = hwMap.get(DcMotor.class, "motorBackRight");
         motorBackLeft = hwMap.get(DcMotor.class, "motorBackLeft");
         //TODO send in motor direction
-        motorFrontLeft.setDirection(DcMotor.Direction.FORWARD);
-        motorFrontRight.setDirection(DcMotor.Direction.FORWARD);
-        motorBackLeft.setDirection(DcMotor.Direction.FORWARD);
-        motorBackRight.setDirection(DcMotor.Direction.FORWARD);
+        motorFrontLeft.setDirection(frontLeftDirection);
+        motorFrontRight.setDirection(frontRightDirection);
+        motorBackLeft.setDirection(backLeftDirection);
+        motorBackRight.setDirection(backRightDirection);
 
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -81,10 +81,10 @@ public class Trigmecanum {
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //TODO Stick1X + - values
-        double motor0Raw = Stick1Y + Stick1X - (Stick2X / 2);//-Stick1Y - Stick1X - (Stick2X / 2);
-        double motor1Raw = -Stick1Y + Stick1X - (Stick2X / 2);//Stick1Y - Stick1X - (Stick2X / 2);
-        double motor2Raw = Stick1Y - Stick1X - (Stick2X / 2);//Stick1Y + Stick1X - (Stick2X / 2);
-        double motor3Raw = -Stick1Y - Stick1X - (Stick2X / 2);//-Stick1Y + Stick1X - (Stick2X / 2);
+        double motor0Raw = Stick1Y - Stick1X - (Stick2X / 2);//-Stick1Y - Stick1X - (Stick2X / 2);
+        double motor1Raw = -Stick1Y - Stick1X - (Stick2X / 2);//Stick1Y - Stick1X - (Stick2X / 2);
+        double motor2Raw = Stick1Y + Stick1X - (Stick2X / 2);//Stick1Y + Stick1X - (Stick2X / 2);
+        double motor3Raw = -Stick1Y + Stick1X - (Stick2X / 2);//-Stick1Y + Stick1X - (Stick2X / 2);
 
         //Find max motor raw values
         double rawMax = Math.max(Math.abs(motor0Raw), Math.max(Math.abs(motor1Raw), Math.max(Math.abs(motor2Raw), Math.abs(motor3Raw))));
@@ -143,14 +143,14 @@ public class Trigmecanum {
         //If any motor power value is outside -1 to 1, scale all values
         if (rawMax > 1) {
             motor0Scaled = motor0Raw / rawMax;
-            motor1Scaled = motor0Raw / rawMax;
-            motor2Scaled = motor0Raw / rawMax;
-            motor3Scaled = motor0Raw / rawMax;
+            motor1Scaled = motor1Raw / rawMax;
+            motor2Scaled = motor2Raw / rawMax;
+            motor3Scaled = motor3Raw / rawMax;
         } else {
             motor0Scaled = motor0Raw;
-            motor1Scaled = motor0Raw;
-            motor2Scaled = motor0Raw;
-            motor3Scaled = motor0Raw;
+            motor1Scaled = motor1Raw;
+            motor2Scaled = motor2Raw;
+            motor3Scaled = motor3Raw;
         }
 
         //If A pressed slow robot
@@ -176,8 +176,8 @@ public class Trigmecanum {
         }
 
         motorFrontLeft.setPower(motor0Scaled * slowdown - lrOfset - fbOfset);
-        //motorFrontRight.setPower(motor1Scaled * slowdown - lrOfset + fbOfset);
-        //motorBackRight.setPower(motor2Scaled * slowdown + lrOfset + fbOfset);
-        //motorBackLeft.setPower(motor2Scaled * slowdown + lrOfset - fbOfset);
+        motorFrontRight.setPower(motor1Scaled * slowdown - lrOfset + fbOfset);
+        motorBackRight.setPower(motor2Scaled * slowdown + lrOfset + fbOfset);
+        motorBackLeft.setPower(motor2Scaled * slowdown + lrOfset - fbOfset);
     }
 }
