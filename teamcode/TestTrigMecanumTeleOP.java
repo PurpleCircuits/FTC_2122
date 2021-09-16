@@ -31,8 +31,8 @@ public class TestTrigMecanumTeleOP extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            //trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x,gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
-            trigmecanum.fieldOrientedDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.a, gamepad1.y, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, gamepad1.dpad_right, gamepad1.dpad_up, gamepad1.dpad_down);
+            trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x,gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
+            //trigmecanum.fieldOrientedDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.a, gamepad1.y, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, gamepad1.dpad_right, gamepad1.dpad_up, gamepad1.dpad_down);
         }
     }
 }
