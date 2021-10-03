@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -57,11 +59,16 @@ public class Trigmecanum {
         motorBackLeft.setDirection(backLeftDirection);
         motorBackRight.setDirection(backRightDirection);
 
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //set power zero?
+        //set power zero
         motorFrontLeft.setPower(0);
         motorFrontRight.setPower(0);
         motorBackLeft.setPower(0);
@@ -74,17 +81,13 @@ public class Trigmecanum {
         imu.initialize(parameters);
 
     }
-    public void mecanumDrive(double Stick1Y, double Stick1X, double Stick2X, boolean A, boolean Y)  {
+    public String mecanumDrive(double Stick1Y, double Stick1X, double Stick2X, boolean A, boolean Y)  {
 
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //TODO Stick1X + - values
-        double motor0Raw = Stick1Y - Stick1X - (Stick2X / 2);//-Stick1Y - Stick1X - (Stick2X / 2);
-        double motor1Raw = -Stick1Y - Stick1X - (Stick2X / 2);//Stick1Y - Stick1X - (Stick2X / 2);
-        double motor2Raw = Stick1Y + Stick1X - (Stick2X / 2);//Stick1Y + Stick1X - (Stick2X / 2);
-        double motor3Raw = -Stick1Y + Stick1X - (Stick2X / 2);//-Stick1Y + Stick1X - (Stick2X / 2);
+        double motor0Raw = Stick1Y - Stick1X - (Stick2X);//-Stick1Y - Stick1X - (Stick2X / 2);
+        double motor1Raw = -Stick1Y - Stick1X - (Stick2X);//Stick1Y - Stick1X - (Stick2X / 2);
+        double motor2Raw = Stick1Y + Stick1X - (Stick2X);//Stick1Y + Stick1X - (Stick2X / 2);
+        double motor3Raw = -Stick1Y + Stick1X - (Stick2X);//-Stick1Y + Stick1X - (Stick2X / 2);
 
         //Find max motor raw values
         double rawMax = Math.max(Math.abs(motor0Raw), Math.max(Math.abs(motor1Raw), Math.max(Math.abs(motor2Raw), Math.abs(motor3Raw))));
@@ -110,7 +113,15 @@ public class Trigmecanum {
         motorBackLeft.setPower(motor2Scaled * slowdown);
         motorBackRight.setPower(motor3Scaled * slowdown);
         double mticks = motorFrontLeft.getCurrentPosition();
+        //Outputting wheel telemetry
+        String returnData = new String();
+        returnData+= "LF" + motorFrontLeft.getCurrentPosition();
+        returnData+= "RF" + motorFrontRight.getCurrentPosition();
+        returnData+= "LB" + motorBackLeft.getCurrentPosition();
+        returnData+= "RB" + motorBackRight.getCurrentPosition();
+        return returnData;
     }
+
     public void fieldOrientedDrive(double Stick1Y, double Stick1X, double Stick2X, boolean A, boolean Y, double imuHeading, boolean rightDpad, boolean upDpad, boolean downDpad) {
 
         double headingRadians = 0;

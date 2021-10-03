@@ -46,6 +46,9 @@ public class RightBlue extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
+        //moveBot(1, 0, 1,0);
+        turnLeft(90, 5);
+        /*
         //IMPORTANT! Stick 1Y negative is up
         //Vuforia magic find the duck
         //strafe right 48 inches
@@ -64,7 +67,9 @@ public class RightBlue extends LinearOpMode {
         //TODO spin the board
         //move right 24 to park in the loading dock
         moveBot(1.1, 0, 1, 0);
-
+        */
+        //Sleep to read telemetry
+        sleep(10000);
     }
 
     private void initHardware() {
@@ -92,27 +97,21 @@ public class RightBlue extends LinearOpMode {
         telemetry.update();
     }
     private void moveBot(double timeoutS, double stick1Y, double stick1X, double stick2X){
+        String telemetryholder = new String();
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < timeoutS) {
-            trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
+            telemetryholder = trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
         }
-
-    }
-    private String determineAction() {
-        if (10 > topDistanceSensor.getDistance(DistanceUnit.CM)){
-            return "c";
-        } else if (10 > bottomDistanceSensor.getDistance(DistanceUnit.CM)){
-            return "b";
-        } else {
-            return "a";
-        }
+        trigmecanum.mecanumDrive(0, 0, 0, false, false);
+        telemetry.addData("Drive", telemetryholder);
+        telemetry.update();
     }
     public void turnLeft(double turnAngle, double timeoutS) {
         if (!opModeIsActive()){
             return;
         }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double speed=.5;
+        double speed=1;
         double scaledSpeed=speed;
         double targetHeading=angles.firstAngle+turnAngle;
         if(targetHeading<-180) {targetHeading+=360;}
@@ -122,19 +121,16 @@ public class RightBlue extends LinearOpMode {
         runtime.reset();
         while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
         {
-            //TODO maybe change the 100 to 75 to make the turn slightly faster.
-            //TODO change this is TestSensorsTest also
-            scaledSpeed=degreesRemaining/(50+degreesRemaining)*speed;
-            if(scaledSpeed>1 || scaledSpeed<.3){scaledSpeed=.3;}//We have a minimum and maximum scaled speed
+            //Change the 10 on the line below to a variable
+            scaledSpeed=degreesRemaining/(10+degreesRemaining)*speed;
+            if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
-            motorFrontLeft.setPower(scaledSpeed);
-            motorFrontRight.setPower(-1*scaledSpeed);
+            trigmecanum.mecanumDrive(0,0, -scaledSpeed, false, false);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         }
-        motorFrontLeft.setPower(0);
-        motorFrontRight.setPower(0);
+        trigmecanum.mecanumDrive(0, 0, 0, false, false);
     }
     //TODO see comments in turnLeft
     public void turnRight(double turnAngle, double timeoutS) {
@@ -142,29 +138,37 @@ public class RightBlue extends LinearOpMode {
             return;
         }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double speed=.5;
+        double speed=1;
         double scaledSpeed=speed;
         double targetHeading=angles.firstAngle+turnAngle;
         if(targetHeading<-180) {targetHeading+=360;}
         if(targetHeading>180){targetHeading-=360;}
-        double degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
+        double degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>2)
+        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
         {
-            scaledSpeed=degreesLeft/(50+degreesLeft)*speed;
-            if(scaledSpeed>1 || scaledSpeed<.3){scaledSpeed=.3;}
+            scaledSpeed=degreesRemaining/(10+degreesRemaining)*speed;
+            if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
-            motorFrontLeft.setPower(-1*scaledSpeed);
-            motorFrontRight.setPower(scaledSpeed);
+            trigmecanum.mecanumDrive(0,0, scaledSpeed, false, false);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
+            degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         }
-        motorFrontLeft.setPower(0);
-        motorFrontRight.setPower(0);
+        trigmecanum.mecanumDrive(0, 0, 0, false, false);
     }
-    private void dropGoal() {
+    //TODO Last years methods
+    private String determineAction() {
+        if (10 > topDistanceSensor.getDistance(DistanceUnit.CM)){
+            return "c";
+        } else if (10 > bottomDistanceSensor.getDistance(DistanceUnit.CM)){
+            return "b";
+        } else {
+            return "a";
+        }
+    }
+   private void dropGoal() {
         if (!opModeIsActive()) {
             return;
         }
