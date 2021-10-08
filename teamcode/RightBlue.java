@@ -46,30 +46,31 @@ public class RightBlue extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        //moveBot(1, 0, 1,0);
-        turnLeft(90, 5);
-        /*
-        //IMPORTANT! Stick 1Y negative is up
+        //moveBotTime(1, -1, 0,0);
+        //turnLeft(90, 5);
+        //TODO speed issue with driving
+        //TODO IMPORTANT! Stick 1Y negative is up
         //Vuforia magic find the duck
         //strafe right 48 inches
-        moveBot(1.75, 0, 1, 0);
+
+
+        moveBotTime(determineStrafeTime(36), 0, 1, 0);
             //forward 12 inches
         //TODO like last year (number of rings detection) depending on where the duck is were going to need change this next move in an else if
-        moveBot(.35, -1, 0, 0);
+        moveBotTime(determineDriveTime(12), -1, 0, 0);
             //put the piece on the thing
-        moveBot(.35, 1, 0, 0);
-        //TODO turn left 45 using IMU
-        moveBot(.5, 0,0, -1);
+        moveBotTime(determineDriveTime(12), 1, 0, 0);
+        //turn right 45 using IMU
+        turnRight(315,5);
+        //moveBot(.5, 0,0, -1);
         //TODO go left for 30ish inches
-        moveBot(1.9, 0, -1, 0);
-        //re align ourselves square
-        moveBot(.5, 0, 0, 1);
+        moveBotTime(determineDriveTime(36), 1, 0, 0);
         //TODO spin the board
+        //re align ourselves square
+        turnLeft(45, 5);
+        //moveBot(.5, 0, 0, 1);
         //move right 24 to park in the loading dock
-        moveBot(1.1, 0, 1, 0);
-        */
-        //Sleep to read telemetry
-        sleep(10000);
+        moveBotTime(determineStrafeTime(18), 0, 1, 0);
     }
 
     private void initHardware() {
@@ -96,7 +97,18 @@ public class RightBlue extends LinearOpMode {
         telemetry.clear();
         telemetry.update();
     }
-    private void moveBot(double timeoutS, double stick1Y, double stick1X, double stick2X){
+    private void moveBot(int inches, double stick1Y, double stick1X, double stick2X){
+        String telemetryholder = new String();
+        double timeoutS = determineStrafeTime(inches);
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() < timeoutS) {
+            telemetryholder = trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
+        }
+        trigmecanum.mecanumDrive(0, 0, 0, false, false);
+        telemetry.addData("Drive", telemetryholder);
+        telemetry.update();
+    }
+    private void moveBotTime(double timeoutS, double stick1Y, double stick1X, double stick2X){
         String telemetryholder = new String();
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < timeoutS) {
@@ -122,7 +134,7 @@ public class RightBlue extends LinearOpMode {
         while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
         {
             //Change the 10 on the line below to a variable
-            scaledSpeed=degreesRemaining/(10+degreesRemaining)*speed;
+            scaledSpeed = degreesRemaining / (10 + degreesRemaining) * speed;
             if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
             trigmecanum.mecanumDrive(0,0, -scaledSpeed, false, false);
@@ -140,9 +152,9 @@ public class RightBlue extends LinearOpMode {
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double speed=1;
         double scaledSpeed=speed;
-        double targetHeading=angles.firstAngle+turnAngle;
-        if(targetHeading<-180) {targetHeading+=360;}
-        if(targetHeading>180){targetHeading-=360;}
+        double targetHeading = angles.firstAngle+turnAngle;
+        if(targetHeading < -180) {targetHeading += 360;}
+        if(targetHeading > 180){targetHeading -= 360;}
         double degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
@@ -158,6 +170,15 @@ public class RightBlue extends LinearOpMode {
         }
         trigmecanum.mecanumDrive(0, 0, 0, false, false);
     }
+    private double determineStrafeTime(int inches){
+        double m = 21;
+        return inches / m;
+    }
+    private double determineDriveTime(int inches){
+        double m = 30;
+        return inches / m;
+    }
+
     //TODO Last years methods
     private String determineAction() {
         if (10 > topDistanceSensor.getDistance(DistanceUnit.CM)){
