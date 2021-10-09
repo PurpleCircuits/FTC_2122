@@ -50,14 +50,16 @@ public class LeftBlue extends LinearOpMode {
         //TODO IMPORTANT! Stick 1Y negative is up
         //vuforia magic find the duck
         //strafe left to put things on the thing
-        moveBotTime(determineStrafeTime(36),0,1,0);
+        moveBotTime(determineStrafeTime(36),0,-1,0);
         //TODO put claw down here
         //move back to where we started
-        moveBotTime(determineStrafeTime(34),0,-1,0);
         //turn to align with the opening
         turnLeft(90,5);
+        moveBotTime(determineDriveTime(37),1,0,0);
         //strafe left into the square
-        moveBotTime(determineStrafeTime(18),0,1,0);
+        moveBotTime(determineStrafeTime(36),0,-1,0);
+        //go further into the loading dock
+        moveBotTime(determineDriveTime(24), -1,0,0);
     }
 
     private void initHardware() {
