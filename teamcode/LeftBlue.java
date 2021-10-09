@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name = "LeftBlue", group = "Linear Opmode")
 public class LeftBlue extends LinearOpMode {
+    private Trigmecanum trigmecanum = null;
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
     // The speed for the drive motors to operate at during autonomous
@@ -27,8 +27,10 @@ public class LeftBlue extends LinearOpMode {
     private static final double WHEEL_DIAMETER_INCHES = 4 ;     // For figuring circumference
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
 
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor motorFrontLeft = null;
+    private DcMotor motorFrontRight = null;
+    private DcMotor motorBackLeft = null;
+    private DcMotor motorBackRight = null;
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private BNO055IMU imu = null;
@@ -44,44 +46,27 @@ public class LeftBlue extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        //drive 36 inches forward
-        encoderDrive(SPEED,28,28,10);
-        //pause for distance sensor
-        sleep (250);
-        //sense rings and save rings
-        String action = determineAction();
-        //reverse 12 inches
-        encoderDrive(SPEED,-4,-4,5);
-        //turn right heading 270
+        //TODO speed issue with driving
+        //TODO IMPORTANT! Stick 1Y negative is up
+        //vuforia magic find the duck
+        //strafe left to put things on the thing
+        moveBotTime(determineStrafeTime(36),0,1,0);
+        //TODO put claw down here
+        //move back to where we started
+        moveBotTime(determineStrafeTime(34),0,-1,0);
+        //turn to align with the opening
         turnLeft(90,5);
-        //forward 18 inches
-        encoderDrive(SPEED,30,30,5);
-        //turn left heading 90
-        turnRight(270,5);
-        //Execute option A B, or C
-        if ("a".equalsIgnoreCase(action)){
-            processA();
-        } else if ("b".equalsIgnoreCase(action)){
-            processB();
-        } else {
-            processC();
-        }
+        //strafe left into the square
+        moveBotTime(determineStrafeTime(18),0,1,0);
     }
+
     private void initHardware() {
-        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-        theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
-        theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
-        digitalTouch = hardwareMap.get(DigitalChannel.class, "limit_sensor");
-        digitalTouch.setMode(DigitalChannel.Mode.INPUT);
-
-        // Our robot needs the motor on one side to be reversed to drive forward
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
-
-        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        //theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
+        //theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
+        //digitalTouch = hardwareMap.get(DigitalChannel.class, "limit_sensor");
+        //digitalTouch.setMode(DigitalChannel.Mode.INPUT);
+        trigmecanum = new Trigmecanum();
+        trigmecanum.init(hardwareMap, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE);
 
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -90,8 +75,8 @@ public class LeftBlue extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottom_distance");
-        topDistanceSensor = hardwareMap.get(DistanceSensor.class, "top_distance");
+        //bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottom_distance");
+        //topDistanceSensor = hardwareMap.get(DistanceSensor.class, "top_distance");
 
         // Log that init hardware is finished
         telemetry.log().clear();
@@ -99,77 +84,33 @@ public class LeftBlue extends LinearOpMode {
         telemetry.clear();
         telemetry.update();
     }
-    public void encoderDrive(double speed,
-                             double leftInches, double rightInches,
-                             double timeoutS) {
-        if (!opModeIsActive()){
-            return;
+    private void moveBot(int inches, double stick1Y, double stick1X, double stick2X){
+        String telemetryholder = new String();
+        double timeoutS = determineStrafeTime(inches);
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() < timeoutS) {
+            telemetryholder = trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
         }
-        int newLeftTarget;
-        int newRightTarget;
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            // Determine new target position, and pass to motor controller
-            newLeftTarget = leftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newRightTarget = rightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-            leftDrive.setTargetPosition(newLeftTarget);
-            rightDrive.setTargetPosition(newRightTarget);
-
-            // Turn On RUN_TO_POSITION
-            leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // reset the timeout time and start motion.
-            runtime.reset();
-            leftDrive.setPower(Math.abs(speed));
-            rightDrive.setPower(Math.abs(speed));
-
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (leftDrive.isBusy() && rightDrive.isBusy())) {
-
-                // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-                telemetry.addData("Path2",  "Running at %7d :%7d",
-                        leftDrive.getCurrentPosition(),
-                        rightDrive.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            leftDrive.setPower(0);
-            rightDrive.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            //  sleep(250);   // optional pause after each move
-        }
+        trigmecanum.mecanumDrive(0, 0, 0, false, false);
+        telemetry.addData("Drive", telemetryholder);
+        telemetry.update();
     }
-    private String determineAction() {
-        if (10 > topDistanceSensor.getDistance(DistanceUnit.CM)){
-            return "c";
-        } else if (10 > bottomDistanceSensor.getDistance(DistanceUnit.CM)){
-            return "b";
-        } else {
-            return "a";
+    private void moveBotTime(double timeoutS, double stick1Y, double stick1X, double stick2X){
+        String telemetryholder = new String();
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() < timeoutS) {
+            telemetryholder = trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
         }
+        trigmecanum.mecanumDrive(0, 0, 0, false, false);
+        telemetry.addData("Drive", telemetryholder);
+        telemetry.update();
     }
     public void turnLeft(double turnAngle, double timeoutS) {
         if (!opModeIsActive()){
             return;
         }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double speed=.5;
+        double speed=1;
         double scaledSpeed=speed;
         double targetHeading=angles.firstAngle+turnAngle;
         if(targetHeading<-180) {targetHeading+=360;}
@@ -179,19 +120,16 @@ public class LeftBlue extends LinearOpMode {
         runtime.reset();
         while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
         {
-            //TODO maybe change the 100 to 75 to make the turn slightly faster.
-            //TODO change this is TestSensorsTest also
-            scaledSpeed=degreesRemaining/(50+degreesRemaining)*speed;
-            if(scaledSpeed>1 || scaledSpeed<.3){scaledSpeed=.3;}//We have a minimum and maximum scaled speed
+            //Change the 10 on the line below to a variable
+            scaledSpeed = degreesRemaining / (10 + degreesRemaining) * speed;
+            if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
-            leftDrive.setPower(scaledSpeed);
-            rightDrive.setPower(-1*scaledSpeed);
+            trigmecanum.mecanumDrive(0,0, -scaledSpeed, false, false);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         }
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
+        trigmecanum.mecanumDrive(0, 0, 0, false, false);
     }
     //TODO see comments in turnLeft
     public void turnRight(double turnAngle, double timeoutS) {
@@ -199,50 +137,44 @@ public class LeftBlue extends LinearOpMode {
             return;
         }
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double speed=.5;
+        double speed=1;
         double scaledSpeed=speed;
-        double targetHeading=angles.firstAngle+turnAngle;
-        if(targetHeading<-180) {targetHeading+=360;}
-        if(targetHeading>180){targetHeading-=360;}
-        double degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
+        double targetHeading = angles.firstAngle+turnAngle;
+        if(targetHeading < -180) {targetHeading += 360;}
+        if(targetHeading > 180){targetHeading -= 360;}
+        double degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesLeft>2)
+        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
         {
-            scaledSpeed=degreesLeft/(50+degreesLeft)*speed;
-            if(scaledSpeed>1 || scaledSpeed<.3){scaledSpeed=.3;}
+            scaledSpeed=degreesRemaining/(10+degreesRemaining)*speed;
+            if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
-            leftDrive.setPower(-1*scaledSpeed);
-            rightDrive.setPower(scaledSpeed);
+            trigmecanum.mecanumDrive(0,0, scaledSpeed, false, false);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            degreesLeft = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
+            degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         }
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
+        trigmecanum.mecanumDrive(0, 0, 0, false, false);
     }
-    private void processA() {
-        encoderDrive(SPEED,36,36,20);
-        turnLeft(45, 5);
-        dropGoal();
-        encoderDrive(SPEED,-12,-12,5);
-        turnRight(315,5);
-        encoderDrive(SPEED,24,24,10);
+    private double determineStrafeTime(int inches){
+        double m = 21;
+        return inches / m;
     }
-    private void processB(){
-        encoderDrive(SPEED, 84, 84, 20);
-        turnRight(270, 10);
-        //encoderDrive(SPEED,18,18,10);
-        dropGoal();
-        turnLeft(90,5);
-        encoderDrive(SPEED,-24,-24,10);
+    private double determineDriveTime(int inches){
+        double m = 30;
+        return inches / m;
     }
-    private void processC() {
-        encoderDrive(SPEED,84, 84, 20);
-        turnLeft(50,5);
-        dropGoal();
-        turnRight(310,5);
-        encoderDrive(SPEED,-30,-30,10);
+
+    //TODO Last years methods
+    private String determineAction() {
+        if (10 > topDistanceSensor.getDistance(DistanceUnit.CM)){
+            return "c";
+        } else if (10 > bottomDistanceSensor.getDistance(DistanceUnit.CM)){
+            return "b";
+        } else {
+            return "a";
+        }
     }
     private void dropGoal() {
         if (!opModeIsActive()) {

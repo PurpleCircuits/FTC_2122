@@ -57,20 +57,24 @@ public class RightBlue extends LinearOpMode {
         moveBotTime(determineStrafeTime(36), 0, 1, 0);
             //forward 12 inches
         //TODO like last year (number of rings detection) depending on where the duck is were going to need change this next move in an else if
-        moveBotTime(determineDriveTime(12), -1, 0, 0);
+        moveBotTime(determineDriveTime(6), -1, 0, 0);
             //put the piece on the thing
-        moveBotTime(determineDriveTime(12), 1, 0, 0);
+        moveBotTime(determineDriveTime(6), 1, 0, 0);
         //turn right 45 using IMU
-        turnRight(315,5);
+        turnRight(300,5);
         //moveBot(.5, 0,0, -1);
         //TODO go left for 30ish inches
         moveBotTime(determineDriveTime(36), 1, 0, 0);
+        turnRight(315,5);
         //TODO spin the board
+        //not doing this cause of where the spinner is
         //re align ourselves square
-        turnLeft(45, 5);
+        //turnLeft(45, 5);
         //moveBot(.5, 0, 0, 1);
         //move right 24 to park in the loading dock
-        moveBotTime(determineStrafeTime(18), 0, 1, 0);
+        moveBotTime(determineDriveTime(16), -1, 0, 0);
+        //TODO might need to add this for the main robot
+        //moveBotTime(determineStrafeTime(8), 0, 1, 0);
     }
 
     private void initHardware() {
