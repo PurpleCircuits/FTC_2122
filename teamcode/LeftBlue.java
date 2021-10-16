@@ -46,6 +46,9 @@ public class LeftBlue extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
+        moveBotTime(1,1,0,0);
+        //turnLeft(90, 5);
+        /*
         //TODO speed issue with driving
         //TODO IMPORTANT! Stick 1Y negative is up
         //vuforia magic find the duck
@@ -60,6 +63,7 @@ public class LeftBlue extends LinearOpMode {
         moveBotTime(determineStrafeTime(36),0,-1,0);
         //go further into the loading dock
         moveBotTime(determineDriveTime(24), -1,0,0);
+         */
     }
 
     private void initHardware() {
