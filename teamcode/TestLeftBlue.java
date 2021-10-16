@@ -15,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name = "LeftBlue", group = "Linear Opmode")
-public class LeftBlue extends LinearOpMode {
+@Autonomous(name = "TestLeftBlue", group = "Linear Opmode")
+public class TestLeftBlue extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
@@ -46,9 +46,8 @@ public class LeftBlue extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        turnLeft(90, 5);
-        /*
-        //TODO speed issue with driving
+        turnLeft(90,10);
+        /* //TODO speed issue with driving
         //TODO IMPORTANT! Stick 1X negative is LEFT
         //vuforia magic find the duck
         //strafe left to put things on the thing
@@ -57,12 +56,13 @@ public class LeftBlue extends LinearOpMode {
         //move back to where we started
         //turn to align with the opening
         turnLeft(90,5);
-        moveBotTime(determineDriveTime(37),1,0,0);
+        moveBotTime(determineDriveTime(37),-1,0,0);
         //strafe left into the square
         moveBotTime(determineStrafeTime(36),0,-1,0);
         //go further into the loading dock
-        moveBotTime(determineDriveTime(24), -1,0,0);
-         */
+        moveBotTime(determineDriveTime(24), 1,0,0);
+        */
+
     }
 
     private void initHardware() {
@@ -163,11 +163,11 @@ public class LeftBlue extends LinearOpMode {
         trigmecanum.mecanumDrive(0, 0, 0, false, false);
     }
     private double determineStrafeTime(int inches){
-        double m = 21;
+        double m = 11;
         return inches / m;
     }
     private double determineDriveTime(int inches){
-        double m = 30;
+        double m = 15;
         return inches / m;
     }
 
