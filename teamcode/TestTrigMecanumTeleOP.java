@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @TeleOp(name="TestTrigMecanumTeleOP", group="Linear Opmode")
 public class TestTrigMecanumTeleOP extends LinearOpMode {
@@ -33,6 +34,9 @@ public class TestTrigMecanumTeleOP extends LinearOpMode {
         while (opModeIsActive()) {
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, -gamepad1.left_stick_x,gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
             //trigmecanum.fieldOrientedDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.a, gamepad1.y, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, gamepad1.dpad_right, gamepad1.dpad_up, gamepad1.dpad_down);
+            Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.addData("XYZ", angles.firstAngle);
+            telemetry.update();
         }
     }
 }

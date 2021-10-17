@@ -46,8 +46,11 @@ public class TestLeftBlue extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        turnLeft(90,10);
-        /* //TODO speed issue with driving
+        //TODO FIX THE TURNS
+        turnLeft(90,5);
+        turnRight(-90,5);
+        /*
+        //TODO speed issue with driving
         //TODO IMPORTANT! Stick 1X negative is LEFT
         //vuforia magic find the duck
         //strafe left to put things on the thing
@@ -62,7 +65,6 @@ public class TestLeftBlue extends LinearOpMode {
         //go further into the loading dock
         moveBotTime(determineDriveTime(24), 1,0,0);
         */
-
     }
 
     private void initHardware() {
@@ -129,7 +131,7 @@ public class TestLeftBlue extends LinearOpMode {
             scaledSpeed = degreesRemaining / (10 + degreesRemaining) * speed;
             if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
-            trigmecanum.mecanumDrive(0,0, -scaledSpeed, false, false);
+            trigmecanum.mecanumDrive(0,0, scaledSpeed, false, false);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
@@ -137,6 +139,7 @@ public class TestLeftBlue extends LinearOpMode {
         trigmecanum.mecanumDrive(0, 0, 0, false, false);
     }
     //TODO see comments in turnLeft
+    //ZYX, XYZ
     public void turnRight(double turnAngle, double timeoutS) {
         if (!opModeIsActive()){
             return;
@@ -155,7 +158,7 @@ public class TestLeftBlue extends LinearOpMode {
             scaledSpeed=degreesRemaining/(10+degreesRemaining)*speed;
             if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
-            trigmecanum.mecanumDrive(0,0, scaledSpeed, false, false);
+            trigmecanum.mecanumDrive(0,0, -scaledSpeed, false, false);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
