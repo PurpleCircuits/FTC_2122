@@ -34,8 +34,7 @@ public class TestLeftBlue extends LinearOpMode {
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private BNO055IMU imu = null;
-    private DistanceSensor topDistanceSensor = null;
-    private DistanceSensor bottomDistanceSensor = null;
+    private DistanceSensor distanceSensor = null;
     private ElapsedTime runtime = new ElapsedTime();
     private DigitalChannel digitalTouch = null;
     /**
@@ -82,8 +81,7 @@ public class TestLeftBlue extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        //bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottom_distance");
-        //topDistanceSensor = hardwareMap.get(DistanceSensor.class, "top_distance");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
 
         // Log that init hardware is finished
         telemetry.log().clear();
@@ -175,14 +173,10 @@ public class TestLeftBlue extends LinearOpMode {
     }
 
     //TODO Last years methods
-    private String determineAction() {
-        if (10 > topDistanceSensor.getDistance(DistanceUnit.CM)){
-            return "c";
-        } else if (10 > bottomDistanceSensor.getDistance(DistanceUnit.CM)){
-            return "b";
-        } else {
-            return "a";
-        }
+    private void distanceAction(){
+        // generic DistanceSensor methods.
+        telemetry.addData("deviceName", distanceSensor.getDeviceName() );
+        telemetry.addData("range", String.format("%.01f cm", distanceSensor.getDistance(DistanceUnit.CM)));
     }
     private void dropGoal() {
         if (!opModeIsActive()) {
