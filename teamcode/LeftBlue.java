@@ -188,7 +188,7 @@ public class LeftBlue extends LinearOpMode {
             scaledSpeed = degreesRemaining / (10 + degreesRemaining) * speed;
             if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
-            trigmecanum.mecanumDrive(0,0, -scaledSpeed, false, false);
+            trigmecanum.mecanumDrive(0,0, scaledSpeed, false, false);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
@@ -196,6 +196,7 @@ public class LeftBlue extends LinearOpMode {
         trigmecanum.mecanumDrive(0, 0, 0, false, false);
     }
     //TODO see comments in turnLeft
+    //ZYX, XYZ
     public void turnRight(double turnAngle, double timeoutS) {
         if (!opModeIsActive()){
             return;
@@ -214,7 +215,7 @@ public class LeftBlue extends LinearOpMode {
             scaledSpeed=degreesRemaining/(10+degreesRemaining)*speed;
             if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
-            trigmecanum.mecanumDrive(0,0, scaledSpeed, false, false);
+            trigmecanum.mecanumDrive(0,0, -scaledSpeed, false, false);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
