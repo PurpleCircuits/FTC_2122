@@ -9,11 +9,17 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
 
 @Autonomous(name = "LeftBlue", group = "Linear Opmode")
 public class LeftBlue extends LinearOpMode {
@@ -38,6 +44,17 @@ public class LeftBlue extends LinearOpMode {
     private DistanceSensor bottomDistanceSensor = null;
     private ElapsedTime runtime = new ElapsedTime();
     private DigitalChannel digitalTouch = null;
+    private static final String VUFORIA_KEY =
+            "AUEPTsj/////AAABmXYBynyLn0xeoNEKiUWEeAAEFvPFDHQUede2OVPhDHFAc4ZnvLxoHoluAS1ACHCMNJb6yYl3NuiHQmRc1m28p9sBRWxOxAEQluIxAP5botlaeikGtcPKmaQdcp98t53w3/WPnVC4OW9VAd6LD+8KFURWHmBm8RbqcCD+VOTenN3excKg8QuGrgiwgp2f21Hse0tkj02caYZovIUxyodab9PHydO0FbvjinBbRcPoh4zN/YmV0IRRrUaxrUvWJVFS+2xuGXJJwet6zELfIslWeU2+rqusIXw/FEw30/ulsg4bXTuQuEhFfs4PHpXM590vObE3eCz2ttYlXiI4qY1TfDBG1DAE7KRcQmH7Ptc7Lx+/";
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
+    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
+    private static final String[] LABELS = {
+            "Ball",
+            "Cube",
+            "Duck",
+            "Marker"
+    };
     /**
      * This is the entry of our Op Mode.
      */
@@ -46,23 +63,51 @@ public class LeftBlue extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        turnLeft(90, 5);
-        /*
-        //TODO speed issue with driving
-        //TODO IMPORTANT! Stick 1X negative is LEFT
-        //vuforia magic find the duck
-        //strafe left to put things on the thing
-        moveBotTime(determineStrafeTime(36),0,-1,0);
-        //TODO put claw down here
+        //tensorflow find the cube
+        String action;
+        //sleep to find artifact
+        sleep(4000);
+        if (isArtifactDetected()){
+            action = "r";
+            moveBotStrafe(8,0,1,0);
+        }
+        else{
+            moveBotStrafe(8,0,1,0);
+            //sleep to find artifact
+            sleep(4000);
+            if (isArtifactDetected()){
+                action = "c";
+            } else {
+                action = "l";
+            }
+        }
+        telemetry.addData("artifact location", action);
+        telemetry.update();
+        //if no cube reverse 8 inches
+        //tensorflow find the cube
+        //if no cube here we know its on the third square
+        //forward towards tower
+        moveBotDrive(36,1,0,0);
+        //turn to fully align with goal
+        turnRight(270,10);
+        if ("r".equalsIgnoreCase(action)){
+            //set arm to position 1
+        } else if ("c".equalsIgnoreCase(action)){
+            //set arm to position 2
+        } else {
+            //set arm to position 3
+        }
+        moveBotDrive(8,1,0,0);
+        //TODO open claw
+        moveBotDrive(8,-1,0,0);
         //move back to where we started
+        moveBotStrafe(36,0,-1,0);
         //turn to align with the opening
         turnLeft(90,5);
-        moveBotTime(determineDriveTime(37),1,0,0);
         //strafe left into the square
-        moveBotTime(determineStrafeTime(36),0,-1,0);
+        moveBotStrafe(36,0,1,0);
         //go further into the loading dock
-        moveBotTime(determineDriveTime(24), -1,0,0);
-         */
+        moveBotDrive(24,1,0,0);
     }
 
     private void initHardware() {
@@ -80,6 +125,19 @@ public class LeftBlue extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
+        initVuforia();
+        initTfod();
+        if (tfod != null) {
+            tfod.activate();
+
+            // The TensorFlow software will scale the input images from the camera to a lower resolution.
+            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
+            // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
+            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
+            // should be set to the value of the images used to create the TensorFlow Object Detection model
+            // (typically 16/9).
+            tfod.setZoom(2.5, 16.0/9.0);
+        }
         //bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottom_distance");
         //topDistanceSensor = hardwareMap.get(DistanceSensor.class, "top_distance");
 
@@ -89,7 +147,7 @@ public class LeftBlue extends LinearOpMode {
         telemetry.clear();
         telemetry.update();
     }
-    private void moveBot(int inches, double stick1Y, double stick1X, double stick2X){
+    private void moveBotStrafe(int inches, double stick1Y, double stick1X, double stick2X){
         String telemetryholder = new String();
         double timeoutS = determineStrafeTime(inches);
         runtime.reset();
@@ -100,8 +158,9 @@ public class LeftBlue extends LinearOpMode {
         telemetry.addData("Drive", telemetryholder);
         telemetry.update();
     }
-    private void moveBotTime(double timeoutS, double stick1Y, double stick1X, double stick2X){
+    private void moveBotDrive(int inches, double stick1Y, double stick1X, double stick2X){
         String telemetryholder = new String();
+        double timeoutS = determineDriveTime(inches);
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < timeoutS) {
             telemetryholder = trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
@@ -202,5 +261,53 @@ public class LeftBlue extends LinearOpMode {
         // send the info back to driver station using telemetry function.
         // if the digital channel returns true it's HIGH and the button is unpressed.
         return digitalTouch.getState();
+    }
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.isModelTensorFlow2 = true;
+        tfodParameters.inputSize = 320;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+    }
+    private boolean isArtifactDetected(){
+        if (tfod != null) {
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+
+                // step through the list of recognitions and display boundary info.
+                int i = 0;
+                for (Recognition recognition : updatedRecognitions) {
+                    if ("duck".equalsIgnoreCase(recognition.getLabel()) || "cube".equalsIgnoreCase(recognition.getLabel()))
+                    {
+                        return true;
+                    }
+                    i++;
+                }
+            }
+        }
+        return false;
     }
 }

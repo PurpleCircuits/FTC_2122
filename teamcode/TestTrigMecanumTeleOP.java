@@ -36,18 +36,18 @@ public class TestTrigMecanumTeleOP extends LinearOpMode {
         parameters.loggingTag     = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
-        theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
+        //distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
+        //theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
         trigmecanum = new Trigmecanum();
         trigmecanum.init(hardwareMap, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD);
-        theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
-        theClawMotor.setDirection(DcMotor.Direction.FORWARD);
+        //theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
+        //theClawMotor.setDirection(DcMotor.Direction.FORWARD);
 
         waitForStart();
         while (opModeIsActive()) {
-            distanceAction();
-            clawAction();
-            trigmecanum.mecanumDrive(gamepad1.left_stick_y, -gamepad1.left_stick_x,gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
+            //distanceAction();
+            //clawAction();
+            trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
             //trigmecanum.fieldOrientedDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.a, gamepad1.y, imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, gamepad1.dpad_right, gamepad1.dpad_up, gamepad1.dpad_down);
             Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.addData("XYZ", angles.firstAngle);

@@ -29,7 +29,8 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             distanceAction();
             clawAction();
             slideAction();
-            trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x,gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
+            spinAction();
+            trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
             telemetry.update();
         }
     }
@@ -52,8 +53,8 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         theSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        //theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
-        //theSpinMotor.setDirection(DcMotor.Direction.FORWARD);
+        theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
+        theSpinMotor.setDirection(DcMotor.Direction.FORWARD);
     }
     private void distanceAction(){
         // generic DistanceSensor methods.
@@ -75,7 +76,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         }
         // Linear speed
         double power = -gamepad2.left_stick_y;
-        // Slow down the robot by factor 5 or 2 when right bumper pressed
+        // Slow down the robot by factor of 2 when right bumper pressed
         if (gamepad2.right_bumper) {
             power = power / 2;
         }
