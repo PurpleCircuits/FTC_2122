@@ -21,16 +21,19 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     private DcMotor theClawMotor = null;
     private DcMotor theSlideMotor = null;
     private DcMotor theSpinMotor = null;
+    private DigitalSensors digitalSensors = null;
     @Override
     public void runOpMode() throws InterruptedException {
         initHardware();
         waitForStart();
         while (opModeIsActive()) {
-            distanceAction();
+            //distanceAction();
             clawAction();
             slideAction();
             spinAction();
+            clawBottom();
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
+            telemetry.addData("tics",theClawMotor.getCurrentPosition());
             telemetry.update();
         }
     }
@@ -52,6 +55,8 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         theSlideMotor.setDirection(DcMotor.Direction.FORWARD);
         theSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        digitalSensors = new DigitalSensors();
+        digitalSensors.init(hardwareMap);
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
         theSpinMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -92,6 +97,13 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             power = 0.5;
         }
         theSpinMotor.setPower(power);
+    }
+    //This is called clawAction in LeftBlue autonomous
+    private void clawBottom() {
+        if (digitalSensors.isCS1AtLimit()) {
+            theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        } double power = -gamepad2.left_stick_y;
+        theClawMotor.setPower(power);
     }
 }
 

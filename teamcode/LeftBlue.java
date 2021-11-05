@@ -104,13 +104,18 @@ public class LeftBlue extends LinearOpMode {
          */
         telemetry.clear();
         telemetry.addData("CS1", digitalSensors.isCS1AtLimit());
-        telemetry.addData("CS2", digitalSensors.isCS2AtLimit());
-        telemetry.addData("SS1", digitalSensors.isSS1AtLimit());
         telemetry.update();
+        telemetry.clear();
+        clawAction();
+        telemetry.addData("tics",theClawMotor.getCurrentPosition());
+        telemetry.update();
+        sleep(10000);
+        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     private void initHardware() {
-        //theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
+        theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
+        theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         trigmecanum = new Trigmecanum();
@@ -216,5 +221,18 @@ public class LeftBlue extends LinearOpMode {
     private double determineDriveTime(int inches){
         double m = 30;
         return inches / m;
+    }
+    private void clawAction(){
+        if(digitalSensors.isCS1AtLimit()){
+            theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }else{
+            while(!digitalSensors.isCS1AtLimit()){
+                theClawMotor.setPower(-.25);
+            }
+            theClawMotor.setPower(0);
+        }
+    }
+    private void moveClaw(double tics){
+        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }
