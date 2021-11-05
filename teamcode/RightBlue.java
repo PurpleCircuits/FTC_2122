@@ -9,17 +9,25 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
 
 @Autonomous(name = "RightBlue", group = "Linear Opmode")
 public class RightBlue extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
+    private DigitalSensors digitalSensors = null;
+    private PurpleTensorFlow purpleTensorFlow = null;
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
+    private static final double SERVO_OPEN_POS = 0.6; // Start at halfway position
     // The speed for the drive motors to operate at during autonomous
     private static final double SPEED = 0.5;
     private static final double COUNTS_PER_MOTOR_REV = 1120 ;    // (40 GEARBOX) eg: TETRIX Motor Encoder
@@ -31,13 +39,16 @@ public class RightBlue extends LinearOpMode {
     private DcMotor motorFrontRight = null;
     private DcMotor motorBackLeft = null;
     private DcMotor motorBackRight = null;
+    private DcMotor theSpinMotor = null;
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private BNO055IMU imu = null;
     private DistanceSensor topDistanceSensor = null;
     private DistanceSensor bottomDistanceSensor = null;
     private ElapsedTime runtime = new ElapsedTime();
-    private DigitalChannel digitalTouch = null;
+    private DigitalChannel slideSwitch1 = null;
+    private DigitalChannel clawSwitch1 = null;
+    private DigitalChannel clawSwitch2 = null;
     /**
      * This is the entry of our Op Mode.
      */
@@ -46,45 +57,80 @@ public class RightBlue extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        //moveBotTime(1, -1, 0,0);
-        //turnLeft(90, 5);
-        //TODO speed issue with driving
-        //TODO IMPORTANT! Stick 1Y negative is up
-        //Vuforia magic find the duck
-        //strafe right 48 inches
-
-
-        moveBotTime(determineStrafeTime(36), 0, 1, 0);
-            //forward 12 inches
-        //TODO like last year (number of rings detection) depending on where the duck is were going to need change this next move in an else if
-        moveBotTime(determineDriveTime(6), -1, 0, 0);
-            //put the piece on the thing
-        moveBotTime(determineDriveTime(6), 1, 0, 0);
-        //turn right 45 using IMU
-        turnRight(300,5);
-        //moveBot(.5, 0,0, -1);
-        //TODO go left for 30ish inches
-        moveBotTime(determineDriveTime(36), 1, 0, 0);
-        turnRight(315,5);
-        //TODO spin the board
-        //not doing this cause of where the spinner is
-        //re align ourselves square
-        //turnLeft(45, 5);
-        //moveBot(.5, 0, 0, 1);
-        //move right 24 to park in the loading dock
-        moveBotTime(determineDriveTime(16), -1, 0, 0);
-        //TODO might need to add this for the main robot
-        //moveBotTime(determineStrafeTime(8), 0, 1, 0);
+        //TODO load the box off the ground a little bit
+        theClawServo.setPosition(SERVO_MIN_POS);
+        //tensorflow find the cube
+        String action;
+        //sleep to give time to find artifact
+        sleep(4000);
+        if (purpleTensorFlow.isArtifactDetected()){
+            action = "r";
+            moveBotStrafe(8,0,-1,0);
+        }
+        else{
+            moveBotStrafe(8,0,-1,0);
+            //sleep to find artifact
+            sleep(4000);
+            if (purpleTensorFlow.isArtifactDetected()){
+                action = "c";
+            } else {
+                action = "l";
+            }
+        }
+        telemetry.addData("artifact location", action);
+        telemetry.update();
+        //if no cube reverse 8 inches
+        //tensorflow find the cube
+        //if no cube here we know its on the third square
+        //forward towards tower
+        moveBotDrive(36,1,0,0);
+        //turn to fully align with goal
+        turnLeft(90,10);
+        if ("l".equalsIgnoreCase(action)){
+            moveClaw(65);
+        } else if ("c".equalsIgnoreCase(action)){
+            moveClaw(130);
+        } else {
+            moveClaw(180);
+        }
+        moveBotDrive(8,1,0,0);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        //go back
+        moveBotDrive(8,-1,0,0);
+        //turn and align with carousel
+        turnRight(315,10);
+        //reverse to carousel
+        moveBotDrive(50,-1,0,0);
+        //spin carousel
+        theSpinMotor.setPower(.5);
+        //TODO change this to a while loop timeout
+        sleep(4000);
+        //move away from carousel
+        moveBotDrive(5,1,0,0);
+        //turn to align straight
+        turnLeft(45,0);
+        //strafe to align with blue dock
+        moveBotStrafe(20,0,1,0);
+        //reverse to wall
+        moveBotDrive(18,-1,0,0);
     }
 
     private void initHardware() {
-        //theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
-        //theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
-        //digitalTouch = hardwareMap.get(DigitalChannel.class, "limit_sensor");
-        //digitalTouch.setMode(DigitalChannel.Mode.INPUT);
+        theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
+        theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
+
+        theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
+
         trigmecanum = new Trigmecanum();
         trigmecanum.init(hardwareMap, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE);
 
+        digitalSensors = new DigitalSensors();
+        digitalSensors.init(hardwareMap);
+
+        purpleTensorFlow = new PurpleTensorFlow();
+        purpleTensorFlow.init(hardwareMap);
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
@@ -92,16 +138,13 @@ public class RightBlue extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        //bottomDistanceSensor = hardwareMap.get(DistanceSensor.class, "bottom_distance");
-        //topDistanceSensor = hardwareMap.get(DistanceSensor.class, "top_distance");
-
         // Log that init hardware is finished
         telemetry.log().clear();
         telemetry.log().add("Init. hardware finished.");
         telemetry.clear();
         telemetry.update();
     }
-    private void moveBot(int inches, double stick1Y, double stick1X, double stick2X){
+    private void moveBotStrafe(int inches, double stick1Y, double stick1X, double stick2X){
         String telemetryholder = new String();
         double timeoutS = determineStrafeTime(inches);
         runtime.reset();
@@ -112,8 +155,9 @@ public class RightBlue extends LinearOpMode {
         telemetry.addData("Drive", telemetryholder);
         telemetry.update();
     }
-    private void moveBotTime(double timeoutS, double stick1Y, double stick1X, double stick2X){
+    private void moveBotDrive(int inches, double stick1Y, double stick1X, double stick2X){
         String telemetryholder = new String();
+        double timeoutS = determineDriveTime(inches);
         runtime.reset();
         while (opModeIsActive() && runtime.seconds() < timeoutS) {
             telemetryholder = trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
@@ -141,7 +185,7 @@ public class RightBlue extends LinearOpMode {
             scaledSpeed = degreesRemaining / (10 + degreesRemaining) * speed;
             if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
-            trigmecanum.mecanumDrive(0,0, -scaledSpeed, false, false);
+            trigmecanum.mecanumDrive(0,0, scaledSpeed, false, false);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
@@ -149,6 +193,7 @@ public class RightBlue extends LinearOpMode {
         trigmecanum.mecanumDrive(0, 0, 0, false, false);
     }
     //TODO see comments in turnLeft
+    //ZYX, XYZ
     public void turnRight(double turnAngle, double timeoutS) {
         if (!opModeIsActive()){
             return;
@@ -167,7 +212,7 @@ public class RightBlue extends LinearOpMode {
             scaledSpeed=degreesRemaining/(10+degreesRemaining)*speed;
             if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
 
-            trigmecanum.mecanumDrive(0,0, scaledSpeed, false, false);
+            trigmecanum.mecanumDrive(0,0, -scaledSpeed, false, false);
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                     + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
@@ -182,37 +227,22 @@ public class RightBlue extends LinearOpMode {
         double m = 30;
         return inches / m;
     }
-
-    //TODO Last years methods
-    private String determineAction() {
-        if (10 > topDistanceSensor.getDistance(DistanceUnit.CM)){
-            return "c";
-        } else if (10 > bottomDistanceSensor.getDistance(DistanceUnit.CM)){
-            return "b";
-        } else {
-            return "a";
-        }
-    }
-   private void dropGoal() {
-        if (!opModeIsActive()) {
-            return;
-        }
-        if(isAtLimit()) {
-            //Arm down until sensor
-            theClawMotor.setPower(-.3);
-            while(isAtLimit()){
+    private void clawAction(){
+        if(digitalSensors.isCS1AtLimit()){
+            theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }else{
+            while(!digitalSensors.isCS1AtLimit()){
+                theClawMotor.setPower(-.25);
             }
             theClawMotor.setPower(0);
         }
-        theClawServo.setPosition(SERVO_MAX_POS);
-        //Arm Up until sensor
-        theClawMotor.setPower(.5);
-        sleep(500);
-        theClawMotor.setPower(0);
     }
-    private boolean isAtLimit(){
-        // send the info back to driver station using telemetry function.
-        // if the digital channel returns true it's HIGH and the button is unpressed.
-        return digitalTouch.getState();
+    private void moveClaw(int tics){
+        theClawMotor.setTargetPosition(tics);
+        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        theClawMotor.setPower(.5);
+        while (opModeIsActive() && theClawMotor.isBusy());
+        theClawMotor.setPower(0);
+        theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }

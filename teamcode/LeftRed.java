@@ -20,8 +20,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "LeftBlue", group = "Linear Opmode")
-public class LeftBlue extends LinearOpMode {
+@Autonomous(name = "LeftRed", group = "Linear Opmode")
+public class LeftRed extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private DigitalSensors digitalSensors = null;
     private PurpleTensorFlow purpleTensorFlow = null;
@@ -39,6 +39,7 @@ public class LeftBlue extends LinearOpMode {
     private DcMotor motorFrontRight = null;
     private DcMotor motorBackLeft = null;
     private DcMotor motorBackRight = null;
+    private DcMotor theSpinMotor = null;
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private BNO055IMU imu = null;
@@ -97,21 +98,30 @@ public class LeftBlue extends LinearOpMode {
         theClawServo.setPosition(SERVO_OPEN_POS);
         //go back
         moveBotDrive(8,-1,0,0);
-        //move back to where we started
-        moveBotStrafe(36,0,-1,0);
-        //turn to align with the opening
-        turnLeft(90,5);
-        //strafe left into the square
-        moveBotStrafe(36,0,1,0);
-        //go further into the loading dock
-        moveBotDrive(24,1,0,0);
-
+        //turn and align with carousel
+        turnLeft(45,10);
+        //reverse to carousel
+        moveBotDrive(50,-1,0,0);
+        //spin carousel
+        theSpinMotor.setPower(.5);
+        //TODO change this to a while loop timeout
+        sleep(4000);
+        //move away from carousel
+        moveBotDrive(5,1,0,0);
+        //turn to align straight
+        turnRight(315,0);
+        //strafe to align with blue dock
+        moveBotStrafe(20,0,-1,0);
+        //reverse to wall
+        moveBotDrive(18,-1,0,0);
     }
 
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
+
+        theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
 
         trigmecanum = new Trigmecanum();
         trigmecanum.init(hardwareMap, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE);

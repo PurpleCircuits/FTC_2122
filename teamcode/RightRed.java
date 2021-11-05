@@ -20,8 +20,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "LeftBlue", group = "Linear Opmode")
-public class LeftBlue extends LinearOpMode {
+@Autonomous(name = "RightRed", group = "Linear Opmode")
+public class RightRed extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private DigitalSensors digitalSensors = null;
     private PurpleTensorFlow purpleTensorFlow = null;
@@ -63,17 +63,17 @@ public class LeftBlue extends LinearOpMode {
         //sleep to give time to find artifact
         sleep(4000);
         if (purpleTensorFlow.isArtifactDetected()){
-            action = "r";
-            moveBotStrafe(8,0,-1,0);
+            action = "l";
+            moveBotStrafe(8,0,1,0);
         }
         else{
-            moveBotStrafe(8,0,-1,0);
+            moveBotStrafe(8,0,1,0);
             //sleep to find artifact
             sleep(4000);
             if (purpleTensorFlow.isArtifactDetected()){
                 action = "c";
             } else {
-                action = "l";
+                action = "r";
             }
         }
         telemetry.addData("artifact location", action);
@@ -84,7 +84,7 @@ public class LeftBlue extends LinearOpMode {
         //forward towards tower
         moveBotDrive(36,1,0,0);
         //turn to fully align with goal
-        turnRight(270,10);
+        turnLeft(90,10);
         if ("l".equalsIgnoreCase(action)){
             moveClaw(65);
         } else if ("c".equalsIgnoreCase(action)){
@@ -100,12 +100,11 @@ public class LeftBlue extends LinearOpMode {
         //move back to where we started
         moveBotStrafe(36,0,-1,0);
         //turn to align with the opening
-        turnLeft(90,5);
+        turnRight(270,5);
         //strafe left into the square
         moveBotStrafe(36,0,1,0);
         //go further into the loading dock
         moveBotDrive(24,1,0,0);
-
     }
 
     private void initHardware() {
