@@ -65,10 +65,10 @@ public class RightBlue extends LinearOpMode {
         sleep(4000);
         if (purpleTensorFlow.isArtifactDetected()){
             action = "r";
-            moveBotStrafe(8,0,-1,0);
+            moveBotStrafe(8,0,1,0);
         }
         else{
-            moveBotStrafe(8,0,-1,0);
+            moveBotStrafe(8,0,1,0);
             //sleep to find artifact
             sleep(4000);
             if (purpleTensorFlow.isArtifactDetected()){
@@ -83,7 +83,7 @@ public class RightBlue extends LinearOpMode {
         //tensorflow find the cube
         //if no cube here we know its on the third square
         //forward towards tower
-        moveBotDrive(36,1,0,0);
+        moveBotDrive(45,1,0,0);
         //turn to fully align with goal
         turnLeft(90,10);
         if ("l".equalsIgnoreCase(action)){
@@ -91,34 +91,36 @@ public class RightBlue extends LinearOpMode {
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(130);
         } else {
-            moveClaw(180);
+            moveClaw(190);
         }
-        moveBotDrive(8,1,0,0);
+        moveBotDrive(18,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         //go back
-        moveBotDrive(8,-1,0,0);
+        moveBotDrive(18,-1,0,0);
         //turn and align with carousel
-        turnRight(315,10);
+        turnRight(295,10);
         //reverse to carousel
-        moveBotDrive(50,-1,0,0);
+        moveBotDrive(45,-1,0,0);
         //spin carousel
         theSpinMotor.setPower(.5);
         //TODO change this to a while loop timeout
         sleep(4000);
+        theSpinMotor.setPower(0);
         //move away from carousel
-        moveBotDrive(5,1,0,0);
+        moveBotDrive(15,1,0,0);
         //turn to align straight
-        turnLeft(45,0);
+        turnLeft(65,4);
         //strafe to align with blue dock
-        moveBotStrafe(20,0,1,0);
+        moveBotStrafe(7,0,-1,0);
         //reverse to wall
-        moveBotDrive(18,-1,0,0);
+        moveBotDrive(10,-1,0,0);
     }
 
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
@@ -152,8 +154,6 @@ public class RightBlue extends LinearOpMode {
             telemetryholder = trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
         }
         trigmecanum.mecanumDrive(0, 0, 0, false, false);
-        telemetry.addData("Drive", telemetryholder);
-        telemetry.update();
     }
     private void moveBotDrive(int inches, double stick1Y, double stick1X, double stick2X){
         String telemetryholder = new String();
@@ -163,8 +163,6 @@ public class RightBlue extends LinearOpMode {
             telemetryholder = trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
         }
         trigmecanum.mecanumDrive(0, 0, 0, false, false);
-        telemetry.addData("Drive", telemetryholder);
-        telemetry.update();
     }
     public void turnLeft(double turnAngle, double timeoutS) {
         if (!opModeIsActive()){
@@ -179,7 +177,7 @@ public class RightBlue extends LinearOpMode {
         double degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
+        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>3)
         {
             //Change the 10 on the line below to a variable
             scaledSpeed = degreesRemaining / (10 + degreesRemaining) * speed;
@@ -207,7 +205,7 @@ public class RightBlue extends LinearOpMode {
         double degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
+        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>3)
         {
             scaledSpeed=degreesRemaining/(10+degreesRemaining)*speed;
             if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed
@@ -241,7 +239,10 @@ public class RightBlue extends LinearOpMode {
         theClawMotor.setTargetPosition(tics);
         theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         theClawMotor.setPower(.5);
-        while (opModeIsActive() && theClawMotor.isBusy());
+        while (opModeIsActive() && theClawMotor.isBusy()){
+            telemetry.addData("claw tics", theClawMotor.getCurrentPosition());
+            telemetry.update();
+        }
         theClawMotor.setPower(0);
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
