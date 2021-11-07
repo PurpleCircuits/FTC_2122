@@ -31,7 +31,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             clawAction();
             slideAction();
             spinAction();
-            clawBottom();
+            clawPosition();
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
             telemetry.addData("tics",theClawMotor.getCurrentPosition());
             telemetry.update();
@@ -68,24 +68,25 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     }
     private void clawAction() {
         // close the claw
-        //if (gamepad2.b) {
-        //    theClawServo.setPosition(SERVO_MIN_POS);
-        //}
-
-        // open the claw
-        if (gamepad2.a || 2 > distanceSensor.getDistance(DistanceUnit.CM)) {
+        if (gamepad2.right_bumper || 5 > distanceSensor.getDistance(DistanceUnit.CM)) {
             theClawServo.setPosition(SERVO_MIN_POS);
         }
-        else if(gamepad2.b){
+        else if(gamepad2.left_bumper){
             theClawServo.setPosition(SERVO_OPEN_POS);
         }
-        // Linear speed
-        double power = -gamepad2.left_stick_y;
+        // Power for claw
+        double power = -gamepad2.left_stick_y / 2;
         // Slow down the robot by factor of 2 when right bumper pressed
         if (gamepad2.right_bumper) {
-            power = power / 2;
+            power = -gamepad2.left_stick_y;
         }
-        theClawMotor.setPower(power);
+        if (digitalSensors.isCS1AtLimit() && 0 < gamepad2.left_stick_y) {
+            theClawMotor.setPower(0);
+            theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+            theClawMotor.setPower(power);
+        }
     }
     private void slideAction(){
         double power = gamepad2.right_stick_y;
@@ -98,12 +99,17 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         }
         theSpinMotor.setPower(power);
     }
-    //This is called clawAction in LeftBlue autonomous
-    private void clawBottom() {
-        if (digitalSensors.isCS1AtLimit()) {
-            theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        } double power = -gamepad2.left_stick_y;
-        theClawMotor.setPower(power);
+    private void clawPosition(){
+        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (gamepad2.a){
+            theClawMotor.setTargetPosition(65);
+        } else if (gamepad2.b){
+            theClawMotor.setTargetPosition(130);
+        } else if (gamepad1.y){
+            theClawMotor.setTargetPosition(190);
+        }
+        //TODO set X for the capstone thing (need rev encoder things)
+        theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
 
