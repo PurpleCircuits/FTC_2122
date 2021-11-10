@@ -83,7 +83,7 @@ public class LeftRed extends LinearOpMode {
         //tensorflow find the cube
         //if no cube here we know its on the third square
         //forward towards tower
-        moveBotDrive(36,1,0,0);
+        moveBotDrive(45,1,0,0);
         //turn to fully align with goal
         turnRight(270,10);
         if ("l".equalsIgnoreCase(action)){
@@ -93,11 +93,11 @@ public class LeftRed extends LinearOpMode {
         } else {
             moveClaw(180);
         }
-        moveBotDrive(8,1,0,0);
+        moveBotDrive(18,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         //go back
-        moveBotDrive(8,-1,0,0);
+        moveBotDrive(18,-1,0,0);
         //turn and align with carousel
         turnLeft(45,10);
         //reverse to carousel
@@ -119,6 +119,7 @@ public class LeftRed extends LinearOpMode {
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
