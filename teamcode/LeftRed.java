@@ -64,7 +64,7 @@ public class LeftRed extends LinearOpMode {
         //sleep to give time to find artifact
         sleep(4000);
         if (purpleTensorFlow.isArtifactDetected()){
-            action = "r";
+            action = "l";
             moveBotStrafe(8,0,-1,0);
         }
         else{
@@ -74,7 +74,7 @@ public class LeftRed extends LinearOpMode {
             if (purpleTensorFlow.isArtifactDetected()){
                 action = "c";
             } else {
-                action = "l";
+                action = "r";
             }
         }
         telemetry.addData("artifact location", action);
@@ -87,33 +87,35 @@ public class LeftRed extends LinearOpMode {
         //turn to fully align with goal
         turnRight(270,10);
         if ("l".equalsIgnoreCase(action)){
-            moveClaw(65);
+            moveClaw(90);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(130);
+            moveClaw(200);
         } else {
-            moveClaw(180);
+            moveClaw(300);
         }
         moveBotDrive(18,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
         //go back
         moveBotDrive(18,-1,0,0);
         //turn and align with carousel
-        turnLeft(45,10);
+        turnLeft(60,10);
         //reverse to carousel
-        moveBotDrive(50,-1,0,0);
+        moveBotDrive(45,-1,0,0);
         //spin carousel
         theSpinMotor.setPower(.5);
         //TODO change this to a while loop timeout
         sleep(4000);
         //move away from carousel
-        moveBotDrive(5,1,0,0);
+        moveBotDrive(15,1,0,0);
         //turn to align straight
-        turnRight(315,0);
+        turnRight(300,0);
         //strafe to align with blue dock
-        moveBotStrafe(20,0,-1,0);
+        moveBotStrafe(9,0,-1,0);
         //reverse to wall
-        moveBotDrive(18,-1,0,0);
+        moveBotDrive(10,-1,0,0);
+        clawAction();
     }
 
     private void initHardware() {
@@ -180,7 +182,7 @@ public class LeftRed extends LinearOpMode {
         double degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
+        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>3)
         {
             //Change the 10 on the line below to a variable
             scaledSpeed = degreesRemaining / (10 + degreesRemaining) * speed;
@@ -208,7 +210,7 @@ public class LeftRed extends LinearOpMode {
         double degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
+        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>3)
         {
             scaledSpeed=degreesRemaining/(10+degreesRemaining)*speed;
             if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed

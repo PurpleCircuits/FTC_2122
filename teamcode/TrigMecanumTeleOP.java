@@ -31,10 +31,10 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             clawAction();
             slideAction();
             spinAction();
-            clawPosition();
-            trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.a, gamepad1.y);
-            telemetry.addData("tics",theClawMotor.getCurrentPosition());
-            telemetry.update();
+            //clawPosition();
+            trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
+            //telemetry.addData("tics",theClawMotor.getCurrentPosition());
+            //telemetry.update();
         }
     }
     private void initHardware(){
@@ -68,11 +68,11 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     }
     private void clawAction() {
         // close the claw
-        if (gamepad2.right_bumper || 5 > distanceSensor.getDistance(DistanceUnit.CM)) {
-            theClawServo.setPosition(SERVO_MIN_POS);
-        }
-        else if(gamepad2.left_bumper){
+        if(gamepad2.left_bumper){
             theClawServo.setPosition(SERVO_OPEN_POS);
+        }
+        else if (gamepad2.right_bumper || 5 > distanceSensor.getDistance(DistanceUnit.CM)) {
+            theClawServo.setPosition(SERVO_MIN_POS);
         }
         // Power for claw
         double power = -gamepad2.left_stick_y / 2;
@@ -100,16 +100,16 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         theSpinMotor.setPower(power);
     }
     private void clawPosition(){
-        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if (gamepad2.a){
-            theClawMotor.setTargetPosition(65);
+            theClawMotor.setTargetPosition(90);
         } else if (gamepad2.b){
-            theClawMotor.setTargetPosition(130);
+            theClawMotor.setTargetPosition(200);
         } else if (gamepad1.y){
-            theClawMotor.setTargetPosition(190);
+            theClawMotor.setTargetPosition(300);
         }
+        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //TODO set X for the capstone thing (need rev encoder things)
-        theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
 

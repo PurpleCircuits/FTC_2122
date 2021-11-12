@@ -84,27 +84,29 @@ public class RightRed extends LinearOpMode {
         //forward towards tower
         moveBotDrive(45,1,0,0);
         //turn to fully align with goal
-        turnLeft(90,10);
         if ("l".equalsIgnoreCase(action)){
-            moveClaw(65);
+            moveClaw(90);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(130);
+            moveClaw(200);
         } else {
-            moveClaw(180);
+            moveClaw(300);
         }
-        moveBotDrive(18,1,0,0);
+        turnLeft(90,10);
+        moveBotDrive(4,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
         //go back
-        moveBotDrive(18,-1,0,0);
+        moveBotDrive(4,-1,0,0);
+        //turn to align with wall
+        turnRight(270,10);
         //move back to where we started
-        moveBotStrafe(36,0,-1,0);
-        //turn to align with the opening
-        turnRight(270,5);
+        moveBotDrive(50,0,-1,0);
         //strafe left into the square
         moveBotStrafe(36,0,1,0);
         //go further into the loading dock
         moveBotDrive(24,1,0,0);
+        clawAction();
     }
 
     private void initHardware() {
@@ -169,7 +171,7 @@ public class RightRed extends LinearOpMode {
         double degreesRemaining = ((int)(Math.signum(angles.firstAngle-targetHeading)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(targetHeading-angles.firstAngle)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
+        while(opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>3)
         {
             //Change the 10 on the line below to a variable
             scaledSpeed = degreesRemaining / (10 + degreesRemaining) * speed;
@@ -197,7 +199,7 @@ public class RightRed extends LinearOpMode {
         double degreesRemaining = ((int)(Math.signum(targetHeading-angles.firstAngle)+1)/2)*(360-Math.abs(angles.firstAngle-targetHeading))
                 + (int)(Math.signum(angles.firstAngle-targetHeading)+1)/2*Math.abs(angles.firstAngle-targetHeading);
         runtime.reset();
-        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>2)
+        while (opModeIsActive() && runtime.seconds() < timeoutS && degreesRemaining>3)
         {
             scaledSpeed=degreesRemaining/(10+degreesRemaining)*speed;
             if(scaledSpeed>1 || scaledSpeed<.5){scaledSpeed=.5;}//We have a minimum and maximum scaled speed

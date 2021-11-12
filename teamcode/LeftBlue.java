@@ -92,8 +92,8 @@ public class LeftBlue extends LinearOpMode {
         turnRight(270,10);
         moveBotDrive(4,1,0,0);
         //open claw
-        sleep(500);
         theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
         //go back
         moveBotDrive(4,-1,0,0);
         //turn to align with the opening

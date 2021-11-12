@@ -87,7 +87,7 @@ public class RightBlue extends LinearOpMode {
         //turn to fully align with goal
         turnLeft(90,10);
         if ("l".equalsIgnoreCase(action)){
-            moveClaw(65);
+            moveClaw(90);
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(200);
         } else {

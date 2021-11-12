@@ -104,9 +104,9 @@ public class Trigmecanum {
             motor3Scaled = motor3Raw;
         }
         if(A) {
-            slowdown = 0.2;
-        }else if (Y) {
             slowdown = 0.5;
+        }else if (Y) {
+            slowdown = 1;
         }
         motorFrontLeft.setPower(motor0Scaled * slowdown);
         motorFrontRight.setPower(motor1Scaled * slowdown);
