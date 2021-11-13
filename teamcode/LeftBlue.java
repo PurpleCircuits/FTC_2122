@@ -82,20 +82,20 @@ public class LeftBlue extends LinearOpMode {
         moveBotDrive(45,1,0,0);
         //move the claw
         if ("l".equalsIgnoreCase(action)){
-            moveClaw(90);
+            moveClaw(.25);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(200);
+            moveClaw(.5);
         } else {
-            moveClaw(300);
+            moveClaw(.75);
         }
         //turn to fully align with goal
         turnRight(270,10);
-        moveBotDrive(4,1,0,0);
+        moveBotDrive(8,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
         //go back
-        moveBotDrive(4,-1,0,0);
+        moveBotDrive(8,-1,0,0);
         //turn to align with the opening
         turnLeft(90,5);
         //move back to where we started
@@ -110,7 +110,6 @@ public class LeftBlue extends LinearOpMode {
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         trigmecanum = new Trigmecanum();
@@ -223,12 +222,11 @@ public class LeftBlue extends LinearOpMode {
             theClawMotor.setPower(0);
         }
     }
-    private void moveClaw(int tics){
-        theClawMotor.setTargetPosition(tics);
-        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    private void moveClaw(double time){
         theClawMotor.setPower(.5);
-        while (opModeIsActive() && theClawMotor.isBusy());
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() < time){
+        }
         theClawMotor.setPower(0);
-        theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }

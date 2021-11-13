@@ -63,7 +63,7 @@ public class RightRed extends LinearOpMode {
         //sleep to give time to find artifact
         sleep(4000);
         if (purpleTensorFlow.isArtifactDetected()){
-            action = "l";
+            action = "c";
             moveBotStrafe(8,0,1,0);
         }
         else{
@@ -71,7 +71,7 @@ public class RightRed extends LinearOpMode {
             //sleep to find artifact
             sleep(4000);
             if (purpleTensorFlow.isArtifactDetected()){
-                action = "c";
+                action = "l";
             } else {
                 action = "r";
             }
@@ -85,25 +85,25 @@ public class RightRed extends LinearOpMode {
         moveBotDrive(45,1,0,0);
         //turn to fully align with goal
         if ("l".equalsIgnoreCase(action)){
-            moveClaw(90);
+            moveClaw(.25);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(200);
+            moveClaw(.5);
         } else {
-            moveClaw(300);
+            moveClaw(.75);
         }
         turnLeft(90,10);
-        moveBotDrive(4,1,0,0);
+        moveBotDrive(8,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
         //go back
-        moveBotDrive(4,-1,0,0);
+        moveBotDrive(8,-1,0,0);
         //turn to align with wall
         turnRight(270,10);
         //move back to where we started
-        moveBotDrive(50,0,-1,0);
+        moveBotDrive(50,-1,0,0);
         //strafe left into the square
-        moveBotStrafe(36,0,1,0);
+        moveBotStrafe(36,0,-1,0);
         //go further into the loading dock
         moveBotDrive(24,1,0,0);
         clawAction();
@@ -112,7 +112,6 @@ public class RightRed extends LinearOpMode {
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         trigmecanum = new Trigmecanum();
@@ -229,12 +228,11 @@ public class RightRed extends LinearOpMode {
             theClawMotor.setPower(0);
         }
     }
-    private void moveClaw(int tics){
-        theClawMotor.setTargetPosition(tics);
-        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    private void moveClaw(double time){
         theClawMotor.setPower(.5);
-        while (opModeIsActive() && theClawMotor.isBusy());
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() < time){
+        }
         theClawMotor.setPower(0);
-        theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }

@@ -85,22 +85,22 @@ public class RightBlue extends LinearOpMode {
         //forward towards tower
         moveBotDrive(45,1,0,0);
         //turn to fully align with goal
-        turnLeft(90,10);
         if ("l".equalsIgnoreCase(action)){
-            moveClaw(90);
+            moveClaw(.25);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(200);
+            moveClaw(.5);
         } else {
-            moveClaw(380);
+            moveClaw(.75);
         }
-        moveBotDrive(18,1,0,0);
+        turnLeft(90,10);
+        moveBotDrive(12,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
         //go back
-        moveBotDrive(18,-1,0,0);
+        moveBotDrive(12,-1,0,0);
         //turn and align with carousel
-        turnRight(300,10);
+        turnRight(297,10);
         //reverse to carousel
         moveBotDrive(45,-1,0,0);
         //spin carousel
@@ -111,7 +111,7 @@ public class RightBlue extends LinearOpMode {
         //move away from carousel
         moveBotDrive(15,1,0,0);
         //turn to align straight
-        turnLeft(60,4);
+        turnLeft(63,4);
         //strafe to align with blue dock
         moveBotStrafe(9,0,-1,0);
         //reverse to wall
@@ -122,7 +122,7 @@ public class RightBlue extends LinearOpMode {
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
@@ -237,15 +237,11 @@ public class RightBlue extends LinearOpMode {
             theClawMotor.setPower(0);
         }
     }
-    private void moveClaw(int tics){
-        theClawMotor.setTargetPosition(tics);
-        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    private void moveClaw(double time){
         theClawMotor.setPower(.5);
-        while (opModeIsActive() && theClawMotor.isBusy()){
-            telemetry.addData("claw tics", theClawMotor.getCurrentPosition());
-            telemetry.update();
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() < time){
         }
         theClawMotor.setPower(0);
-        theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }

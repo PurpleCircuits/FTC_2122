@@ -84,35 +84,35 @@ public class LeftRed extends LinearOpMode {
         //if no cube here we know its on the third square
         //forward towards tower
         moveBotDrive(45,1,0,0);
+        if ("l".equalsIgnoreCase(action)){
+            moveClaw(.25);
+        } else if ("c".equalsIgnoreCase(action)){
+            moveClaw(.5);
+        } else {
+            moveClaw(.75);
+        }
         //turn to fully align with goal
         turnRight(270,10);
-        if ("l".equalsIgnoreCase(action)){
-            moveClaw(90);
-        } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(200);
-        } else {
-            moveClaw(300);
-        }
-        moveBotDrive(18,1,0,0);
+        moveBotDrive(8,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
         //go back
-        moveBotDrive(18,-1,0,0);
+        moveBotDrive(8,-1,0,0);
         //turn and align with carousel
         turnLeft(60,10);
         //reverse to carousel
-        moveBotDrive(45,-1,0,0);
+        moveBotDrive(49,-1,0,0);
         //spin carousel
-        theSpinMotor.setPower(.5);
+        theSpinMotor.setPower(-.5);
         //TODO change this to a while loop timeout
         sleep(4000);
         //move away from carousel
         moveBotDrive(15,1,0,0);
         //turn to align straight
-        turnRight(300,0);
+        turnRight(300,5);
         //strafe to align with blue dock
-        moveBotStrafe(9,0,-1,0);
+        moveBotStrafe(9,0,1,0);
         //reverse to wall
         moveBotDrive(10,-1,0,0);
         clawAction();
@@ -121,7 +121,6 @@ public class LeftRed extends LinearOpMode {
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
@@ -240,12 +239,11 @@ public class LeftRed extends LinearOpMode {
             theClawMotor.setPower(0);
         }
     }
-    private void moveClaw(int tics){
-        theClawMotor.setTargetPosition(tics);
-        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    private void moveClaw(double time){
         theClawMotor.setPower(.5);
-        while (opModeIsActive() && theClawMotor.isBusy());
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() < time){
+        }
         theClawMotor.setPower(0);
-        theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
