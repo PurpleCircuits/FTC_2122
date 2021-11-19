@@ -94,8 +94,21 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     }
     private void spinAction(){
         double power = 0;
-        if (gamepad2.x){
-            power = 0.5;
+        double leftPower = gamepad2.left_trigger;
+        double rightPower = gamepad2.right_trigger;
+        if (leftPower > .1){
+            if (leftPower > .5){
+                power = .5;
+            } else{
+                power = leftPower;
+            }
+        } else {
+            if (rightPower > .5){
+                power = -.5;
+            } else{
+                power = -rightPower;
+            }
+
         }
         theSpinMotor.setPower(power);
     }

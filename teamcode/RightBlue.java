@@ -86,7 +86,7 @@ public class RightBlue extends LinearOpMode {
         moveBotDrive(45,1,0,0);
         //turn to fully align with goal
         if ("l".equalsIgnoreCase(action)){
-            moveClaw(.25);
+            moveClaw(.35);
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(.5);
         } else {
@@ -102,7 +102,7 @@ public class RightBlue extends LinearOpMode {
         //turn and align with carousel
         turnRight(297,10);
         //reverse to carousel
-        moveBotDrive(45,-1,0,0);
+        moveBotDrive(49,-1,0,0);
         //spin carousel
         theSpinMotor.setPower(.5);
         //TODO change this to a while loop timeout

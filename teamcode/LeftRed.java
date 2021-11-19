@@ -85,7 +85,7 @@ public class LeftRed extends LinearOpMode {
         //forward towards tower
         moveBotDrive(45,1,0,0);
         if ("l".equalsIgnoreCase(action)){
-            moveClaw(.25);
+            moveClaw(.35);
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(.5);
         } else {

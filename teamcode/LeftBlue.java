@@ -82,7 +82,7 @@ public class LeftBlue extends LinearOpMode {
         moveBotDrive(45,1,0,0);
         //move the claw
         if ("l".equalsIgnoreCase(action)){
-            moveClaw(.25);
+            moveClaw(.35);
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(.5);
         } else {
@@ -103,8 +103,7 @@ public class LeftBlue extends LinearOpMode {
         //strafe left into the square
         moveBotStrafe(36,0,1,0);
         //go further into the loading dock
-        moveBotDrive(24,1,0,0);
-
+        clawAction();
     }
 
     private void initHardware() {

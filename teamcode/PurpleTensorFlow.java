@@ -35,7 +35,7 @@ public class PurpleTensorFlow {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            tfod.setZoom(2.5, 16.0/9.0);
+            tfod.setZoom(2, 16.0/9.0);
         }
 
     }
@@ -77,7 +77,7 @@ public class PurpleTensorFlow {
                 // step through the list of recognitions and display boundary info.
                 int i = 0;
                 for (Recognition recognition : updatedRecognitions) {
-                    if ("duck".equalsIgnoreCase(recognition.getLabel()) || "cube".equalsIgnoreCase(recognition.getLabel()))
+                    if ("duck".equalsIgnoreCase(recognition.getLabel()) || "cube".equalsIgnoreCase(recognition.getLabel()) || "ball".equalsIgnoreCase(recognition.getLabel()))
                     {
                         return true;
                     }
