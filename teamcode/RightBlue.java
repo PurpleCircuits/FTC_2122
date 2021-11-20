@@ -122,7 +122,6 @@ public class RightBlue extends LinearOpMode {
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");

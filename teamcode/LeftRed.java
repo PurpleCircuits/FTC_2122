@@ -154,8 +154,6 @@ public class LeftRed extends LinearOpMode {
             telemetryholder = trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
         }
         trigmecanum.mecanumDrive(0, 0, 0, false, false);
-        telemetry.addData("Drive", telemetryholder);
-        telemetry.update();
     }
     private void moveBotDrive(int inches, double stick1Y, double stick1X, double stick2X){
         String telemetryholder = new String();
@@ -165,8 +163,6 @@ public class LeftRed extends LinearOpMode {
             telemetryholder = trigmecanum.mecanumDrive(stick1Y, stick1X, stick2X, false, false);
         }
         trigmecanum.mecanumDrive(0, 0, 0, false, false);
-        telemetry.addData("Drive", telemetryholder);
-        telemetry.update();
     }
     public void turnLeft(double turnAngle, double timeoutS) {
         if (!opModeIsActive()){
