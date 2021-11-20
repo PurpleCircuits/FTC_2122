@@ -86,7 +86,7 @@ public class LeftBlue extends LinearOpMode {
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(.5);
         } else {
-            moveClaw(.75);
+            moveClaw(1);
         }
         //turn to fully align with goal
         turnRight(270,10);

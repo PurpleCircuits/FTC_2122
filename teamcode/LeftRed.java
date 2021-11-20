@@ -89,28 +89,29 @@ public class LeftRed extends LinearOpMode {
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(.5);
         } else {
-            moveClaw(.75);
+            moveClaw(1);
         }
         //turn to fully align with goal
         turnRight(270,10);
-        moveBotDrive(8,1,0,0);
+        //moveBotDrive(8,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
         //go back
         moveBotDrive(8,-1,0,0);
         //turn and align with carousel
-        turnLeft(60,10);
+        turnLeft(57,10);
         //reverse to carousel
         moveBotDrive(49,-1,0,0);
         //spin carousel
         theSpinMotor.setPower(-.5);
         //TODO change this to a while loop timeout
         sleep(4000);
+        theSpinMotor.setPower(0);
         //move away from carousel
         moveBotDrive(15,1,0,0);
         //turn to align straight
-        turnRight(300,5);
+        turnRight(303,5);
         //strafe to align with blue dock
         moveBotStrafe(9,0,1,0);
         //reverse to wall

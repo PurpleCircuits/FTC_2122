@@ -82,7 +82,7 @@ public class RightRed extends LinearOpMode {
         //tensorflow find the cube
         //if no cube here we know its on the third square
         //forward towards tower
-        moveBotDrive(45,1,0,0);
+        moveBotDrive(1,1,0,0);
         //turn to fully align with goal
         if ("l".equalsIgnoreCase(action)){
             moveClaw(.35);

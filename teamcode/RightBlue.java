@@ -90,7 +90,7 @@ public class RightBlue extends LinearOpMode {
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(.5);
         } else {
-            moveClaw(.75);
+            moveClaw(1);
         }
         turnLeft(90,10);
         moveBotDrive(12,1,0,0);
