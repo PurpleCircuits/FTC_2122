@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -17,11 +18,12 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     private DistanceSensor distanceSensor = null;
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
-    private static final double SERVO_OPEN_POS = 0.6; // Start at halfway position
+    private static final double SERVO_OPEN_POS = 0.4; // Start at halfway position
     private DcMotor theClawMotor = null;
     private DcMotor theSlideMotor = null;
     private DcMotor theSpinMotor = null;
     private DigitalSensors digitalSensors = null;
+    private ElapsedTime runtime = new ElapsedTime();
     @Override
     public void runOpMode() throws InterruptedException {
         initHardware();
@@ -31,6 +33,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             clawAction();
             slideAction();
             spinAction();
+            clawPosition();
             //clawPosition();
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
             //telemetry.addData("tics",theClawMotor.getCurrentPosition());
@@ -114,15 +117,30 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     }
     private void clawPosition(){
         if (gamepad2.a){
-            theClawMotor.setTargetPosition(90);
+            moveClaw(.35);
         } else if (gamepad2.b){
-            theClawMotor.setTargetPosition(200);
-        } else if (gamepad1.y){
-            theClawMotor.setTargetPosition(300);
+            moveClaw(.6);
+        } else if (gamepad2.y){
+            moveClaw(.75);
         }
-        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (gamepad2.x){
+            if(digitalSensors.isCS1AtLimit()){
+                theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }else{
+                while(!digitalSensors.isCS1AtLimit()){
+                    theClawMotor.setPower(-.25);
+                }
+                theClawMotor.setPower(0);
+            }
+        }
         //TODO set X for the capstone thing (need rev encoder things)
-        //theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    private void moveClaw(double time){
+        theClawMotor.setPower(.5);
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() < time){
+        }
+        theClawMotor.setPower(0);
     }
 }
 
