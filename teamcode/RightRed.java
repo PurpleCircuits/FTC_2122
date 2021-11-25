@@ -82,12 +82,12 @@ public class RightRed extends LinearOpMode {
         //tensorflow find the cube
         //if no cube here we know its on the third square
         //forward towards tower
-        moveBotDrive(1,1,0,0);
+        moveBotDrive(45,1,0,0);
         //turn to fully align with goal
         if ("l".equalsIgnoreCase(action)){
             moveClaw(.35);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(.5);
+            moveClaw(.6);
         } else {
             moveClaw(.75);
         }
@@ -111,6 +111,7 @@ public class RightRed extends LinearOpMode {
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        theClawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         trigmecanum = new Trigmecanum();

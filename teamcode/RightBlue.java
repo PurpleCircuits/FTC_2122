@@ -88,7 +88,7 @@ public class RightBlue extends LinearOpMode {
         if ("l".equalsIgnoreCase(action)){
             moveClaw(.35);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(.5);
+            moveClaw(.6);
         } else {
             moveClaw(1);
         }
@@ -100,7 +100,7 @@ public class RightBlue extends LinearOpMode {
         //go back
         moveBotDrive(12,-1,0,0);
         //turn and align with carousel
-        turnRight(297,10);
+        turnRight(295,10);
         //reverse to carousel
         moveBotDrive(49,-1,0,0);
         //spin carousel
@@ -111,7 +111,7 @@ public class RightBlue extends LinearOpMode {
         //move away from carousel
         moveBotDrive(15,1,0,0);
         //turn to align straight
-        turnLeft(63,4);
+        turnLeft(65,4);
         //strafe to align with blue dock
         moveBotStrafe(9,0,-1,0);
         //reverse to wall
@@ -122,6 +122,7 @@ public class RightBlue extends LinearOpMode {
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        theClawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");

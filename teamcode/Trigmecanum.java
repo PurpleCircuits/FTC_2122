@@ -100,6 +100,7 @@ public class Trigmecanum {
         } else {
             motor0Scaled = motor0Raw;
             motor1Scaled = motor1Raw;
+
             motor2Scaled = motor2Raw;
             motor3Scaled = motor3Raw;
         }

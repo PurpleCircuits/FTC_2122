@@ -87,13 +87,13 @@ public class LeftRed extends LinearOpMode {
         if ("l".equalsIgnoreCase(action)){
             moveClaw(.35);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(.5);
+            moveClaw(.6);
         } else {
             moveClaw(1);
         }
         //turn to fully align with goal
         turnRight(270,10);
-        //moveBotDrive(8,1,0,0);
+        moveBotDrive(8,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
@@ -122,6 +122,7 @@ public class LeftRed extends LinearOpMode {
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        theClawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
