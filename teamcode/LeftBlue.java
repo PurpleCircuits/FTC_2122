@@ -84,7 +84,7 @@ public class LeftBlue extends LinearOpMode {
         if ("l".equalsIgnoreCase(action)){
             moveClaw(.35);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(.6);
+            moveClaw(.5);
         } else {
             moveClaw(1);
         }

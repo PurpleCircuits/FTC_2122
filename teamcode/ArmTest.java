@@ -20,8 +20,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "RightBlue", group = "Linear Opmode")
-public class RightBlue extends LinearOpMode {
+@Autonomous(name = "ArmTest", group = "Linear Opmode")
+public class ArmTest extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private DigitalSensors digitalSensors = null;
     private PurpleTensorFlow purpleTensorFlow = null;
@@ -59,64 +59,16 @@ public class RightBlue extends LinearOpMode {
         waitForStart();
         //TODO load the box off the ground a little bit
         theClawServo.setPosition(SERVO_MIN_POS);
-        //tensorflow find the cube
-        String action;
-        //sleep to give time to find artifact
-        sleep(4000);
-        if (purpleTensorFlow.isArtifactDetected()){
-            action = "r";
-            moveBotStrafe(8,0,1,0);
-        }
-        else{
-            moveBotStrafe(8,0,1,0);
-            //sleep to find artifact
-            sleep(4000);
-            if (purpleTensorFlow.isArtifactDetected()){
-                action = "c";
-            } else {
-                action = "l";
-            }
-        }
-        telemetry.addData("artifact location", action);
-        telemetry.update();
-        //if no cube reverse 8 inches
-        //tensorflow find the cube
-        //if no cube here we know its on the third square
-        //forward towards tower
-        moveBotDrive(45,1,0,0);
-        //turn to fully align with goal
-        if ("l".equalsIgnoreCase(action)){
-            moveClaw(.35);
-        } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(.5);
-        } else {
-            moveClaw(1);
-        }
-        turnLeft(90,10);
-        moveBotDrive(12,1,0,0);
-        //open claw
-        theClawServo.setPosition(SERVO_OPEN_POS);
-        sleep(500);
-        //go back
-        moveBotDrive(12,-1,0,0);
-        //turn and align with carousel
-        turnRight(295,10);
-        //reverse to carousel
-        moveBotDrive(49,-1,0,0);
-        //spin carousel
-        theSpinMotor.setPower(.5);
-        //TODO change this to a while loop timeout
-        sleep(4000);
-        theSpinMotor.setPower(0);
-        //move away from carousel
-        moveBotDrive(15,1,0,0);
-        //turn to align straight
-        turnLeft(65,4);
-        //strafe to align with blue dock
-        moveBotStrafe(9,0,-1,0);
-        //reverse to wall
-        moveBotDrive(10,-1,0,0);
+        moveClaw(.35);
+        sleep(3000);
         clawAction();
+        sleep(2000);
+        moveClaw(.5);
+        sleep(3000);
+        clawAction();
+        sleep(2000);
+        moveClaw(.75);
+        sleep(3000);
     }
 
     private void initHardware() {

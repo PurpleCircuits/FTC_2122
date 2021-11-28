@@ -87,19 +87,19 @@ public class RightRed extends LinearOpMode {
         if ("l".equalsIgnoreCase(action)){
             moveClaw(.35);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(.6);
+            moveClaw(.5);
         } else {
             moveClaw(.75);
         }
         turnLeft(90,10);
-        moveBotDrive(8,1,0,0);
+        moveBotDrive(4,1,0,0);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
         //go back
-        moveBotDrive(8,-1,0,0);
+        moveBotDrive(4,-1,0,0);
         //turn to align with wall
-        turnRight(270,10);
+        turnRight(265,10);
         //move back to where we started
         moveBotDrive(50,-1,0,0);
         //strafe left into the square

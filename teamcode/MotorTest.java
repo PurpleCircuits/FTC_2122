@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Autonomous(name = "MotorTest", group = "Linear Opmode")
-@Disabled
+
 public class MotorTest extends LinearOpMode {
 
     public DcMotor motorBackLeft;

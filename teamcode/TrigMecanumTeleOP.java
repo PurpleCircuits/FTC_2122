@@ -17,13 +17,15 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     BNO055IMU imu;
     private DistanceSensor distanceSensor = null;
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
-    private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
+    private static final double SERVO_MAX_POS = 0.7; // Maximum rotational position
     private static final double SERVO_OPEN_POS = 0.4; // Start at halfway position
     private DcMotor theClawMotor = null;
     private DcMotor theSlideMotor = null;
     private DcMotor theSpinMotor = null;
     private DigitalSensors digitalSensors = null;
     private ElapsedTime runtime = new ElapsedTime();
+    private boolean isArmMoving = false;
+    private double armFinishTime = 0;
     @Override
     public void runOpMode() throws InterruptedException {
         initHardware();
@@ -33,7 +35,6 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             clawAction();
             slideAction();
             spinAction();
-            clawPosition();
             //clawPosition();
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
             //telemetry.addData("tics",theClawMotor.getCurrentPosition());
@@ -71,6 +72,9 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     }
     private void clawAction() {
         // close the claw
+        if(gamepad2.dpad_down){
+            theClawServo.setPosition(SERVO_MAX_POS);
+        }
         if(gamepad2.left_bumper){
             theClawServo.setPosition(SERVO_OPEN_POS);
         }
@@ -116,14 +120,27 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         theSpinMotor.setPower(power);
     }
     private void clawPosition(){
-        if (gamepad2.a){
-            moveClaw(.35);
-        } else if (gamepad2.b){
-            moveClaw(.6);
-        } else if (gamepad2.y){
-            moveClaw(.75);
+        if (isArmMoving){
+            if (runtime.seconds() > armFinishTime){
+                theClawMotor.setPower(0);
+                isArmMoving = false;
+                armFinishTime = 0;
+            }
+        }else {
+            double time = 0;
+            if (gamepad2.a) {
+                time = .4;
+            } else if (gamepad2.b) {
+                time = .75;
+            } else if (gamepad2.y) {
+                time = 1;
+            }
+            theClawMotor.setPower(.5);
+            isArmMoving = true;
+            runtime.reset();
+            armFinishTime = time;
         }
-        if (gamepad2.x){
+        /*if (gamepad2.x){
             if(digitalSensors.isCS1AtLimit()){
                 theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }else{
@@ -132,15 +149,8 @@ public class TrigMecanumTeleOP extends LinearOpMode {
                 }
                 theClawMotor.setPower(0);
             }
-        }
+        } */
         //TODO set X for the capstone thing (need rev encoder things)
-    }
-    private void moveClaw(double time){
-        theClawMotor.setPower(.5);
-        runtime.reset();
-        while (opModeIsActive() && runtime.seconds() < time){
-        }
-        theClawMotor.setPower(0);
     }
 }
 
