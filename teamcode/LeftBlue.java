@@ -83,21 +83,44 @@ public class LeftBlue extends LinearOpMode {
         //move the claw
         if ("l".equalsIgnoreCase(action)){
             moveClaw(.35);
+            //turn to fully align with goal
+            turnRight(270,10);
+            moveBotDrive(4,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(4,-1,0,0);
+            //turn to align with the opening
+            turnLeft(90,5);
+
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(.5);
+            //turn to fully align with goal
+            turnRight(270,10);
+            moveBotDrive(4,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(4,-1,0,0);
+            //turn to align with the opening
+            turnLeft(90,5);
+
         } else {
             moveClaw(1);
+            //turn to fully align with goal
+            turnRight(270,10);
+            moveBotDrive(8,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(8,-1,0,0);
+            //turn to align with the opening
+            turnLeft(90,5);
+
         }
-        //turn to fully align with goal
-        turnRight(270,10);
-        //moveBotDrive(8,1,0,0);
-        //open claw
-        theClawServo.setPosition(SERVO_OPEN_POS);
-        sleep(500);
-        //go back
-        moveBotDrive(8,-1,0,0);
-        //turn to align with the opening
-        turnLeft(90,5);
         //move back to where we started
         moveBotDrive(50,-1,0,0);
         //strafe left into the square

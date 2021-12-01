@@ -85,26 +85,18 @@ public class LeftRed extends LinearOpMode {
         //forward towards tower
         moveBotDrive(45,1,0,0);
         if ("l".equalsIgnoreCase(action)){
-            moveClaw(.35);
+            leftProcess();
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(.5);
+            centerProcess();
         } else {
-            moveClaw(1);
+            rightProcess();
         }
-        //turn to fully align with goal
-        turnRight(270,10);
-        moveBotDrive(8,1,0,0);
-        //open claw
-        theClawServo.setPosition(SERVO_OPEN_POS);
-        sleep(500);
-        //go back
-        moveBotDrive(8,-1,0,0);
         //turn and align with carousel
         turnLeft(57,10);
         //reverse to carousel
         moveBotDrive(49,-1,0,0);
         //spin carousel
-        theSpinMotor.setPower(-.5);
+        theSpinMotor.setPower(-.4);
         //TODO change this to a while loop timeout
         sleep(4000);
         theSpinMotor.setPower(0);
@@ -115,7 +107,7 @@ public class LeftRed extends LinearOpMode {
         //strafe to align with blue dock
         moveBotStrafe(9,0,1,0);
         //reverse to wall
-        moveBotDrive(10,-1,0,0);
+        moveBotDrive(13,-1,0,0);
         clawAction();
     }
 
@@ -243,5 +235,37 @@ public class LeftRed extends LinearOpMode {
         while (opModeIsActive() && runtime.seconds() < time){
         }
         theClawMotor.setPower(0);
+    }
+    private void leftProcess(){
+            moveClaw(.35);
+        //turn to fully align with goal
+        turnRight(270,10);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
+        //go back
+        moveBotDrive(8,-1,0,0);
+    }
+    private void centerProcess(){
+        moveClaw(.55);
+        //turn to fully align with goal
+        turnRight(270,10);
+        moveBotDrive(5,1,0,0);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
+        //go back
+        moveBotDrive(13,-1,0,0);
+    }
+    private void rightProcess(){
+            moveClaw(1);
+        //turn to fully align with goal
+        turnRight(270,10);
+        moveBotDrive(8,1,0,0);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
+        //go back
+        moveBotDrive(16,-1,0,0);
     }
 }

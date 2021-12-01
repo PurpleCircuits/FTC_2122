@@ -86,18 +86,33 @@ public class RightRed extends LinearOpMode {
         //turn to fully align with goal
         if ("l".equalsIgnoreCase(action)){
             moveClaw(.35);
+            turnLeft(90,10);
+            moveBotDrive(4,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            moveBotDrive(4,-1,0,0);
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(.5);
+            turnLeft(90,10);
+            moveBotDrive(4,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(4,-1,0,0);
+
         } else {
             moveClaw(.75);
+            turnLeft(90,10);
+            moveBotDrive(8,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(8,-1,0,0);
+
         }
-        turnLeft(90,10);
-        moveBotDrive(4,1,0,0);
-        //open claw
-        theClawServo.setPosition(SERVO_OPEN_POS);
-        sleep(500);
-        //go back
-        moveBotDrive(4,-1,0,0);
         //turn to align with wall
         turnRight(265,10);
         //move back to where we started

@@ -35,7 +35,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             clawAction();
             slideAction();
             spinAction();
-            //clawPosition();
+            clawPosition();
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
             //telemetry.addData("tics",theClawMotor.getCurrentPosition());
             //telemetry.update();
@@ -135,10 +135,12 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             } else if (gamepad2.y) {
                 time = 1;
             }
-            theClawMotor.setPower(.5);
-            isArmMoving = true;
-            runtime.reset();
-            armFinishTime = time;
+            if(time != 0){
+                theClawMotor.setPower(.5);
+                isArmMoving = true;
+                runtime.reset();
+                armFinishTime = time;
+            }
         }
         /*if (gamepad2.x){
             if(digitalSensors.isCS1AtLimit()){

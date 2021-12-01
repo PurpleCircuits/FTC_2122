@@ -87,35 +87,52 @@ public class RightBlue extends LinearOpMode {
         //turn to fully align with goal
         if ("l".equalsIgnoreCase(action)){
             moveClaw(.35);
+            turnLeft(90,10);
+            moveBotDrive(8,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(8,-1,0,0);
+
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(.5);
+            turnLeft(90,10);
+            moveBotDrive(12,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(12,-1,0,0);
+
         } else {
             moveClaw(1);
+            turnLeft(90,10);
+            moveBotDrive(18,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(18,-1,0,0);
+
         }
-        turnLeft(90,10);
-        moveBotDrive(12,1,0,0);
-        //open claw
-        theClawServo.setPosition(SERVO_OPEN_POS);
-        sleep(500);
-        //go back
-        moveBotDrive(12,-1,0,0);
         //turn and align with carousel
-        turnRight(295,10);
+        turnRight(293,10);
         //reverse to carousel
         moveBotDrive(49,-1,0,0);
         //spin carousel
-        theSpinMotor.setPower(.5);
+        theSpinMotor.setPower(.4);
         //TODO change this to a while loop timeout
         sleep(4000);
         theSpinMotor.setPower(0);
         //move away from carousel
         moveBotDrive(15,1,0,0);
         //turn to align straight
-        turnLeft(65,4);
+        turnLeft(67,4);
         //strafe to align with blue dock
         moveBotStrafe(9,0,-1,0);
         //reverse to wall
-        moveBotDrive(10,-1,0,0);
+        moveBotDrive(13,-1,0,0);
         clawAction();
     }
 
