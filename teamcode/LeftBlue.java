@@ -79,35 +79,34 @@ public class LeftBlue extends LinearOpMode {
         telemetry.addData("artifact location", action);
         telemetry.update();
         //drive forward
-        moveBotDrive(45,1,0,0);
+        moveBotDrive(50,1,0,0);
         //move the claw
         if ("l".equalsIgnoreCase(action)){
+            moveBotDrive(5,-1,0,0);
             moveClaw(.35);
             //turn to fully align with goal
             turnRight(270,10);
-            moveBotDrive(4,1,0,0);
             //open claw
             theClawServo.setPosition(SERVO_OPEN_POS);
             sleep(500);
             //go back
-            moveBotDrive(4,-1,0,0);
             //turn to align with the opening
             turnLeft(90,5);
 
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(.5);
+            moveBotDrive(5,-1,0,0);
+            moveClaw(.55);
             //turn to fully align with goal
             turnRight(270,10);
-            moveBotDrive(4,1,0,0);
             //open claw
             theClawServo.setPosition(SERVO_OPEN_POS);
             sleep(500);
             //go back
-            moveBotDrive(4,-1,0,0);
             //turn to align with the opening
             turnLeft(90,5);
 
         } else {
+            moveBotDrive(5,-1,0,0);
             moveClaw(1);
             //turn to fully align with goal
             turnRight(270,10);
