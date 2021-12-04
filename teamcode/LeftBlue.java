@@ -64,7 +64,7 @@ public class LeftBlue extends LinearOpMode {
         sleep(4000);
         if (purpleTensorFlow.isArtifactDetected()){
             action = "r";
-            moveBotStrafe(8,0,1,0);
+            moveBotStrafe(12,0,1,0);
         }
         else{
             moveBotStrafe(8,0,1,0);
@@ -75,38 +75,43 @@ public class LeftBlue extends LinearOpMode {
             } else {
                 action = "l";
             }
+            moveBotStrafe(4,0,1,0);
         }
         telemetry.addData("artifact location", action);
         telemetry.update();
         //drive forward
-        moveBotDrive(50,1,0,0);
+        moveBotDrive(45,1,0,0);
         //move the claw
         if ("l".equalsIgnoreCase(action)){
-            moveBotDrive(5,-1,0,0);
+            //moveBotDrive(5,-1,0,0);
             moveClaw(.35);
             //turn to fully align with goal
             turnRight(270,10);
+            moveBotDrive(2,1,0,0);
             //open claw
             theClawServo.setPosition(SERVO_OPEN_POS);
             sleep(500);
             //go back
+            moveBotDrive(2,-1,0,0);
             //turn to align with the opening
             turnLeft(90,5);
 
         } else if ("c".equalsIgnoreCase(action)){
-            moveBotDrive(5,-1,0,0);
+            //moveBotDrive(5,-1,0,0);
             moveClaw(.55);
             //turn to fully align with goal
             turnRight(270,10);
             //open claw
+            moveBotDrive(4,1,0,0);
             theClawServo.setPosition(SERVO_OPEN_POS);
             sleep(500);
             //go back
+            moveBotDrive(4,-1,0,0);
             //turn to align with the opening
             turnLeft(90,5);
 
         } else {
-            moveBotDrive(5,-1,0,0);
+            //moveBotDrive(5,-1,0,0);
             moveClaw(1);
             //turn to fully align with goal
             turnRight(270,10);

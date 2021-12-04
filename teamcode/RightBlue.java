@@ -88,12 +88,12 @@ public class RightBlue extends LinearOpMode {
         if ("l".equalsIgnoreCase(action)){
             moveClaw(.35);
             turnLeft(90,10);
-            moveBotDrive(8,1,0,0);
+            moveBotDrive(12,1,0,0);
             //open claw
             theClawServo.setPosition(SERVO_OPEN_POS);
             sleep(500);
             //go back
-            moveBotDrive(8,-1,0,0);
+            moveBotDrive(12,-1,0,0);
 
         } else if ("c".equalsIgnoreCase(action)){
             moveClaw(.5);
@@ -109,6 +109,7 @@ public class RightBlue extends LinearOpMode {
             moveClaw(1);
             turnLeft(90,10);
             moveBotDrive(18,1,0,0);
+
             //open claw
             theClawServo.setPosition(SERVO_OPEN_POS);
             sleep(500);
@@ -117,9 +118,9 @@ public class RightBlue extends LinearOpMode {
 
         }
         //turn and align with carousel
-        turnRight(293,10);
+        turnRight(302,10);
         //reverse to carousel
-        moveBotDrive(49,-1,0,0);
+        moveBotDrive(47,-1,0,0);
         //spin carousel
         theSpinMotor.setPower(.4);
         //TODO change this to a while loop timeout
@@ -128,7 +129,7 @@ public class RightBlue extends LinearOpMode {
         //move away from carousel
         moveBotDrive(15,1,0,0);
         //turn to align straight
-        turnLeft(67,4);
+        turnLeft(58,4);
         //strafe to align with blue dock
         moveBotStrafe(9,0,-1,0);
         //reverse to wall
