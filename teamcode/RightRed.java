@@ -93,7 +93,7 @@ public class RightRed extends LinearOpMode {
             sleep(500);
             moveBotDrive(4,-1,0,0);
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(.5);
+            moveClaw(.6);
             turnLeft(90,10);
             moveBotDrive(4,1,0,0);
             //open claw

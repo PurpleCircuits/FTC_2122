@@ -98,7 +98,7 @@ public class LeftBlue extends LinearOpMode {
 
         } else if ("c".equalsIgnoreCase(action)){
             //moveBotDrive(5,-1,0,0);
-            moveClaw(.55);
+            moveClaw(.6);
             //turn to fully align with goal
             turnRight(270,10);
             //open claw

@@ -96,7 +96,7 @@ public class RightBlue extends LinearOpMode {
             moveBotDrive(12,-1,0,0);
 
         } else if ("c".equalsIgnoreCase(action)){
-            moveClaw(.5);
+            moveClaw(.6);
             turnLeft(90,10);
             moveBotDrive(12,1,0,0);
             //open claw

@@ -92,7 +92,7 @@ public class LeftRed extends LinearOpMode {
             rightProcess();
         }
         //turn and align with carousel
-        turnLeft(57,10);
+        turnLeft(60,10);
         //reverse to carousel
         moveBotDrive(49,-1,0,0);
         //spin carousel
@@ -103,7 +103,7 @@ public class LeftRed extends LinearOpMode {
         //move away from carousel
         moveBotDrive(15,1,0,0);
         //turn to align straight
-        turnRight(303,5);
+        turnRight(300,5);
         //strafe to align with blue dock
         moveBotStrafe(9,0,1,0);
         //reverse to wall
@@ -247,7 +247,7 @@ public class LeftRed extends LinearOpMode {
         moveBotDrive(8,-1,0,0);
     }
     private void centerProcess(){
-        moveClaw(.55);
+        moveClaw(.6);
         //turn to fully align with goal
         turnRight(270,10);
         moveBotDrive(5,1,0,0);
