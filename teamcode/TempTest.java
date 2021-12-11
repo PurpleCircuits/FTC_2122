@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name="TrigMecanumTeleOP", group="Linear Opmode")
-public class TrigMecanumTeleOP extends LinearOpMode {
+@TeleOp(name="TempTest", group="Linear Opmode")
+public class TempTest extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private Servo theClawServo = null;
     BNO055IMU imu;
@@ -32,39 +32,18 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             //distanceAction();
-            clawAction();
-            slideAction();
-            spinAction();
-            clawPosition();
-            trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
+            testClawPosition();
+            //trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
             //telemetry.addData("tics",theClawMotor.getCurrentPosition());
             //telemetry.update();
         }
     }
     private void initHardware(){
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.loggingEnabled = true;
-        parameters.loggingTag     = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
-        theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
-        trigmecanum = new Trigmecanum();
-        trigmecanum.init(hardwareMap, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD);
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setDirection(DcMotor.Direction.FORWARD);
         theClawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        theSlideMotor = hardwareMap.get(DcMotor.class, "the_slide_motor");
-        theSlideMotor.setDirection(DcMotor.Direction.FORWARD);
-        theSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        digitalSensors = new DigitalSensors();
-        digitalSensors.init(hardwareMap);
-
-        theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
-        theSpinMotor.setDirection(DcMotor.Direction.FORWARD);
-    }
+        }
     private void distanceAction(){
         // generic DistanceSensor methods.
         telemetry.addData("deviceName", distanceSensor.getDeviceName() );
@@ -166,7 +145,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             }
 
             // Ensure that the opmode is still active
-            if (opModeIsActive()) {
+            if (opModeIsActive() && clawTarget > 0) {
 
                 // Determine new target position, and pass to motor controller
                 theClawMotor.setTargetPosition(clawTarget);
