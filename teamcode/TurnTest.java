@@ -20,11 +20,11 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "LeftBlue", group = "Linear Opmode")
-public class LeftBlue extends LinearOpMode {
+@Autonomous(name = "TurnTest", group = "Linear Opmode")
+public class TurnTest extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private DigitalSensors digitalSensors = null;
-    private PurpleTensorFlow purpleTensorFlow = null;
+    //private PurpleTensorFlow purpleTensorFlow = null;
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
     private static final double SERVO_OPEN_POS = 0.6; // Start at halfway position
@@ -44,9 +44,6 @@ public class LeftBlue extends LinearOpMode {
     private BNO055IMU imu = null;
     private DistanceSensor topDistanceSensor = null;
     private DistanceSensor bottomDistanceSensor = null;
-    private DistanceSensor leftDistance = null;
-    private DistanceSensor rightDistance = null;
-    private DistanceSensor frontDistance = null;
     private ElapsedTime runtime = new ElapsedTime();
     private DigitalChannel slideSwitch1 = null;
     private DigitalChannel clawSwitch1 = null;
@@ -59,81 +56,9 @@ public class LeftBlue extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        //TODO load the box off the ground a little bit
-        theClawServo.setPosition(SERVO_MIN_POS);
-        //tensorflow find the cube
-        String action;
-        //sleep to give time to find artifact
-        sleep(4000);
-        if (purpleTensorFlow.isArtifactDetected()){
-            action = "r";
-            moveBotStrafe(12,0,1,0);
-        }
-        else{
-            moveBotStrafe(8,0,1,0);
-            //sleep to find artifact
-            sleep(4000);
-            if (purpleTensorFlow.isArtifactDetected()){
-                action = "c";
-            } else {
-                action = "l";
-            }
-            moveBotStrafe(4,0,1,0);
-        }
-        telemetry.addData("artifact location", action);
-        telemetry.update();
-        //drive forward
-        moveBotDrive(45,1,0,0);
-        //move the claw
-        if ("l".equalsIgnoreCase(action)){
-            //moveBotDrive(5,-1,0,0);
-            moveClaw(.35);
-            //turn to fully align with goal
-            turnRight(270,10);
-            moveBotDrive(2,1,0,0);
-            //open claw
-            theClawServo.setPosition(SERVO_OPEN_POS);
-            sleep(500);
-            //go back
-            moveBotDrive(2,-1,0,0);
-            //turn to align with the opening
-            turnLeft(90,5);
-
-        } else if ("c".equalsIgnoreCase(action)){
-            //moveBotDrive(5,-1,0,0);
-            moveClaw(.6);
-            //turn to fully align with goal
-            turnRight(270,10);
-            //open claw
-            moveBotDrive(4,1,0,0);
-            theClawServo.setPosition(SERVO_OPEN_POS);
-            sleep(500);
-            //go back
-            moveBotDrive(4,-1,0,0);
-            //turn to align with the opening
-            turnLeft(90,5);
-
-        } else {
-            //moveBotDrive(5,-1,0,0);
-            moveClaw(1);
-            //turn to fully align with goal
-            turnRight(270,10);
-            moveBotDrive(8,1,0,0);
-            //open claw
-            theClawServo.setPosition(SERVO_OPEN_POS);
-            sleep(500);
-            //go back
-            moveBotDrive(8,-1,0,0);
-            //turn to align with the opening
-            turnLeft(90,5);
-
-        }
-        //move back to where we started
-        moveBotDrive(50,-1,0,0);
-        //strafe left into the square
-        moveBotStrafe(36,0,1,0);
-        //go further into the loading dock
-        clawAction();
+        turnLeft(90,5);
+        sleep(500);
+        turnRight(180,5);
     }
 
     private void initHardware() {
@@ -148,8 +73,8 @@ public class LeftBlue extends LinearOpMode {
         digitalSensors = new DigitalSensors();
         digitalSensors.init(hardwareMap);
 
-        purpleTensorFlow = new PurpleTensorFlow();
-        purpleTensorFlow.init(hardwareMap);
+//        purpleTensorFlow = new PurpleTensorFlow();
+  //      purpleTensorFlow.init(hardwareMap);
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;

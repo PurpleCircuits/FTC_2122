@@ -36,9 +36,11 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             slideAction();
             spinAction();
             clawPosition();
+            digitalSensors.colorSensorTest(telemetry); //TODO move into its own method like above
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
             //telemetry.addData("tics",theClawMotor.getCurrentPosition());
             //telemetry.update();
+            telemetry.update();
         }
     }
     private void initHardware(){
@@ -202,34 +204,6 @@ public class TrigMecanumTeleOP extends LinearOpMode {
 
                 //  sleep(250);   // optional pause after each move
             }
-    }
-
-    private void colorSensorTest() {
-
-        final float[] hsvValues = new float[3];
-        // Get the normalized colors from the sensor
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-
-        /* Use telemetry to display feedback on the driver station. We show the red, green, and blue
-         * normalized values from the sensor (in the range of 0 to 1), as well as the equivalent
-         * HSV (hue, saturation and value) values. See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
-         * for an explanation of HSV color. */
-
-        // Update the hsvValues array by passing it to Color.colorToHSV()
-        Color.colorToHSV(colors.toColor(), hsvValues);
-
-        telemetry.addLine()
-                .addData("Red", "%.3f", colors.red)
-                .addData("Green", "%.3f", colors.green)
-                .addData("Blue", "%.3f", colors.blue);
-        telemetry.addLine()
-                .addData("Hue", "%.3f", hsvValues[0])
-                .addData("Saturation", "%.3f", hsvValues[1])
-                .addData("Value", "%.3f", hsvValues[2]);
-        telemetry.addData("Alpha", "%.3f", colors.alpha);
-        if (colorSensor instanceof DistanceSensor) {
-            telemetry.addData("Distance (cm)", "%.3f", ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM));
-        }
     }
 }
 
