@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -22,6 +24,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     private DcMotor theClawMotor = null;
     private DcMotor theSlideMotor = null;
     private DcMotor theSpinMotor = null;
+    private DistanceSensor leftDistance = null;
     private DigitalSensors digitalSensors = null;
     private ElapsedTime runtime = new ElapsedTime();
     private boolean isArmMoving = false;
@@ -40,6 +43,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
             //telemetry.addData("tics",theClawMotor.getCurrentPosition());
             //telemetry.update();
+            telemetry.addData("Distance",leftDistance.getDistance(CM));
             telemetry.update();
         }
     }
@@ -63,6 +67,8 @@ public class TrigMecanumTeleOP extends LinearOpMode {
 
         digitalSensors = new DigitalSensors();
         digitalSensors.init(hardwareMap);
+//TODO THIS IS FOR TESTING REMOVE LATER IF U WANT
+        leftDistance = hardwareMap.get(DistanceSensor.class, "left_distance");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
         theSpinMotor.setDirection(DcMotor.Direction.FORWARD);

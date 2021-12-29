@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -13,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -20,11 +23,11 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "TurnTest", group = "Linear Opmode")
-public class TurnTest extends LinearOpMode {
+@Autonomous(name = "TestAuto", group = "Linear Opmode")
+public class TestAuto extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private DigitalSensors digitalSensors = null;
-    //private PurpleTensorFlow purpleTensorFlow = null;
+    private PurpleTensorFlow purpleTensorFlow = null;
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
     private static final double SERVO_OPEN_POS = 0.6; // Start at halfway position
@@ -44,6 +47,9 @@ public class TurnTest extends LinearOpMode {
     private BNO055IMU imu = null;
     private DistanceSensor topDistanceSensor = null;
     private DistanceSensor bottomDistanceSensor = null;
+    private DistanceSensor leftDistance = null;
+    private DistanceSensor rightDistance = null;
+    private DistanceSensor frontDistance = null;
     private ElapsedTime runtime = new ElapsedTime();
     private DigitalChannel slideSwitch1 = null;
     private DigitalChannel clawSwitch1 = null;
@@ -56,10 +62,11 @@ public class TurnTest extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        turnLeft(90,5);
-        sleep(500);
-        turnRight(180,5);
-    }
+        leftToDistance();
+        telemetry.addData("Distance",leftDistance.getDistance(CM));
+        telemetry.update();
+        sleep(2000);
+        }
 
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
@@ -73,8 +80,10 @@ public class TurnTest extends LinearOpMode {
         digitalSensors = new DigitalSensors();
         digitalSensors.init(hardwareMap);
 
-//        purpleTensorFlow = new PurpleTensorFlow();
-  //      purpleTensorFlow.init(hardwareMap);
+        leftDistance = hardwareMap.get(DistanceSensor.class, "left_distance");
+
+        //purpleTensorFlow = new PurpleTensorFlow();
+        //purpleTensorFlow.init(hardwareMap);
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
@@ -184,4 +193,18 @@ public class TurnTest extends LinearOpMode {
         }
         theClawMotor.setPower(0);
     }
-}
+    private void runToColor(){
+        while(digitalSensors.getColors().red < .010)
+        {
+            trigmecanum.mecanumDrive(.5,0,0,false,false);
+        }
+        trigmecanum.mecanumDrive(0,0,0,false,false);
+    }
+    public void leftToDistance(){
+        while(leftDistance.getDistance(CM) > 8)
+        {
+        trigmecanum.mecanumDrive(0,1,0,false,false);
+        }
+            trigmecanum.mecanumDrive(0,0,0,false,false);
+        }
+    }

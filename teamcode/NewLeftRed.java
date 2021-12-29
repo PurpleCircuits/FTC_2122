@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -20,8 +22,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
-@Autonomous(name = "LeftBlue", group = "Linear Opmode")
-public class LeftBlue extends LinearOpMode {
+@Autonomous(name = "NewLeftRed", group = "Linear Opmode")
+public class NewLeftRed extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private DigitalSensors digitalSensors = null;
     private PurpleTensorFlow purpleTensorFlow = null;
@@ -39,14 +41,13 @@ public class LeftBlue extends LinearOpMode {
     private DcMotor motorFrontRight = null;
     private DcMotor motorBackLeft = null;
     private DcMotor motorBackRight = null;
+    private DcMotor theSpinMotor = null;
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private BNO055IMU imu = null;
     private DistanceSensor topDistanceSensor = null;
     private DistanceSensor bottomDistanceSensor = null;
     private DistanceSensor leftDistance = null;
-    private DistanceSensor rightDistance = null;
-    private DistanceSensor frontDistance = null;
     private ElapsedTime runtime = new ElapsedTime();
     private DigitalChannel slideSwitch1 = null;
     private DigitalChannel clawSwitch1 = null;
@@ -64,76 +65,75 @@ public class LeftBlue extends LinearOpMode {
         //tensorflow find the cube
         String action;
         //sleep to give time to find artifact
+        /*
         sleep(4000);
         if (purpleTensorFlow.isArtifactDetected()){
-            action = "r";
-            moveBotStrafe(12,0,1,0);
+            action = "l";
+            moveBotStrafe(8,0,-1,0);
         }
         else{
-            moveBotStrafe(8,0,1,0);
+            moveBotStrafe(8,0,-1,0);
             //sleep to find artifact
             sleep(4000);
             if (purpleTensorFlow.isArtifactDetected()){
                 action = "c";
             } else {
-                action = "l";
+                action = "r";
             }
-            moveBotStrafe(4,0,1,0);
         }
         telemetry.addData("artifact location", action);
         telemetry.update();
-        //drive forward
+        */
+
+        //if no cube reverse 8 inches
+        //tensorflow find the cube
+        //if no cube here we know its on the third square
+        //forward towards tower
         moveBotDrive(45,1,0,0);
-        //move the claw
+        /*
         if ("l".equalsIgnoreCase(action)){
-            //moveBotDrive(5,-1,0,0);
-            moveClaw(.35);
-            //turn to fully align with goal
-            turnRight(270,10);
-            moveBotDrive(2,1,0,0);
-            //open claw
-            theClawServo.setPosition(SERVO_OPEN_POS);
-            sleep(500);
-            //go back
-            moveBotDrive(2,-1,0,0);
-            //turn to align with the opening
-            turnLeft(90,5);
-
+            leftProcess();
         } else if ("c".equalsIgnoreCase(action)){
-            //moveBotDrive(5,-1,0,0);
-            moveClaw(.6);
-            //turn to fully align with goal
-            turnRight(270,10);
-            //open claw
-            moveBotDrive(4,1,0,0);
-            theClawServo.setPosition(SERVO_OPEN_POS);
-            sleep(500);
-            //go back
-            moveBotDrive(4,-1,0,0);
-            //turn to align with the opening
-            turnLeft(90,5);
-
+            centerProcess();
         } else {
-            //moveBotDrive(5,-1,0,0);
-            moveClaw(1);
-            //turn to fully align with goal
-            turnRight(270,10);
-            moveBotDrive(8,1,0,0);
-            //open claw
-            theClawServo.setPosition(SERVO_OPEN_POS);
-            sleep(500);
-            //go back
-            moveBotDrive(8,-1,0,0);
-            //turn to align with the opening
-            turnLeft(90,5);
-
+            rightProcess();
         }
-        //move back to where we started
-        moveBotDrive(50,-1,0,0);
-        //strafe left into the square
-        moveBotStrafe(36,0,1,0);
-        //go further into the loading dock
+         */
+        centerProcess();
+        turnLeft(90,5);
+        leftToDistance();
+        moveBotDrive(12,-1,0,0);
+        runToColor();
+        moveBotDrive(12,-1,0,0);
+        theSpinMotor.setPower(-.4);
+        //TODO change this to a while loop timeout
+        sleep(4000);
+        theSpinMotor.setPower(0);
+        runToColorForward();
+        moveBotDrive(12,0,0,0);
+        leftToDistance();
         clawAction();
+        //TODO OLD
+        /*
+        //turn and align with carousel
+        turnLeft(60,10);
+        //reverse to carousel
+        moveBotDrive(49,-1,0,0);
+        //spin carousel
+        theSpinMotor.setPower(-.4);
+        //TODO change this to a while loop timeout
+        sleep(4000);
+        theSpinMotor.setPower(0);
+        //move away from carousel
+        moveBotDrive(15,1,0,0);
+        //turn to align straight
+        turnRight(300,5);
+        //strafe to align with blue dock
+        moveBotStrafe(9,0,1,0);
+        //reverse to wall
+        moveBotDrive(13,-1,0,0);
+        clawAction();
+         */
     }
 
     private void initHardware() {
@@ -142,14 +142,18 @@ public class LeftBlue extends LinearOpMode {
         theClawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
+        theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
+
         trigmecanum = new Trigmecanum();
         trigmecanum.init(hardwareMap, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE);
 
         digitalSensors = new DigitalSensors();
         digitalSensors.init(hardwareMap);
 
-        purpleTensorFlow = new PurpleTensorFlow();
-        purpleTensorFlow.init(hardwareMap);
+        leftDistance = hardwareMap.get(DistanceSensor.class, "left_distance");
+
+        //purpleTensorFlow = new PurpleTensorFlow();
+        //purpleTensorFlow.init(hardwareMap);
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
@@ -259,10 +263,58 @@ public class LeftBlue extends LinearOpMode {
         }
         theClawMotor.setPower(0);
     }
+    private void leftProcess(){
+        moveClaw(.35);
+        //turn to fully align with goal
+        turnRight(270,10);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
+        //go back
+        moveBotDrive(8,-1,0,0);
+    }
+    private void centerProcess(){
+        moveClaw(.6);
+        //turn to fully align with goal
+        turnRight(270,10);
+        moveBotDrive(5,1,0,0);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
+        //go back
+        moveBotDrive(13,-1,0,0);
+    }
+    private void rightProcess(){
+        moveClaw(1);
+        //turn to fully align with goal
+        turnRight(270,10);
+        moveBotDrive(8,1,0,0);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
+        //go back
+        moveBotDrive(16,-1,0,0);
+    }
     private void runToColor(){
-        while(digitalSensors.getColors().red > .01){
-            trigmecanum.mecanumDrive(0,0,0,false,false);
+        while(digitalSensors.getColors().red < .010)
+        {
+            trigmecanum.mecanumDrive(-.5,0,0,false,false);
         }
-        trigmecanum.mecanumDrive(1,0,0,false,false);
+        trigmecanum.mecanumDrive(0,0,0,false,false);
+    }
+    public void leftToDistance(){
+        while(leftDistance.getDistance(CM) > 8)
+        {
+            trigmecanum.mecanumDrive(0,1,0,false,false);
+        }
+        trigmecanum.mecanumDrive(0,0,0,false,false);
+    }
+    private void runToColorForward(){
+        while(digitalSensors.getColors().red < .010)
+        {
+            trigmecanum.mecanumDrive(.5,0,0,false,false);
+        }
+        trigmecanum.mecanumDrive(0,0,0,false,false);
     }
 }
+
