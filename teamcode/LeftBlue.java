@@ -259,4 +259,11 @@ public class LeftBlue extends LinearOpMode {
         }
         theClawMotor.setPower(0);
     }
-}
+    private void runToColor(){
+        if(digitalSensors.getColors().get(android.R.color.holo_red_dark) ){
+            trigmecanum.mecanumDrive(0,0,0,0,0);
+        }else{
+            trigmecanum.mecanumDrive(1,0,0,0,0);
+            }
+        }
+    }

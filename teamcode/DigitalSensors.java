@@ -89,4 +89,7 @@ public class DigitalSensors {
                 .addData("Value", "%.3f", hsvValues[2]);
         telemetry.addData("Alpha", "%.3f", colors.alpha);
     }
+    public NormalizedRGBA getColors(){
+        return leftColor.getNormalizedColors();
+    }
 }
