@@ -260,7 +260,7 @@ public class LeftBlue extends LinearOpMode {
         theClawMotor.setPower(0);
     }
     private void runToColor(){
-        while(digitalSensors.getColors().red > .01){
+        while(opModeIsActive() && digitalSensors.getColors().red > .01){
             trigmecanum.mecanumDrive(0,0,0,false,false);
         }
         trigmecanum.mecanumDrive(1,0,0,false,false);

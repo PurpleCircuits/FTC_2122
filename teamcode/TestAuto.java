@@ -194,17 +194,17 @@ public class TestAuto extends LinearOpMode {
         theClawMotor.setPower(0);
     }
     private void runToColor(){
-        while(digitalSensors.getColors().red < .010)
+        while(opModeIsActive() && digitalSensors.getColors().red < .010)
         {
             trigmecanum.mecanumDrive(.5,0,0,false,false);
         }
         trigmecanum.mecanumDrive(0,0,0,false,false);
     }
     public void leftToDistance(){
-        while(leftDistance.getDistance(CM) > 8)
+        while(opModeIsActive() && leftDistance.getDistance(CM) > 8)
         {
         trigmecanum.mecanumDrive(0,1,0,false,false);
         }
             trigmecanum.mecanumDrive(0,0,0,false,false);
-        }
     }
+}
