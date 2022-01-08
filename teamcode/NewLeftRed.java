@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -19,6 +20,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 
@@ -48,10 +52,13 @@ public class NewLeftRed extends LinearOpMode {
     private DistanceSensor topDistanceSensor = null;
     private DistanceSensor bottomDistanceSensor = null;
     private DistanceSensor leftDistance = null;
+    private DistanceSensor frontDistance = null;
     private ElapsedTime runtime = new ElapsedTime();
     private DigitalChannel slideSwitch1 = null;
     private DigitalChannel clawSwitch1 = null;
     private DigitalChannel clawSwitch2 = null;
+    DuckPosition placement = new DuckPosition();
+    private OpenCvCamera webcam = null;
     /**
      * This is the entry of our Op Mode.
      */
@@ -60,48 +67,51 @@ public class NewLeftRed extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        //TODO load the box off the ground a little bit
-        theClawServo.setPosition(SERVO_MIN_POS);
-        //tensorflow find the cube
-        String action;
-        //sleep to give time to find artifact
-        /*
-        sleep(4000);
-        if (purpleTensorFlow.isArtifactDetected()){
-            action = "l";
-            moveBotStrafe(8,0,-1,0);
+        String level = "left";
+        switch (placement.pipeline.getAnalysis()) {
+            case LEFT:
+                level = "bottom";
+                telemetry.addData("Left", level);
+                telemetry.update();
+                sleep(50);
+                break;
+            case CENTER:
+                level = "center";
+                telemetry.addData("Center", level);
+                telemetry.update();
+                sleep(50);
+                break;
+            case RIGHT:
+                level = "top";
+                telemetry.addData("Right", level);
+                telemetry.update();
+                sleep(50);
         }
-        else{
-            moveBotStrafe(8,0,-1,0);
-            //sleep to find artifact
-            sleep(4000);
-            if (purpleTensorFlow.isArtifactDetected()){
-                action = "c";
-            } else {
-                action = "r";
-            }
-        }
-        telemetry.addData("artifact location", action);
-        telemetry.update();
-        */
+        webcam.stopStreaming();
+        //bottom = 500
+        //center =  1000
+        //top = 1600
 
-        //if no cube reverse 8 inches
-        //tensorflow find the cube
-        //if no cube here we know its on the third square
+        theClawServo.setPosition(SERVO_MIN_POS);
         //forward towards tower
         moveBotDrive(45,1,0,0);
-        /*
-        if ("l".equalsIgnoreCase(action)){
-            leftProcess();
-        } else if ("c".equalsIgnoreCase(action)){
-            centerProcess();
+        //Set claw to position
+        if ("bottom".equalsIgnoreCase(level)){
+            runToClawPosition(500);
+        } else if ("center".equalsIgnoreCase(level)){
+            runToClawPosition(1000);
         } else {
-            rightProcess();
+            runToClawPosition(1600);
         }
-         */
-        centerProcess();
+        turnRight(270,5);
+        frontToDistance(8);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
+        moveBotDrive(12,-1,0,0);
         turnLeft(90,5);
-        leftToDistance();
+        runToClawPosition(500);
+        leftToDistance(8);
         moveBotDrive(12,-1,0,0);
         runToColor();
         moveBotDrive(12,-1,0,0);
@@ -111,29 +121,8 @@ public class NewLeftRed extends LinearOpMode {
         theSpinMotor.setPower(0);
         runToColorForward();
         moveBotDrive(12,0,0,0);
-        leftToDistance();
+        leftToDistance(8);
         clawAction();
-        //TODO OLD
-        /*
-        //turn and align with carousel
-        turnLeft(60,10);
-        //reverse to carousel
-        moveBotDrive(49,-1,0,0);
-        //spin carousel
-        theSpinMotor.setPower(-.4);
-        //TODO change this to a while loop timeout
-        sleep(4000);
-        theSpinMotor.setPower(0);
-        //move away from carousel
-        moveBotDrive(15,1,0,0);
-        //turn to align straight
-        turnRight(300,5);
-        //strafe to align with blue dock
-        moveBotStrafe(9,0,1,0);
-        //reverse to wall
-        moveBotDrive(13,-1,0,0);
-        clawAction();
-         */
     }
 
     private void initHardware() {
@@ -151,7 +140,7 @@ public class NewLeftRed extends LinearOpMode {
         digitalSensors.init(hardwareMap);
 
         leftDistance = hardwareMap.get(DistanceSensor.class, "left_distance");
-
+        frontDistance = hardwareMap.get(DistanceSensor.class, "front_distance");
         //purpleTensorFlow = new PurpleTensorFlow();
         //purpleTensorFlow.init(hardwareMap);
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
@@ -160,6 +149,27 @@ public class NewLeftRed extends LinearOpMode {
         parameters.loggingTag     = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
+        placement.pipeline = new DuckPosition.SamplePipeline();
+
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        webcam.setPipeline(placement.pipeline);
+
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
 
         // Log that init hardware is finished
         telemetry.log().clear();
@@ -296,23 +306,34 @@ public class NewLeftRed extends LinearOpMode {
         moveBotDrive(16,-1,0,0);
     }
     private void runToColor(){
-        while(digitalSensors.getColors().red < .010)
+        while(opModeIsActive() && digitalSensors.getColors().red < .010)
         {
             trigmecanum.mecanumDrive(-.5,0,0,false,false);
         }
         trigmecanum.mecanumDrive(0,0,0,false,false);
     }
-    public void leftToDistance(){
-        while(leftDistance.getDistance(CM) > 8)
+    public void leftToDistance(int distance){
+        while(opModeIsActive() && leftDistance.getDistance(CM) > distance)
         {
             trigmecanum.mecanumDrive(0,1,0,false,false);
         }
         trigmecanum.mecanumDrive(0,0,0,false,false);
     }
     private void runToColorForward(){
-        while(digitalSensors.getColors().red < .010)
+        while(opModeIsActive() && digitalSensors.getColors().red < .010)
         {
             trigmecanum.mecanumDrive(.5,0,0,false,false);
+        }
+        trigmecanum.mecanumDrive(0,0,0,false,false);
+    }
+    private void runToClawPosition(int tics){
+        theClawMotor.setTargetPosition(tics);
+        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    public void frontToDistance(int distance){
+        while(opModeIsActive() && frontDistance.getDistance(CM) > distance)
+        {
+            trigmecanum.mecanumDrive(0,1,0,false,false);
         }
         trigmecanum.mecanumDrive(0,0,0,false,false);
     }
