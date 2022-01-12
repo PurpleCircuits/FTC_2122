@@ -104,7 +104,7 @@ public class NewLeftRed extends LinearOpMode {
             runToClawPosition(1600);
         }
         turnRight(270,5);
-        frontToDistance(8);
+        frontToDistance(8,1);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
@@ -114,13 +114,13 @@ public class NewLeftRed extends LinearOpMode {
         leftToDistance(8);
         moveBotDrive(12,-1,0,0);
         runToColor();
-        moveBotDrive(12,-1,0,0);
+        moveBotDrive(14,-1,0,0);
         theSpinMotor.setPower(-.4);
         //TODO change this to a while loop timeout
         sleep(4000);
         theSpinMotor.setPower(0);
         runToColorForward();
-        moveBotDrive(12,0,0,0);
+        moveBotDrive(6,1,0,0);
         leftToDistance(8);
         clawAction();
     }
@@ -129,6 +129,8 @@ public class NewLeftRed extends LinearOpMode {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         theClawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        theClawMotor.setDirection(DcMotor.Direction.FORWARD);
+        theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
@@ -257,6 +259,7 @@ public class NewLeftRed extends LinearOpMode {
         return inches / m;
     }
     private void clawAction(){
+        theClawMotor.setTargetPosition(0);
         if(digitalSensors.isCS1AtLimit()){
             theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }else{
@@ -329,13 +332,21 @@ public class NewLeftRed extends LinearOpMode {
     private void runToClawPosition(int tics){
         theClawMotor.setTargetPosition(tics);
         theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-    public void frontToDistance(int distance){
-        while(opModeIsActive() && frontDistance.getDistance(CM) > distance)
-        {
-            trigmecanum.mecanumDrive(0,1,0,false,false);
+        theClawMotor.setPower(.5);
+        while (opModeIsActive() && theClawMotor.isBusy()){
+            //potential telemetry here if needed
         }
-        trigmecanum.mecanumDrive(0,0,0,false,false);
+        theClawMotor.setPower(0);
+    }
+    public void frontToDistance(int distance, int timeout){
+        runtime.reset();
+        while(opModeIsActive() && frontDistance.getDistance(CM) > distance && runtime.seconds() < timeout)
+        {
+            telemetry.addData("distance",frontDistance.getDistance(CM));
+            telemetry.update();
+            trigmecanum.mecanumDrive(1,0,0,false,false);
+        }
+            trigmecanum.mecanumDrive(0,0,0,false,false);
     }
 }
 

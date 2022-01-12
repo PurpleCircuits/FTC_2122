@@ -26,6 +26,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     private DcMotor theSlideMotor = null;
     private DcMotor theSpinMotor = null;
     private DistanceSensor leftDistance = null;
+    private DistanceSensor frontDistance = null;
     private DigitalSensors digitalSensors = null;
     private ElapsedTime runtime = new ElapsedTime();
     private boolean isArmMoving = false;
@@ -46,7 +47,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             //bottom = 500
             //center =  1000
             //top = 1600
-            telemetry.addData("Distance",leftDistance.getDistance(CM));
+            telemetry.addData("Distance",frontDistance.getDistance(CM));
             telemetry.update();
         }
     }
@@ -57,6 +58,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
         clawDistance = hardwareMap.get(ColorRangeSensor.class, "distance");
+        frontDistance = hardwareMap.get(DistanceSensor.class, "front_distance");
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
         trigmecanum = new Trigmecanum();
         trigmecanum.init(hardwareMap, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD);
