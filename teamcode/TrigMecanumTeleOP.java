@@ -20,8 +20,8 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     BNO055IMU imu;
     private ColorRangeSensor clawDistance = null;
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
-    private static final double SERVO_MAX_POS = 0.7; // Maximum rotational position
-    private static final double SERVO_OPEN_POS = 0.4; // Start at halfway position
+    private static final double SERVO_MAX_POS = 1; // Maximum rotational position
+    private static final double SERVO_OPEN_POS = 0.7; // Start at halfway position
     private DcMotor theClawMotor = null;
     private DcMotor theSlideMotor = null;
     private DcMotor theSpinMotor = null;
@@ -40,14 +40,15 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             clawAction();
             slideAction();
             spinAction();
-            clawPosition();
+            //clawPosition();
             digitalSensors.colorSensorTest(telemetry); //TODO move into its own method like above
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
             telemetry.addData("tics",theClawMotor.getCurrentPosition());
             //bottom = 500
             //center =  1000
             //top = 1600
-            telemetry.addData("Distance",frontDistance.getDistance(CM));
+            telemetry.addData("frontDistance",frontDistance.getDistance(CM));
+            telemetry.addData("clawDistance",clawDistance.getDistance(CM));
             telemetry.update();
         }
     }
@@ -63,8 +64,9 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         trigmecanum = new Trigmecanum();
         trigmecanum.init(hardwareMap, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD);
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
-        theClawMotor.setDirection(DcMotor.Direction.FORWARD);
+        theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         theClawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        theClawMotor.setDirection(DcMotor.Direction.FORWARD);
 
         theSlideMotor = hardwareMap.get(DcMotor.class, "the_slide_motor");
         theSlideMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -97,9 +99,9 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         // Power for claw
         double power = -gamepad2.left_stick_y / 2;
         // Slow down the robot by factor of 2 when right bumper pressed
-        if (gamepad2.right_bumper) {
-            power = -gamepad2.left_stick_y;
-        }
+        //if (gamepad2.right_bumper) {
+        //  power = -gamepad2.left_stick_y;
+        //}
         if (digitalSensors.isCS1AtLimit() && 0 < gamepad2.left_stick_y) {
             theClawMotor.setPower(0);
             theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -134,87 +136,29 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     }
     private void clawPosition(){
         if (isArmMoving){
-            if (runtime.seconds() > armFinishTime){
+            if (!opModeIsActive() || !theClawMotor.isBusy()){
                 theClawMotor.setPower(0);
                 isArmMoving = false;
-                armFinishTime = 0;
+                telemetry.addData("isarmmoving", isArmMoving);
+                telemetry.update();
             }
         }else {
-            double time = 0;
+            boolean buttonpushed = false;
             if (gamepad2.a) {
-                time = .4;
+                buttonpushed = true;
+                theClawMotor.setTargetPosition(500);
             } else if (gamepad2.b) {
-                time = .75;
+                buttonpushed = true;
+                theClawMotor.setTargetPosition(1000);
             } else if (gamepad2.y) {
-                time = 1;
-            }
-            if(time != 0){
+                buttonpushed = true;
+                theClawMotor.setTargetPosition(1500);
+            }if (buttonpushed){
+                theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 theClawMotor.setPower(.5);
                 isArmMoving = true;
-                runtime.reset();
-                armFinishTime = time;
             }
         }
-        /*if (gamepad2.x){
-            if(digitalSensors.isCS1AtLimit()){
-                theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            }else{
-                while(!digitalSensors.isCS1AtLimit()){
-                    theClawMotor.setPower(-.25);
-                }
-                theClawMotor.setPower(0);
-            }
-        } */
-        //TODO set X for the capstone thing (need rev encoder things)
-    }
-    private void testClawPosition() {
-        //1680 ticks per 60 motor revolution
-            int clawTarget = 0;
-            if (gamepad2.a) {
-                clawTarget = 300;
-            } else if (gamepad2.b) {
-                clawTarget = 420;
-            } else if (gamepad2.y) {
-                clawTarget = 600;
-            }
-
-            // Ensure that the opmode is still active
-            if (opModeIsActive()) {
-
-                // Determine new target position, and pass to motor controller
-                theClawMotor.setTargetPosition(clawTarget);
-
-                // Turn On RUN_TO_POSITION
-                theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                // reset the timeout time and start motion.
-                runtime.reset();
-                theClawMotor.setPower(.5);
-
-                // keep looping while we are still active, and there is time left, and both motors are running.
-                // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-                // its target position, the motion will stop.  This is "safer" in the event that the robot will
-                // always end the motion as soon as possible.
-                // However, if you require that BOTH motors have finished their moves before the robot continues
-                // onto the next step, use (isBusy() || isBusy()) in the loop test.
-                while (opModeIsActive() &&
-                        theClawMotor.isBusy()) {
-
-                    // Display it for the driver.
-                    telemetry.addData("Path1",  "Running to %7d", clawTarget);
-                    telemetry.addData("Path2",  "Running at %7d",
-                            theClawMotor.getCurrentPosition());
-                    telemetry.update();
-                }
-
-                // Stop all motion;
-                theClawMotor.setPower(0);
-
-                // Turn off RUN_TO_POSITION
-                theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                //  sleep(250);   // optional pause after each move
-            }
     }
 }
 

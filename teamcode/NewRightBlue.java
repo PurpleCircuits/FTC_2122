@@ -26,8 +26,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 
-@Autonomous(name = "NewLeftRed", group = "Linear Opmode")
-public class NewLeftRed extends LinearOpMode {
+@Autonomous(name = "NewRightBlue", group = "Linear Opmode")
+public class NewRightBlue extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private DigitalSensors digitalSensors = null;
     private PurpleTensorFlow purpleTensorFlow = null;
@@ -317,7 +317,7 @@ public class NewLeftRed extends LinearOpMode {
             telemetry.update();
             trigmecanum.mecanumDrive(speed,0,0,false,false);
         }
-            trigmecanum.mecanumDrive(0,0,0,false,false);
+        trigmecanum.mecanumDrive(0,0,0,false,false);
     }
 }
 
