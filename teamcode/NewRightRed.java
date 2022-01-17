@@ -26,8 +26,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 
-@Autonomous(name = "NewRightBlue", group = "Linear Opmode")
-public class NewRightBlue extends LinearOpMode {
+@Autonomous(name = "NewRightRed", group = "Linear Opmode")
+public class NewRightRed extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private DigitalSensors digitalSensors = null;
     private PurpleTensorFlow purpleTensorFlow = null;
@@ -94,6 +94,8 @@ public class NewRightBlue extends LinearOpMode {
         //top = 1600
 
         theClawServo.setPosition(SERVO_MIN_POS);
+        //Unique to this method, strafe left to not hit barrier
+        moveBotStrafe(8,0,.5,0);
         //forward towards tower
         moveBotDrive(45,1,0,0);
         //Set claw to position
@@ -110,24 +112,11 @@ public class NewRightBlue extends LinearOpMode {
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
-        moveBotDrive(12,-1,0,0);
+        moveBotDrive(6,-1,0,0);
         turnRight(270,5);
         runToClawPosition(500);
-        //TODO plug in right distance sensor
-        rightToDistance(8,10);
-        moveBotDrive(12,-1,0,0);
-        runToColor(6);
-        //doubled due to half speed
-        moveBotDrive(28,-.5,0,0);
-        sleep(250);
-        theSpinMotor.setPower(.3);
-        sleep(4000);
-        theSpinMotor.setPower(0);
-        sleep(250);
-        runToColorForward(10);
-        moveBotDrive(8,1,0,0);
-        rightToDistance(8,5);
-        clawAction();
+        moveBotDrive(48,-1,0,0);
+        moveBotStrafe(24,0,-1,0);
     }
 
     private void initHardware() {

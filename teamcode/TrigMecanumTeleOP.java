@@ -96,19 +96,6 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         else if (gamepad2.right_bumper || 5 > clawDistance.getDistance(DistanceUnit.CM)) {
             theClawServo.setPosition(SERVO_MIN_POS);
         }
-        // Power for claw
-        double power = -gamepad2.left_stick_y / 2;
-        // Slow down the robot by factor of 2 when right bumper pressed
-        //if (gamepad2.right_bumper) {
-        //  power = -gamepad2.left_stick_y;
-        //}
-        if (digitalSensors.isCS1AtLimit() && 0 < gamepad2.left_stick_y) {
-            theClawMotor.setPower(0);
-            theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        } else {
-            theClawMotor.setPower(power);
-        }
     }
     private void slideAction(){
         double power = gamepad2.right_stick_y;
@@ -153,10 +140,24 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             } else if (gamepad2.y) {
                 buttonpushed = true;
                 theClawMotor.setTargetPosition(1500);
-            }if (buttonpushed){
+            }
+
+            if (buttonpushed){
                 theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 theClawMotor.setPower(.5);
                 isArmMoving = true;
+            } else {
+                // Power for claw
+                //TODO may change - new slower motor
+                double power = -gamepad2.left_stick_y / 2;
+
+                if (digitalSensors.isCS1AtLimit() && 0 < gamepad2.left_stick_y) {
+                    theClawMotor.setPower(0);
+                    theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                } else {
+                    theClawMotor.setPower(power);
+                }
             }
         }
     }

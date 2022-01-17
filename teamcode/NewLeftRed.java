@@ -118,8 +118,8 @@ public class NewLeftRed extends LinearOpMode {
         //doubled due to half speed
         moveBotDrive(28,-.5,0,0);
         sleep(250);
-        theSpinMotor.setPower(-.4);
-        sleep(3000);
+        theSpinMotor.setPower(-.3);
+        sleep(4000);
         theSpinMotor.setPower(0);
         sleep(250);
         runToColorForward(10);
