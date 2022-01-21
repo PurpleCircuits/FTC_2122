@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -11,20 +10,15 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.oldauto.PurpleTensorFlow;
 
-import java.util.List;
-
-@Autonomous(name = "TestAuto", group = "Linear Opmode")
-public class TestAuto extends LinearOpMode {
+@Disabled
+@Autonomous(name = "OLDRightBlue", group = "Linear Opmode")
+public class OLDRightBlue extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private DigitalSensors digitalSensors = null;
     private PurpleTensorFlow purpleTensorFlow = null;
@@ -42,14 +36,12 @@ public class TestAuto extends LinearOpMode {
     private DcMotor motorFrontRight = null;
     private DcMotor motorBackLeft = null;
     private DcMotor motorBackRight = null;
+    private DcMotor theSpinMotor = null;
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private BNO055IMU imu = null;
     private DistanceSensor topDistanceSensor = null;
     private DistanceSensor bottomDistanceSensor = null;
-    private DistanceSensor leftDistance = null;
-    private DistanceSensor rightDistance = null;
-    private DistanceSensor frontDistance = null;
     private ElapsedTime runtime = new ElapsedTime();
     private DigitalChannel slideSwitch1 = null;
     private DigitalChannel clawSwitch1 = null;
@@ -62,11 +54,85 @@ public class TestAuto extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        leftToDistance();
-        telemetry.addData("Distance",leftDistance.getDistance(CM));
-        telemetry.update();
-        sleep(2000);
+        //TODO load the box off the ground a little bit
+        theClawServo.setPosition(SERVO_MIN_POS);
+        //tensorflow find the cube
+        String action;
+        //sleep to give time to find artifact
+        sleep(4000);
+        if (purpleTensorFlow.isArtifactDetected()){
+            action = "r";
+            moveBotStrafe(8,0,1,0);
         }
+        else{
+            moveBotStrafe(8,0,1,0);
+            //sleep to find artifact
+            sleep(4000);
+            if (purpleTensorFlow.isArtifactDetected()){
+                action = "c";
+            } else {
+                action = "l";
+            }
+        }
+        telemetry.addData("artifact location", action);
+        telemetry.update();
+        //if no cube reverse 8 inches
+        //tensorflow find the cube
+        //if no cube here we know its on the third square
+        //forward towards tower
+        moveBotDrive(45,1,0,0);
+        //turn to fully align with goal
+        if ("l".equalsIgnoreCase(action)){
+            moveClaw(.35);
+            turnLeft(90,10);
+            moveBotDrive(12,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(12,-1,0,0);
+
+        } else if ("c".equalsIgnoreCase(action)){
+            moveClaw(.6);
+            turnLeft(90,10);
+            moveBotDrive(12,1,0,0);
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(12,-1,0,0);
+
+        } else {
+            moveClaw(1);
+            turnLeft(90,10);
+            moveBotDrive(18,1,0,0);
+
+            //open claw
+            theClawServo.setPosition(SERVO_OPEN_POS);
+            sleep(500);
+            //go back
+            moveBotDrive(18,-1,0,0);
+
+        }
+        //turn and align with carousel
+        turnRight(302,10);
+        //reverse to carousel
+        moveBotDrive(47,-1,0,0);
+        //spin carousel
+        theSpinMotor.setPower(.4);
+        //TODO change this to a while loop timeout
+        sleep(4000);
+        theSpinMotor.setPower(0);
+        //move away from carousel
+        moveBotDrive(15,1,0,0);
+        //turn to align straight
+        turnLeft(58,4);
+        //strafe to align with blue dock
+        moveBotStrafe(9,0,-1,0);
+        //reverse to wall
+        moveBotDrive(13,-1,0,0);
+        clawAction();
+    }
 
     private void initHardware() {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
@@ -74,16 +140,16 @@ public class TestAuto extends LinearOpMode {
         theClawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
+        theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
+
         trigmecanum = new Trigmecanum();
         trigmecanum.init(hardwareMap, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE, DcMotor.Direction.REVERSE);
 
         digitalSensors = new DigitalSensors();
         digitalSensors.init(hardwareMap);
 
-        leftDistance = hardwareMap.get(DistanceSensor.class, "left_distance");
-
-        //purpleTensorFlow = new PurpleTensorFlow();
-        //purpleTensorFlow.init(hardwareMap);
+        purpleTensorFlow = new PurpleTensorFlow();
+        purpleTensorFlow.init(hardwareMap);
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
@@ -192,19 +258,5 @@ public class TestAuto extends LinearOpMode {
         while (opModeIsActive() && runtime.seconds() < time){
         }
         theClawMotor.setPower(0);
-    }
-    private void runToColor(){
-        while(opModeIsActive() && digitalSensors.getColors().red < .010)
-        {
-            trigmecanum.mecanumDrive(.5,0,0,false,false);
-        }
-        trigmecanum.mecanumDrive(0,0,0,false,false);
-    }
-    public void leftToDistance(){
-        while(opModeIsActive() && leftDistance.getDistance(CM) > 8)
-        {
-        trigmecanum.mecanumDrive(0,1,0,false,false);
-        }
-            trigmecanum.mecanumDrive(0,0,0,false,false);
     }
 }

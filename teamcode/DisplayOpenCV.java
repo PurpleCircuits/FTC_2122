@@ -14,8 +14,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 
-@Autonomous(name = "BlueWarehouse2BlocksDELYAED4Sec")
-public class BlueWarehouse2BlocksDELAYED4Sec extends LinearOpMode {
+@Autonomous(name = "DisplayOpenCV")
+public class DisplayOpenCV extends LinearOpMode {
 
     //hardware variable
 

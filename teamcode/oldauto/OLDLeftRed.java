@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -11,23 +10,15 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.firstinspires.ftc.teamcode.oldauto.PurpleTensorFlow;
 
-import java.util.List;
-
-@Autonomous(name = "NewRightBlue", group = "Linear Opmode")
-public class NewRightBlue extends LinearOpMode {
+@Disabled
+@Autonomous(name = "OLDLeftRed", group = "Linear Opmode")
+public class OLDLeftRed extends LinearOpMode {
     private Trigmecanum trigmecanum = null;
     private DigitalSensors digitalSensors = null;
     private PurpleTensorFlow purpleTensorFlow = null;
@@ -51,15 +42,10 @@ public class NewRightBlue extends LinearOpMode {
     private BNO055IMU imu = null;
     private DistanceSensor topDistanceSensor = null;
     private DistanceSensor bottomDistanceSensor = null;
-    private DistanceSensor leftDistance = null;
-    private DistanceSensor rightDistance = null;
-    private DistanceSensor frontDistance = null;
     private ElapsedTime runtime = new ElapsedTime();
     private DigitalChannel slideSwitch1 = null;
     private DigitalChannel clawSwitch1 = null;
     private DigitalChannel clawSwitch2 = null;
-    DuckPosition placement = new DuckPosition();
-    private OpenCvCamera webcam = null;
     /**
      * This is the entry of our Op Mode.
      */
@@ -68,65 +54,57 @@ public class NewRightBlue extends LinearOpMode {
         //initalize hardware
         initHardware();
         waitForStart();
-        String level = "left";
-        switch (placement.pipeline.getAnalysis()) {
-            case LEFT:
-                level = "bottom";
-                telemetry.addData("Left", level);
-                telemetry.update();
-                sleep(50);
-                break;
-            case CENTER:
-                level = "center";
-                telemetry.addData("Center", level);
-                telemetry.update();
-                sleep(50);
-                break;
-            case RIGHT:
-                level = "top";
-                telemetry.addData("Right", level);
-                telemetry.update();
-                sleep(50);
-        }
-        webcam.stopStreaming();
-        //bottom = 500
-        //center =  1000
-        //top = 1600
-
+        //TODO load the box off the ground a little bit
         theClawServo.setPosition(SERVO_MIN_POS);
+        //tensorflow find the cube
+        String action;
+        //sleep to give time to find artifact
+        sleep(4000);
+        if (purpleTensorFlow.isArtifactDetected()){
+            action = "l";
+            moveBotStrafe(8,0,-1,0);
+        }
+        else{
+            moveBotStrafe(8,0,-1,0);
+            //sleep to find artifact
+            sleep(4000);
+            if (purpleTensorFlow.isArtifactDetected()){
+                action = "c";
+            } else {
+                action = "r";
+            }
+        }
+        telemetry.addData("artifact location", action);
+        telemetry.update();
+        //if no cube reverse 8 inches
+        //tensorflow find the cube
+        //if no cube here we know its on the third square
         //forward towards tower
         moveBotDrive(45,1,0,0);
-        //Set claw to position
-        if ("bottom".equalsIgnoreCase(level)){
-            runToClawPosition(500);
-        } else if ("center".equalsIgnoreCase(level)){
-            runToClawPosition(1000);
+        if ("l".equalsIgnoreCase(action)){
+            leftProcess();
+        } else if ("c".equalsIgnoreCase(action)){
+            centerProcess();
         } else {
-            runToClawPosition(1600);
+            rightProcess();
         }
-        turnLeft(90,5);
-        frontToDistance(.25,8,1);
-        sleep(250);
-        //open claw
-        theClawServo.setPosition(SERVO_OPEN_POS);
-        sleep(500);
-        moveBotDrive(12,-1,0,0);
-        turnRight(270,5);
-        runToClawPosition(500);
-        //TODO plug in right distance sensor
-        rightToDistance(8,10);
-        moveBotDrive(12,-1,0,0);
-        runToColor(6);
-        //doubled due to half speed
-        moveBotDrive(28,-.5,0,0);
-        sleep(250);
-        theSpinMotor.setPower(.3);
+        //turn and align with carousel
+        turnLeft(60,10);
+        //reverse to carousel
+        moveBotDrive(49,-1,0,0);
+        //spin carousel
+        theSpinMotor.setPower(-.4);
+        //TODO change this to a while loop timeout
         sleep(4000);
         theSpinMotor.setPower(0);
-        sleep(250);
-        runToColorForward(10);
-        moveBotDrive(8,1,0,0);
-        rightToDistance(8,5);
+        //move away from carousel
+        moveBotDrive(15,1,0,0);
+        //turn to align straight
+        turnRight(300,5);
+        //strafe to align with blue dock
+        moveBotStrafe(9,0,1,0);
+        //reverse to wall
+        moveBotDrive(13,-1,0,0);
         clawAction();
     }
 
@@ -134,8 +112,6 @@ public class NewRightBlue extends LinearOpMode {
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         theClawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        theClawMotor.setDirection(DcMotor.Direction.FORWARD);
-        theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
@@ -146,38 +122,14 @@ public class NewRightBlue extends LinearOpMode {
         digitalSensors = new DigitalSensors();
         digitalSensors.init(hardwareMap);
 
-        leftDistance = hardwareMap.get(DistanceSensor.class, "left_distance");
-        frontDistance = hardwareMap.get(DistanceSensor.class, "front_distance");
-        frontDistance = hardwareMap.get(DistanceSensor.class, "right_distance");
-        //purpleTensorFlow = new PurpleTensorFlow();
-        //purpleTensorFlow.init(hardwareMap);
+        purpleTensorFlow = new PurpleTensorFlow();
+        purpleTensorFlow.init(hardwareMap);
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
         parameters.loggingTag     = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-
-        placement.pipeline = new DuckPosition.SamplePipeline();
-
-
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-
-        webcam.setPipeline(placement.pipeline);
-
-
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-
-            }
-        });
 
         // Log that init hardware is finished
         telemetry.log().clear();
@@ -265,7 +217,6 @@ public class NewRightBlue extends LinearOpMode {
         return inches / m;
     }
     private void clawAction(){
-        theClawMotor.setTargetPosition(0);
         if(digitalSensors.isCS1AtLimit()){
             theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }else{
@@ -282,52 +233,36 @@ public class NewRightBlue extends LinearOpMode {
         }
         theClawMotor.setPower(0);
     }
-    private void runToColor(int timeout){
-        while(opModeIsActive() && digitalSensors.getColors().red < .010 && runtime.seconds() < timeout)
-        {
-            trigmecanum.mecanumDrive(-.5,0,0,false,false);
-        }
-        trigmecanum.mecanumDrive(0,0,0,false,false);
+    private void leftProcess(){
+            moveClaw(.35);
+        //turn to fully align with goal
+        turnRight(270,10);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
+        //go back
+        moveBotDrive(8,-1,0,0);
     }
-    public void leftToDistance(int distance, int timeout){
-        while(opModeIsActive() && leftDistance.getDistance(CM) > distance && runtime.seconds() < timeout)
-        {
-            trigmecanum.mecanumDrive(0,1,0,false,false);
-        }
-        trigmecanum.mecanumDrive(0,0,0,false,false);
+    private void centerProcess(){
+        moveClaw(.6);
+        //turn to fully align with goal
+        turnRight(270,10);
+        moveBotDrive(5,1,0,0);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
+        //go back
+        moveBotDrive(13,-1,0,0);
     }
-    public void rightToDistance(int distance, int timeout){
-        while(opModeIsActive() && rightDistance.getDistance(CM) > distance && runtime.seconds() < timeout)
-        {
-            trigmecanum.mecanumDrive(0,-1,0,false,false);
-        }
-        trigmecanum.mecanumDrive(0,0,0,false,false);
-    }
-    private void runToColorForward(int timeout){
-        while(opModeIsActive() && digitalSensors.getColors().red < .010 && runtime.seconds() < timeout)
-        {
-            trigmecanum.mecanumDrive(.5,0,0,false,false);
-        }
-        trigmecanum.mecanumDrive(0,0,0,false,false);
-    }
-    private void runToClawPosition(int tics){
-        theClawMotor.setTargetPosition(tics);
-        theClawMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        theClawMotor.setPower(.5);
-        while (opModeIsActive() && theClawMotor.isBusy()){
-            //potential telemetry here if needed
-        }
-        theClawMotor.setPower(0);
-    }
-    public void frontToDistance(double speed, int distance, int timeout){
-        runtime.reset();
-        while(opModeIsActive() && frontDistance.getDistance(CM) > distance && runtime.seconds() < timeout)
-        {
-            telemetry.addData("distance",frontDistance.getDistance(CM));
-            telemetry.update();
-            trigmecanum.mecanumDrive(speed,0,0,false,false);
-        }
-        trigmecanum.mecanumDrive(0,0,0,false,false);
+    private void rightProcess(){
+            moveClaw(1);
+        //turn to fully align with goal
+        turnRight(270,10);
+        moveBotDrive(8,1,0,0);
+        //open claw
+        theClawServo.setPosition(SERVO_OPEN_POS);
+        sleep(500);
+        //go back
+        moveBotDrive(16,-1,0,0);
     }
 }
-
