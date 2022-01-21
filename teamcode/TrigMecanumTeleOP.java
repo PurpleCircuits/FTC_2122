@@ -40,7 +40,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             clawAction();
             slideAction();
             spinAction();
-            //clawPosition();
+            clawPosition();
             digitalSensors.colorSensorTest(telemetry); //TODO move into its own method like above
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
             telemetry.addData("tics",theClawMotor.getCurrentPosition());
@@ -98,7 +98,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         }
     }
     private void slideAction(){
-        double power = gamepad2.right_stick_y;
+        double power = gamepad2.left_stick_y;
         theSlideMotor.setPower(power);
     }
     private void spinAction(){
@@ -121,15 +121,15 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         }
         theSpinMotor.setPower(power);
     }
-    private void clawPosition(){
-        if (isArmMoving){
+    private void clawPosition()
+    {
+        if (isArmMoving)
+        {
             if (!opModeIsActive() || !theClawMotor.isBusy()){
                 theClawMotor.setPower(0);
                 isArmMoving = false;
-                telemetry.addData("isarmmoving", isArmMoving);
-                telemetry.update();
             }
-        }else {
+        } else {
             boolean buttonpushed = false;
             if (gamepad2.a) {
                 buttonpushed = true;
@@ -149,17 +149,21 @@ public class TrigMecanumTeleOP extends LinearOpMode {
             } else {
                 // Power for claw
                 //TODO may change - new slower motor
-                double power = -gamepad2.left_stick_y / 2;
+                double power = -gamepad2.right_stick_y / 2;
+                telemetry.addData("ClawMotorPower",power);
 
-                if (digitalSensors.isCS1AtLimit() && 0 < gamepad2.left_stick_y) {
+                if (digitalSensors.isCS1AtLimit() && 0 < gamepad2.right_stick_y) {
                     theClawMotor.setPower(0);
                     theClawMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 } else {
+                    theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    telemetry.addData("IN MOVE ClawMotorPower",power);
                     theClawMotor.setPower(power);
                 }
             }
         }
+        telemetry.addData("isarmmoving", isArmMoving);
     }
 }
 

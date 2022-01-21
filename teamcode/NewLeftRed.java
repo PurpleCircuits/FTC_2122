@@ -33,7 +33,8 @@ public class NewLeftRed extends LinearOpMode {
     private PurpleTensorFlow purpleTensorFlow = null;
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
-    private static final double SERVO_OPEN_POS = 0.6; // Start at halfway position
+    //TODO ^.7 change in all autonomous programs
+    private static final double SERVO_OPEN_POS = 0.7; // Start at halfway position
     // The speed for the drive motors to operate at during autonomous
     private static final double SPEED = 0.5;
     private static final double COUNTS_PER_MOTOR_REV = 1120 ;    // (40 GEARBOX) eg: TETRIX Motor Encoder
@@ -97,7 +98,8 @@ public class NewLeftRed extends LinearOpMode {
         moveBotDrive(45,1,0,0);
         //Set claw to position
         if ("bottom".equalsIgnoreCase(level)){
-            runToClawPosition(500);
+            //TODO change to 600 in all programs
+            runToClawPosition(600);
         } else if ("center".equalsIgnoreCase(level)){
             runToClawPosition(1000);
         } else {
@@ -110,9 +112,11 @@ public class NewLeftRed extends LinearOpMode {
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
         moveBotDrive(12,-1,0,0);
+        sleep(100);
         turnLeft(90,5);
         runToClawPosition(500);
         leftToDistance(8,10);
+        sleep(100);
         moveBotDrive(12,-1,0,0);
         runToColor(6);
         //doubled due to half speed

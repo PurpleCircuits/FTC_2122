@@ -33,7 +33,7 @@ public class NewLeftBlue extends LinearOpMode {
     private PurpleTensorFlow purpleTensorFlow = null;
     private static final double SERVO_MIN_POS = 0.0; // Minimum rotational position
     private static final double SERVO_MAX_POS = 1.0; // Maximum rotational position
-    private static final double SERVO_OPEN_POS = 0.6; // Start at halfway position
+    private static final double SERVO_OPEN_POS = 0.7; // Start at halfway position
     // The speed for the drive motors to operate at during autonomous
     private static final double SPEED = 0.5;
     private static final double COUNTS_PER_MOTOR_REV = 1120 ;    // (40 GEARBOX) eg: TETRIX Motor Encoder
