@@ -82,14 +82,23 @@ public class LeftBlue extends LinearOpMode {
         //Set claw to position
         if ("bottom".equalsIgnoreCase(level)){
             runToClawPosition(600);
+            sleep(250);
+            turnRight(270,5);
+            moveBotDrive(20,.5,0,0);
         } else if ("center".equalsIgnoreCase(level)){
             runToClawPosition(1000);
+            sleep(250);
+            turnRight(270,5);
+            moveBotDrive(24,.5,0,0);
         } else {
             runToClawPosition(1600);
+            sleep(250);
+            turnRight(270,5);
+            moveBotDrive(30,.5,0,0);
         }
-        turnRight(90,5);
-        frontToDistance(.25,8,1);
-        sleep(250);
+        //turnRight(90,5);
+        //frontToDistance(.25,8,1);
+        //sleep(250);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
@@ -98,7 +107,7 @@ public class LeftBlue extends LinearOpMode {
         //all classes - set arm to set position as to not confuse runs
         runToClawPosition(500);
         moveBotDrive(48,-1,0,0);
-        moveBotStrafe(24,0,1,0);
+        moveBotStrafe(36,0,1,0);//TODO move farther??
         clawAction();
     }
 

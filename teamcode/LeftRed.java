@@ -78,16 +78,24 @@ public class LeftRed extends LinearOpMode {
         moveBotDrive(45,1,0,0);
         //Set claw to position
         if ("bottom".equalsIgnoreCase(level)){
-            //TODO change to 600 in all programs
             runToClawPosition(600);
+            sleep(250);
+            turnRight(270,5);
+            moveBotDrive(20,.5,0,0);
         } else if ("center".equalsIgnoreCase(level)){
             runToClawPosition(1000);
+            sleep(250);
+            turnRight(270,5);
+            moveBotDrive(20,.5,0,0);
         } else {
             runToClawPosition(1600);
+            sleep(250);
+            turnRight(270,5);
+            moveBotDrive(24,.5,0,0);
         }
-        turnRight(270,5);
-        frontToDistance(.25,8,1);
-        sleep(250);
+        //turnRight(270,5);
+        //frontToDistance(.25,8,1);
+        //sleep(250);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
@@ -96,6 +104,7 @@ public class LeftRed extends LinearOpMode {
         turnLeft(90,5);
         runToClawPosition(500);
         leftToDistance(8,10);
+        moveBotStrafe(8,0,-.5,0);
         sleep(100);
         moveBotDrive(12,-1,0,0);
         runToColor(-.5,6);

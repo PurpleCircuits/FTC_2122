@@ -83,14 +83,24 @@ public class RightBlue extends LinearOpMode {
         //Set claw to position
         if ("bottom".equalsIgnoreCase(level)){
             runToClawPosition(600);
+            sleep(250);
+            turnLeft(90,5);
+            moveBotDrive(20,.5,0,0);
         } else if ("center".equalsIgnoreCase(level)){
             runToClawPosition(1000);
+            sleep(250);
+            turnLeft(90,5);
+            moveBotDrive(24,.5,0,0);
         } else {
             runToClawPosition(1600);
+            sleep(250);
+            turnLeft(90,5);
+            moveBotDrive(30,.5,0,0);
         }
-        turnLeft(90,5);
-        frontToDistance(.25,8,1);
-        sleep(250);
+        //turnLeft(90,5);
+        //frontToDistance(.5,8,4);
+        //^replaced this by putting it in the if else statement while moving the claw
+        //sleep(250);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
@@ -98,6 +108,7 @@ public class RightBlue extends LinearOpMode {
         turnRight(270,5);
         runToClawPosition(500);
         rightToDistance(8,10);
+        moveBotStrafe(8,0,.5,0);
         moveBotDrive(12,-1,0,0);
         runToColor(-.5,6);
         //doubled due to half speed
@@ -108,7 +119,7 @@ public class RightBlue extends LinearOpMode {
         theSpinMotor.setPower(0);
         sleep(250);
         runToColor(.5,10);
-        moveBotDrive(8,1,0,0);
+        moveBotDrive(10,1,0,0);
         rightToDistance(8,5);
         clawAction();
     }
@@ -130,7 +141,7 @@ public class RightBlue extends LinearOpMode {
         digitalSensors.init(hardwareMap);
 
         frontDistance = hardwareMap.get(DistanceSensor.class, "front_distance");
-        frontDistance = hardwareMap.get(DistanceSensor.class, "right_distance");
+        rightDistance = hardwareMap.get(DistanceSensor.class, "right_distance");
         //purpleTensorFlow = new PurpleTensorFlow();
         //purpleTensorFlow.init(hardwareMap);
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
@@ -274,7 +285,7 @@ public class RightBlue extends LinearOpMode {
     }
     private void runToColor(double speed, int timeout){
         runtime.reset();
-        while(opModeIsActive() && digitalSensors.getColors().red < .010 && runtime.seconds() < timeout)
+        while(opModeIsActive() && digitalSensors.getColors().blue < .010 && runtime.seconds() < timeout)
         {
             trigmecanum.mecanumDrive(speed,0,0,false,false);
         }

@@ -90,7 +90,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         if(gamepad2.dpad_down){
             theClawServo.setPosition(SERVO_MAX_POS);
         }
-        if(gamepad2.left_bumper){
+        else if(gamepad2.left_bumper){
             theClawServo.setPosition(SERVO_OPEN_POS);
         }
         else if (gamepad2.right_bumper || 5 > clawDistance.getDistance(DistanceUnit.CM)) {
@@ -139,7 +139,7 @@ public class TrigMecanumTeleOP extends LinearOpMode {
                 theClawMotor.setTargetPosition(1000);
             } else if (gamepad2.y) {
                 buttonpushed = true;
-                theClawMotor.setTargetPosition(1500);
+                theClawMotor.setTargetPosition(0);
             }
 
             if (buttonpushed){

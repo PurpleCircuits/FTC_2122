@@ -114,7 +114,7 @@ public class RightRed extends LinearOpMode {
         digitalSensors.init(hardwareMap);
 
         frontDistance = hardwareMap.get(DistanceSensor.class, "front_distance");
-        frontDistance = hardwareMap.get(DistanceSensor.class, "right_distance");
+
         //purpleTensorFlow = new PurpleTensorFlow();
         //purpleTensorFlow.init(hardwareMap);
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
