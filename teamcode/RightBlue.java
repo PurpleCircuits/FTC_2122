@@ -79,7 +79,9 @@ public class RightBlue extends LinearOpMode {
 
         theClawServo.setPosition(SERVO_MIN_POS);
         //forward towards tower
-        moveBotDrive(45,1,0,0);
+        moveBotDrive(48,1,0,0);
+        sleep(250);
+        moveBotDrive(5,-1,0,0);
         //Set claw to position
         if ("bottom".equalsIgnoreCase(level)){
             runToClawPosition(600);
@@ -108,11 +110,12 @@ public class RightBlue extends LinearOpMode {
         turnRight(270,5);
         runToClawPosition(500);
         rightToDistance(8,10);
-        moveBotStrafe(8,0,.5,0);
+        moveBotStrafe(8,0,-.5,0);
         moveBotDrive(12,-1,0,0);
         runToColor(-.5,6);
         //doubled due to half speed
         moveBotDrive(28,-.5,0,0);
+        moveBotStrafe(6,0,-.5,0);
         sleep(250);
         theSpinMotor.setPower(.3);
         sleep(4000);

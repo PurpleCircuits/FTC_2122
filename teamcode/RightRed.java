@@ -74,19 +74,26 @@ public class RightRed extends LinearOpMode {
         webcam.stopStreaming();
         theClawServo.setPosition(SERVO_MIN_POS);
         //Unique to this method, strafe left to not hit barrier
-        moveBotStrafe(8,0,.5,0);
+        moveBotStrafe(12,0,.5,0);
         //forward towards tower
         moveBotDrive(45,1,0,0);
         //Set claw to position
         if ("bottom".equalsIgnoreCase(level)){
             runToClawPosition(600);
+            sleep(250);
+            turnLeft(90,5);
+            moveBotDrive(20,.5,0,0);
         } else if ("center".equalsIgnoreCase(level)){
             runToClawPosition(1000);
+            sleep(250);
+            turnLeft(90,5);
+            moveBotDrive(20,.5,0,0);
         } else {
             runToClawPosition(1600);
+            sleep(250);
+            turnLeft(90,5);
+            moveBotDrive(24,.5,0,0);
         }
-        turnLeft(90,5);
-        frontToDistance(.25,8,1);
         sleep(250);
         //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
@@ -95,7 +102,7 @@ public class RightRed extends LinearOpMode {
         turnRight(270,5);
         runToClawPosition(500);
         moveBotDrive(48,-1,0,0);
-        moveBotStrafe(24,0,-1,0);
+        moveBotStrafe(36,0,-1,0);
         clawAction();
     }
 

@@ -75,28 +75,26 @@ public class LeftRed extends LinearOpMode {
         webcam.stopStreaming();
         theClawServo.setPosition(SERVO_MIN_POS);
         //forward towards tower
-        moveBotDrive(45,1,0,0);
+        moveBotDrive(55,1,0,0);
+        sleep(100);
+        moveBotDrive(5,-1,0,0);
         //Set claw to position
         if ("bottom".equalsIgnoreCase(level)){
             runToClawPosition(600);
             sleep(250);
             turnRight(270,5);
-            moveBotDrive(20,.5,0,0);
+            moveBotDrive(14,.5,0,0);
         } else if ("center".equalsIgnoreCase(level)){
-            runToClawPosition(1000);
+            runToClawPosition(1100);
             sleep(250);
             turnRight(270,5);
-            moveBotDrive(20,.5,0,0);
+            moveBotDrive(16,.5,0,0);
         } else {
-            runToClawPosition(1600);
+            runToClawPosition(1700);
             sleep(250);
             turnRight(270,5);
-            moveBotDrive(24,.5,0,0);
+            moveBotDrive(16,.5,0,0);
         }
-        //turnRight(270,5);
-        //frontToDistance(.25,8,1);
-        //sleep(250);
-        //open claw
         theClawServo.setPosition(SERVO_OPEN_POS);
         sleep(500);
         moveBotDrive(12,-1,0,0);
@@ -104,12 +102,18 @@ public class LeftRed extends LinearOpMode {
         turnLeft(90,5);
         runToClawPosition(500);
         leftToDistance(8,10);
-        moveBotStrafe(8,0,-.5,0);
+        moveBotStrafe(8,0,.5,0);
         sleep(100);
-        moveBotDrive(12,-1,0,0);
+        moveBotDrive(18,-1,0,0);
         runToColor(-.5,6);
         //doubled due to half speed
         moveBotDrive(28,-.5,0,0);
+        sleep(100);
+        moveBotStrafe(4,0,1,0);
+        //sleep(100);
+        //moveBotDrive(6,-1,0,0);
+        //sleep(100);
+        //moveBotStrafe(2,0,.5,0);
         sleep(250);
         theSpinMotor.setPower(-.3);
         sleep(4000);
