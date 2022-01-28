@@ -7,9 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -25,30 +23,24 @@ public class TrigMecanumTeleOP extends LinearOpMode {
     private DcMotor theClawMotor = null;
     private DcMotor theSlideMotor = null;
     private DcMotor theSpinMotor = null;
-    private DistanceSensor leftDistance = null;
-    private DistanceSensor frontDistance = null;
     private DigitalSensors digitalSensors = null;
-    private ElapsedTime runtime = new ElapsedTime();
     private boolean isArmMoving = false;
-    private double armFinishTime = 0;
     @Override
     public void runOpMode() throws InterruptedException {
         initHardware();
         waitForStart();
         while (opModeIsActive()) {
-            //distanceAction();
             clawAction();
             slideAction();
             spinAction();
             clawPosition();
-            digitalSensors.colorSensorTest(telemetry); //TODO move into its own method like above
             trigmecanum.mecanumDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.left_bumper, gamepad1.right_bumper);
-            telemetry.addData("tics",theClawMotor.getCurrentPosition());
-            //bottom = 500
-            //center =  1000
-            //top = 1600
-            telemetry.addData("frontDistance",frontDistance.getDistance(CM));
-            telemetry.addData("clawDistance",clawDistance.getDistance(CM));
+            //Color Sensor output
+            //digitalSensors.colorSensorTest(telemetry);
+            //Claw motor tics output
+            //telemetry.addData("tics",theClawMotor.getCurrentPosition());
+            //Claw Distance sensor output
+            telemetry.addData("Claw Distance:",clawDistance.getDistance(CM));
             telemetry.update();
         }
     }
@@ -58,11 +50,13 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         parameters.loggingTag     = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
         clawDistance = hardwareMap.get(ColorRangeSensor.class, "distance");
-        frontDistance = hardwareMap.get(DistanceSensor.class, "front_distance");
         theClawServo = hardwareMap.get(Servo.class, "the_claw_servo");
+
         trigmecanum = new Trigmecanum();
         trigmecanum.init(hardwareMap, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD, DcMotor.Direction.FORWARD);
+
         theClawMotor = hardwareMap.get(DcMotor.class, "the_claw_motor");
         theClawMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         theClawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -74,16 +68,9 @@ public class TrigMecanumTeleOP extends LinearOpMode {
 
         digitalSensors = new DigitalSensors();
         digitalSensors.init(hardwareMap);
-//TODO THIS IS FOR TESTING REMOVE LATER IF U WANT
-        leftDistance = hardwareMap.get(DistanceSensor.class, "left_distance");
 
         theSpinMotor = hardwareMap.get(DcMotor.class, "the_spin_motor");
         theSpinMotor.setDirection(DcMotor.Direction.FORWARD);
-    }
-    private void distanceAction(){
-        // generic DistanceSensor methods.
-        telemetry.addData("deviceName", clawDistance.getDeviceName() );
-        telemetry.addData("range", String.format("%.01f cm", clawDistance.getDistance(DistanceUnit.CM)));
     }
     private void clawAction() {
         // close the claw
@@ -148,7 +135,6 @@ public class TrigMecanumTeleOP extends LinearOpMode {
                 isArmMoving = true;
             } else {
                 // Power for claw
-                //TODO may change - new slower motor
                 double power = -gamepad2.right_stick_y / 2;
                 telemetry.addData("ClawMotorPower",power);
 
@@ -166,4 +152,3 @@ public class TrigMecanumTeleOP extends LinearOpMode {
         telemetry.addData("isarmmoving", isArmMoving);
     }
 }
-

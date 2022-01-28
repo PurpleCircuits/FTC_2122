@@ -84,12 +84,12 @@ public class RightRed extends LinearOpMode {
             turnLeft(90,5);
             moveBotDrive(20,.5,0,0);
         } else if ("center".equalsIgnoreCase(level)){
-            runToClawPosition(1000);
+            runToClawPosition(1100);
             sleep(250);
             turnLeft(90,5);
             moveBotDrive(20,.5,0,0);
         } else {
-            runToClawPosition(1600);
+            runToClawPosition(1700);
             sleep(250);
             turnLeft(90,5);
             moveBotDrive(24,.5,0,0);
