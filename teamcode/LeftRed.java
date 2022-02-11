@@ -40,7 +40,6 @@ public class LeftRed extends LinearOpMode {
     private Servo theClawServo = null;
     private BNO055IMU imu = null;
     private DistanceSensor leftDistance = null;
-    private DistanceSensor frontDistance = null;
 
     DuckPosition placement = new DuckPosition();
     private OpenCvCamera webcam = null;
@@ -104,7 +103,7 @@ public class LeftRed extends LinearOpMode {
         leftToDistance(8,10);
         moveBotStrafe(8,0,.5,0);
         sleep(100);
-        moveBotDrive(18,-1,0,0);
+        moveBotDrive(24,-1,0,0);
         runToColor(-.5,6);
         //doubled due to half speed
         moveBotDrive(28,-.5,0,0);
@@ -142,7 +141,6 @@ public class LeftRed extends LinearOpMode {
         digitalSensors.init(hardwareMap);
 
         leftDistance = hardwareMap.get(DistanceSensor.class, "left_distance");
-        frontDistance = hardwareMap.get(DistanceSensor.class, "front_distance");
         //purpleTensorFlow = new PurpleTensorFlow();
         //purpleTensorFlow.init(hardwareMap);
         // We are expecting the IMU to be attached to an I2C port (port 0) on a Core Device Interface Module and named "imu".
@@ -289,16 +287,6 @@ public class LeftRed extends LinearOpMode {
         while(opModeIsActive() && leftDistance.getDistance(CM) > distance && runtime.seconds() < timeout)
         {
             trigmecanum.mecanumDrive(0,1,0,false,false);
-        }
-        trigmecanum.mecanumDrive(0,0,0,false,false);
-    }
-    public void frontToDistance(double speed, int distance, int timeout){
-        runtime.reset();
-        while(opModeIsActive() && frontDistance.getDistance(CM) > distance && runtime.seconds() < timeout)
-        {
-            telemetry.addData("distance",frontDistance.getDistance(CM));
-            telemetry.update();
-            trigmecanum.mecanumDrive(speed,0,0,false,false);
         }
         trigmecanum.mecanumDrive(0,0,0,false,false);
     }

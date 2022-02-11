@@ -19,7 +19,6 @@ public class DigitalSensors {
     private DigitalChannel clawSwitch2 = null;
     private DistanceSensor leftDistance = null;
     private DistanceSensor rightDistance = null;
-    private DistanceSensor frontDistance = null;
     private ColorRangeSensor leftColor = null;
     private ColorRangeSensor rightColor = null;
     HardwareMap hwMap;
@@ -33,8 +32,6 @@ public class DigitalSensors {
         clawSwitch1.setMode(DigitalChannel.Mode.INPUT);
 
         leftDistance = hwMap.get(DistanceSensor.class, "left_distance");
-        //leftDistance = hwMap.get(DistanceSensor.class, "right_distance");
-        //leftDistance = hwMap.get(DistanceSensor.class, "front_distance");
         leftColor = hwMap.get(ColorRangeSensor.class, "left_color");
         //rightColor = hwMap.get(ColorRangeSensor.class, "right_color");
 

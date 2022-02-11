@@ -42,7 +42,6 @@ public class RightBlue extends LinearOpMode {
     private BNO055IMU imu = null;
 
     private DistanceSensor rightDistance = null;
-    private DistanceSensor frontDistance = null;
     private ElapsedTime runtime = new ElapsedTime();
 
     DuckPosition placement = new DuckPosition();
@@ -87,7 +86,7 @@ public class RightBlue extends LinearOpMode {
             runToClawPosition(600);
             sleep(250);
             turnLeft(90,5);
-            moveBotDrive(20,.5,0,0);
+            moveBotDrive(20,.5,0,0);//TODO add 4 more inches potentially
         } else if ("center".equalsIgnoreCase(level)){
             runToClawPosition(1100);
             sleep(250);
@@ -111,7 +110,7 @@ public class RightBlue extends LinearOpMode {
         runToClawPosition(500);
         rightToDistance(8,10);
         moveBotStrafe(8,0,-.5,0);
-        moveBotDrive(12,-1,0,0);
+        moveBotDrive(18,-1,0,0);
         runToColor(-.5,6);
         //doubled due to half speed
         moveBotDrive(28,-.5,0,0);
@@ -143,7 +142,6 @@ public class RightBlue extends LinearOpMode {
         digitalSensors = new DigitalSensors();
         digitalSensors.init(hardwareMap);
 
-        frontDistance = hardwareMap.get(DistanceSensor.class, "front_distance");
         rightDistance = hardwareMap.get(DistanceSensor.class, "right_distance");
         //purpleTensorFlow = new PurpleTensorFlow();
         //purpleTensorFlow.init(hardwareMap);
@@ -290,16 +288,6 @@ public class RightBlue extends LinearOpMode {
         runtime.reset();
         while(opModeIsActive() && digitalSensors.getColors().blue < .010 && runtime.seconds() < timeout)
         {
-            trigmecanum.mecanumDrive(speed,0,0,false,false);
-        }
-        trigmecanum.mecanumDrive(0,0,0,false,false);
-    }
-    public void frontToDistance(double speed, int distance, int timeout){
-        runtime.reset();
-        while(opModeIsActive() && frontDistance.getDistance(CM) > distance && runtime.seconds() < timeout)
-        {
-            telemetry.addData("distance",frontDistance.getDistance(CM));
-            telemetry.update();
             trigmecanum.mecanumDrive(speed,0,0,false,false);
         }
         trigmecanum.mecanumDrive(0,0,0,false,false);

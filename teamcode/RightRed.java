@@ -39,7 +39,6 @@ public class RightRed extends LinearOpMode {
     private DcMotor theClawMotor = null;
     private Servo theClawServo = null;
     private BNO055IMU imu = null;
-    private DistanceSensor frontDistance = null;
 
     DuckPosition placement = new DuckPosition();
     private OpenCvCamera webcam = null;
@@ -119,8 +118,6 @@ public class RightRed extends LinearOpMode {
 
         digitalSensors = new DigitalSensors();
         digitalSensors.init(hardwareMap);
-
-        frontDistance = hardwareMap.get(DistanceSensor.class, "front_distance");
 
         //purpleTensorFlow = new PurpleTensorFlow();
         //purpleTensorFlow.init(hardwareMap);
@@ -256,16 +253,6 @@ public class RightRed extends LinearOpMode {
             //potential telemetry here if needed
         }
         theClawMotor.setPower(0);
-    }
-    public void frontToDistance(double speed, int distance, int timeout){
-        runtime.reset();
-        while(opModeIsActive() && frontDistance.getDistance(CM) > distance && runtime.seconds() < timeout)
-        {
-            telemetry.addData("distance",frontDistance.getDistance(CM));
-            telemetry.update();
-            trigmecanum.mecanumDrive(speed,0,0,false,false);
-        }
-        trigmecanum.mecanumDrive(0,0,0,false,false);
     }
 }
 
