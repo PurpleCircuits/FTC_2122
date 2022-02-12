@@ -76,7 +76,7 @@ public class LeftRed extends LinearOpMode {
         //forward towards tower
         moveBotDrive(55,1,0,0);
         sleep(100);
-        moveBotDrive(5,-1,0,0);
+        moveBotDrive(8,-1,0,0);
         //Set claw to position
         if ("bottom".equalsIgnoreCase(level)){
             runToClawPosition(600);

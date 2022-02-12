@@ -83,17 +83,17 @@ public class LeftBlue extends LinearOpMode {
             runToClawPosition(600);
             sleep(250);
             turnRight(270,5);
-            moveBotDrive(20,.5,0,0);
+            moveBotDrive(12,.5,0,0);
         } else if ("center".equalsIgnoreCase(level)){
             runToClawPosition(1100);
             sleep(250);
             turnRight(270,5);
-            moveBotDrive(24,.5,0,0);
+            moveBotDrive(16,.5,0,0);
         } else {
             runToClawPosition(1700);
             sleep(250);
             turnRight(270,5);
-            moveBotDrive(30,.5,0,0);
+            moveBotDrive(18,.5,0,0);
         }
         //turnRight(90,5);
         //sleep(250);
